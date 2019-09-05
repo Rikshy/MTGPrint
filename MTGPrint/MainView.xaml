@@ -1,0 +1,75 @@
+﻿<Window x:Class="MTGPrint.MainView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MTGPrint"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" IsEnabled="{Binding IsEnabled}">
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
+    <Window.Resources>
+        <ControlTemplate x:Key="TplFlatButton" TargetType="{x:Type Button}">
+            <Border Width="{TemplateBinding Width}"
+                    Height="{TemplateBinding Height}"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                  TextElement.Foreground="{TemplateBinding Foreground}"
+                                  TextElement.FontFamily="{TemplateBinding FontFamily}"
+                                  TextElement.FontSize="{TemplateBinding FontSize}"
+                                  TextElement.FontStretch="{TemplateBinding FontStretch}"
+                                  TextElement.FontWeight="{TemplateBinding FontWeight}"/>
+            </Border>
+        </ControlTemplate>
+        <Style x:Key="StlFlatButton" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="{x:Null}" />
+            <Setter Property="BorderBrush" Value="{x:Null}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Template" Value="{StaticResource TplFlatButton}" />
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid Visibility="{Binding CreateOpenGridVisibility}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="4*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Command="{Binding OpenDeckCommand}" Style="{StaticResource StlFlatButton}" >
+                <Image Source="Resources/create.png" Margin="50" />
+            </Button>
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+            </StackPanel>
+            <Button Grid.Column="2" Command="{Binding CreateDeckCommand}" Style="{StaticResource StlFlatButton}">
+                <Image Source="Resources/open.png" Margin="50" />
+            </Button>
+        </Grid>
+        <Grid Visibility="{Binding DeckGridVisibility}">
+            <ItemsControl ItemsSource="{Binding Deck.Cards}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="5">
+                            <Image Width="220.5" Height="308" Source="{Binding SelectPrint.ImageUrls.Png, NotifyOnSourceUpdated=True}" Margin="2" />
+                            <WrapPanel HorizontalAlignment="Stretch">
+                                <Border BorderBrush="{x:Null}" Height="25" Width="25">
+                                    <TextBlock Text="{Binding Count}" TextAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ComboBox ItemsSource="{Binding Prints}" SelectedItem="{Binding SelectPrint}" IsSynchronizedWithCurrentItem="True" Width="150" MaxWidth="150" />
+                            </WrapPanel>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+    </Grid>
+</Window>

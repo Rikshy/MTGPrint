@@ -159,6 +159,7 @@ namespace MTGPrint
 
             Deck.Cards.Clear();
             CardCount = 0;
+            Deck.HasChanges = false;
             LoadErrors = string.Empty;
 
             CreateOpenGridVisibility = Visibility.Visible;

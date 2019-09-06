@@ -80,30 +80,32 @@
                     </MenuItem.Header>
                 </MenuItem>
             </Menu>
-            <ItemsControl ItemsSource="{Binding Deck.Cards}" Margin="5,20,0,0">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Margin="5">
-                            <Image Width="220.5" Height="308" Source="{Binding SelectPrint.ImageUrls.Png, NotifyOnSourceUpdated=True}" Margin="2" />
-                            <Grid HorizontalAlignment="Stretch">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Border Grid.Column="0" BorderBrush="{x:Null}" HorizontalAlignment="Center">
-                                    <TextBlock Text="{Binding Count}" TextAlignment="Center" VerticalAlignment="Center" Width="30"/>
-                                </Border>
-                                <ComboBox Grid.Column="1" ItemsSource="{Binding Prints}" SelectedItem="{Binding SelectPrint}" IsSynchronizedWithCurrentItem="True" Margin="0,1,5,0"/>
-                            </Grid>
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5,20,5,20">
+                <ItemsControl ItemsSource="{Binding Deck.Cards}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="5">
+                                <Image Width="220.5" Height="308" Source="{Binding SelectPrint.ImageUrls.Png, NotifyOnSourceUpdated=True}" Margin="2" />
+                                <Grid HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" BorderBrush="{x:Null}" HorizontalAlignment="Center">
+                                        <TextBlock Text="{Binding Count}" TextAlignment="Center" VerticalAlignment="Center" Width="30"/>
+                                    </Border>
+                                    <ComboBox Grid.Column="1" ItemsSource="{Binding Prints}" SelectedItem="{Binding SelectPrint}" Margin="0,1,5,0"/>
+                                </Grid>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
         </Grid>
         <StatusBar VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="Auto">
             <StatusBar.ItemsPanel>

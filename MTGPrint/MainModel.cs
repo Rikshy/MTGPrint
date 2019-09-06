@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -25,15 +26,13 @@ namespace MTGPrint
         }
 
         public event EventHandler WorkFinished;
+        public event EventHandler LocalDataUpdated;
+
+        public bool CheckForUpdates() { return UpdateCheck(out _); }
 
         public void UpdateBulkData()
         {
-            var bulkInfo = Scry.GetBulkInfo().Data.First(b => b.Type == BulkType.DefaultCards);
-
-            if ( localData == null)
-                LoadLocalData();
-
-            if ( localData != null && bulkInfo.UpdatedAt >= localData.UpdatedAt)
+            if (!UpdateCheck(out var bulkInfo))
                 return;
 
             if (!Directory.Exists(@"data"))
@@ -41,18 +40,24 @@ namespace MTGPrint
 
             var bulkFile = $@"data\default-temp.json";
 
-            using (var wc = new WebClient())
-                wc.DownloadFile(bulkInfo.PermalinkUri.ToString(), bulkFile );
-            
-            var cards = JsonConvert.DeserializeObject<ScryCard[]>(File.ReadAllText( bulkFile ) );
+            var dl = new BackgroundWorker();
+            dl.DoWork += delegate
+            {
+                using (var wc = new WebClient())
+                    wc.DownloadFile(bulkInfo.PermalinkUri, bulkFile);
 
-            if ( localData != null && localData.CardCount != cards.LongLength )
-                return;
+                var cards = JsonConvert.DeserializeObject<ScryCard[]>(File.ReadAllText(bulkFile));
 
-            ConvertToLocal( bulkInfo.UpdatedAt, cards );
+                if (localData != null && localData.CardCount != cards.LongLength)
+                    return;
 
-            File.WriteAllText( LOCALDATA, JsonConvert.SerializeObject( localData, Formatting.Indented ) );
-            File.Delete( bulkFile );
+                ConvertToLocal(bulkInfo.UpdatedAt, cards);
+
+                File.WriteAllText(LOCALDATA, JsonConvert.SerializeObject(localData, Formatting.Indented));
+                File.Delete(bulkFile);
+            };
+            dl.RunWorkerCompleted += delegate { LocalDataUpdated?.Invoke(this, EventArgs.Empty); };
+            dl.RunWorkerAsync();
         }
 
         public List<DeckCard> ParseCardList(string cardList, out List<string> errors)
@@ -110,10 +115,10 @@ namespace MTGPrint
 
         public void LoadDeckPrints(Deck deck)
         {
-            foreach (DeckCard dc in deck.Cards)
+            foreach (var dc in deck.Cards)
             {
                 var lcard = localData.Cards.FirstOrDefault( lc => lc.OracleId == dc.OracleId );
-                dc.Prints = lcard.Prints;
+                if (lcard != null) dc.Prints = lcard.Prints;
                 //lcard.Prints.ForEach( cp => dc.Prints.Add( new DeckPrint { OracleId = lcard.OracleId, Id = cp.Id, Set = cp.Set, SetName = cp.SetName } ) );
             }
         }
@@ -121,6 +126,16 @@ namespace MTGPrint
         private void OnWorkFinished()
         {
             WorkFinished?.Invoke( this, EventArgs.Empty );
+        }
+
+        private bool UpdateCheck(out Bulk bulkInfo)
+        {
+            bulkInfo = Scry.GetBulkInfo().Data.First(b => b.Type == BulkType.DefaultCards);
+
+            if (localData == null)
+                LoadLocalData();
+
+            return localData == null || bulkInfo.UpdatedAt < localData.UpdatedAt;
         }
 
         private void LoadLocalData()
@@ -156,7 +171,7 @@ namespace MTGPrint
                 else if ( card.ReleasedAt > lcard.LatestPrint )
                     lcard.LatestPrint = card.ReleasedAt;
 
-                if (!lcard.Prints.Any(p => p.Set == card.Set))
+                if (lcard.Prints.All(p => p.Set != card.Set))
                 {
                     lcard.Prints.Add( new CardPrints
                     {

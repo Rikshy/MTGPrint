@@ -17,16 +17,18 @@ namespace MTGPrint
             OpenDeckCommand = new DelegateCommand(OpenDeck);
             WindowLoadedCommand = new DelegateCommand(WindowLoaded);
 
-            model.WorkFinished += delegate { IsEnabled = true; };
-
-            model.UpdateBulkData();
-
-            int i = 0;
+            model.LocalDataUpdated += delegate
+                                      {
+                                          StatusText = "Localdata updated";
+                                          IsEnabled = true;
+                                          MessageBox.Show("Localdata updated!");
+                                      };
         }
 
-
+        #region Bindings
         public ICommand OpenDeckCommand { get; }
         public ICommand CreateDeckCommand { get; }
+        public ICommand WindowLoadedCommand { get; set; }
 
         private Visibility createOpenGridVisibility = Visibility.Visible;
         public Visibility CreateOpenGridVisibility
@@ -72,12 +74,35 @@ namespace MTGPrint
             }
         }
 
+        private string statusText;
+        public string StatusText
+        {
+            get => statusText;
+            set
+            {
+                statusText = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));  
         }
 
+        #region CommandActions
+        private void WindowLoaded(object o)
+        {
+            if (model.CheckForUpdates())
+            {
+                StatusText = "Updating localdata";
+                model.UpdateBulkData();
+                IsEnabled = false;
+                MessageBox.Show("The client is updating local data. This might take a while.");
+            }
+        }
         private void CreateDeck(object o)
         {
             //IsEnabled = false;
@@ -103,5 +128,6 @@ namespace MTGPrint
         {
             CreateOpenGridVisibility = Visibility.Collapsed;
         }
+        #endregion
     }
 }

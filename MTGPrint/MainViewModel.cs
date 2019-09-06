@@ -2,10 +2,13 @@
 
 using MTGPrint.Models;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+
+using Microsoft.Win32;
 
 namespace MTGPrint
 {
@@ -15,9 +18,11 @@ namespace MTGPrint
 
         public MainViewModel()
         {
+            NewDeckCommand = new DelegateCommand(NewDeck);
             OpenDeckCommand = new DelegateCommand(OpenDeck);
             WindowLoadedCommand = new DelegateCommand(WindowLoaded);
             AddCardsCommand = new DelegateCommand(AddCards);
+            SaveDeckCommand = new DelegateCommand(SaveDeck);
 
             model.LocalDataUpdated += delegate
                                       {
@@ -25,12 +30,20 @@ namespace MTGPrint
                                           IsEnabled = true;
                                           MessageBox.Show("Localdata updated!");
                                       };
+
+            if (Application.Current.MainWindow != null)
+                Application.Current.MainWindow.Closing += CanClose;
+
+            if (!Directory.Exists("decks"))
+                Directory.CreateDirectory("decks");
         }
 
         #region Bindings
+        public ICommand NewDeckCommand { get; }
         public ICommand OpenDeckCommand { get; }
         public ICommand WindowLoadedCommand { get; }
         public ICommand AddCardsCommand { get; }
+        public ICommand SaveDeckCommand { get; }
 
         private Visibility createOpenGridVisibility = Visibility.Visible;
         public Visibility CreateOpenGridVisibility
@@ -41,7 +54,7 @@ namespace MTGPrint
                 createOpenGridVisibility = value;
                 OnPropertyChanged();
             }
-        } 
+        }
 
         private Visibility deckGridVisibility = Visibility.Collapsed;
         public Visibility DeckGridVisibility
@@ -65,16 +78,7 @@ namespace MTGPrint
             }
         }
 
-        private Deck deck;
-        public Deck Deck
-        {
-            get => deck;
-            set
-            {
-                deck = value;
-                OnPropertyChanged();
-            }
-        }
+        public Deck Deck => model.Deck;
 
         private string statusText;
         public string StatusText
@@ -112,7 +116,6 @@ namespace MTGPrint
         }
 
         private int cardCount = 0;
-
         public int CardCount
         {
             get => cardCount;
@@ -127,7 +130,7 @@ namespace MTGPrint
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));  
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         #region CommandActions
@@ -143,32 +146,93 @@ namespace MTGPrint
             else
                 StatusText = "Localdata updated";
         }
+
+        private void NewDeck(object o)
+        {
+            if (model.Deck.HasChanges &&
+                MessageBox.Show("Your deck has unsaved changes! Continue anyway?",
+                                                         "Unsaved Changes",
+                                                         MessageBoxButton.YesNo) == MessageBoxResult.No)
+                return;
+
+            Deck.Cards.Clear();
+            CardCount = 0;
+            LoadErrors = string.Empty;
+
+            CreateOpenGridVisibility = Visibility.Visible;
+            DeckGridVisibility = Visibility.Collapsed;
+        }
+
         private void AddCards(object o)
         {
             var vm = new ViewModels.AddCardsViewModel();
             var addCardsView = new AddCardsView { DataContext = vm };
-            if ( addCardsView.ShowDialog() == true && vm.ImportCards.Trim().Length > 0 )
+            if (addCardsView.ShowDialog() == true && !string.IsNullOrEmpty(vm.ImportCards) && vm.ImportCards.Trim().Length > 0)
             {
-                var deckCards = model.ParseCardList( vm.ImportCards.Trim(), out var errors );
-                if (deckCards.Any())
+                model.AddCardsToDeck(vm.ImportCards.Trim(), out var errors);
+                if (Deck.Cards.Any())
                 {
-                    var tmpDeck = Deck ?? new Deck();
-                    deckCards.ForEach( dc => tmpDeck.Cards.Add( dc ) );
-                    Deck = tmpDeck;
-                    CardCount = Deck.Cards.Sum( c => c.Count);
-
                     CreateOpenGridVisibility = Visibility.Collapsed;
                     DeckGridVisibility = Visibility.Visible;
                 }
 
+                CardCount = Deck.Cards.Sum(c => c.Count);
                 LoadErrors = string.Join(Environment.NewLine, errors);
+            }
+        }
+
+        private void SaveDeck(object o)
+        {
+            var sfd = new SaveFileDialog
+            {
+                Filter = "Deck file (*.jd)|*.jd",
+                InitialDirectory = "decks"
+            };
+            try
+            {
+                if (sfd.ShowDialog() == true)
+                    model.SaveDeck(sfd.FileName);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
             }
         }
 
         private void OpenDeck(object o)
         {
-            CreateOpenGridVisibility = Visibility.Collapsed;
+            var ofd = new OpenFileDialog
+            {
+                Multiselect = false,
+                Filter = "Deck file (*.jd)|*.jd",
+                InitialDirectory = "decks"
+            };
+            try
+            {
+                if (ofd.ShowDialog() != true) return;
+
+                CreateOpenGridVisibility = Visibility.Collapsed;
+                DeckGridVisibility = Visibility.Visible;
+
+                CardCount = Deck.Cards.Sum(c => c.Count);
+                LoadErrors = string.Empty;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
         }
         #endregion
+
+        private void CanClose(object sender, CancelEventArgs args)
+        {
+            if (model.Deck.HasChanges &&
+                MessageBox.Show("Your deck has unsaved changes! Continue anyway?",
+                                "Unsaved Changes",
+                                MessageBoxButton.YesNo)
+                == MessageBoxResult.No)
+                args.Cancel = true;
+
+        }
     }
 }

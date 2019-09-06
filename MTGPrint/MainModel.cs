@@ -6,6 +6,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Windows;
+
 using MTGPrint.Models;
 
 using Newtonsoft.Json;
@@ -27,6 +29,8 @@ namespace MTGPrint
 
         public event EventHandler WorkFinished;
         public event EventHandler LocalDataUpdated;
+
+        public Deck Deck { get; } = new Deck();
 
         public bool CheckForUpdates() { return UpdateCheck(out _); }
 
@@ -60,54 +64,31 @@ namespace MTGPrint
             dl.RunWorkerAsync();
         }
 
-        public List<DeckCard> ParseCardList(string cardList, out List<string> errors)
+        public void AddCardsToDeck(string cardList, out List<string> errors)
         {
-            var splits = cardList.Split( new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries );
+            var deckCards = ParseCardList(cardList, out errors);
+            deckCards.ForEach(dc => Deck.Cards.Add(dc));
+            Deck.HasChanges = true;
+        }
 
-            var deckCards = new List<DeckCard>();
-            errors = new List<string>();
+        public void SaveDeck(string path)
+        {
+            var savePath = string.IsNullOrEmpty(path) ? Deck.FileName : path;
+            Deck.FileName = savePath;
+            File.WriteAllText(savePath, JsonConvert.SerializeObject(Deck));
+            Deck.HasChanges = false;
+        }
 
-            foreach (string line in splits)
-            {
-                var ci = line.Split( new[] { " " }, StringSplitOptions.RemoveEmptyEntries );
-                if ( ci.Length != 2 )
-                {
-                    errors.Add(line);
-                    continue;
-                }
-
-                if ( !int.TryParse( ci[0].Trim(), out var count ) )
-                {
-                    errors.Add(line);
-                    continue;
-                }
-
-                var card = localData.Cards.FirstOrDefault( c => c.Name.ToUpper() == ci[1].Trim().ToUpper() );
-                if ( card == null )
-                {
-                    errors.Add(line);
-                    continue;
-                }
-
-                var first = card.Prints.FirstOrDefault();
-                if ( first == null )
-                {
-                    errors.Add( $"no prints found? {card.Name}" );
-                    continue;
-                }
-
-                var dc = new DeckCard
-                {
-                    OracleId = card.OracleId,
-                    SelectPrint = first,
-                    Prints = card.Prints,
-                    Count = count
-                };
-
-                deckCards.Add( dc );
-            }
-
-            return deckCards;
+        public void OpenDeck(string path)
+        {
+            var tempDeck = JsonConvert.DeserializeObject<Deck>(File.ReadAllText(path));
+            if (!tempDeck.Cards.Any())
+                throw new FileLoadException("invalid deck file");
+            Deck.Cards.Clear();
+            foreach (var c in tempDeck.Cards)
+                Deck.Cards.Add(c);
+            Deck.FileName = path;
+            Deck.HasChanges = false;
         }
 
         public void LoadDeckPrints(Deck deck)
@@ -178,6 +159,56 @@ namespace MTGPrint
                     } );
                 }
             }
+        }
+
+        private List<DeckCard> ParseCardList(string cardList, out List<string> errors)
+        {
+            var splits = cardList.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+            var deckCards = new List<DeckCard>();
+            errors = new List<string>();
+
+            foreach (string line in splits)
+            {
+                var ci = line.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                if (ci.Length != 2)
+                {
+                    errors.Add(line);
+                    continue;
+                }
+
+                if (!int.TryParse(ci[0].Trim(), out var count))
+                {
+                    errors.Add(line);
+                    continue;
+                }
+
+                var card = localData.Cards.FirstOrDefault(c => c.Name.ToUpper() == ci[1].Trim().ToUpper());
+                if (card == null)
+                {
+                    errors.Add(line);
+                    continue;
+                }
+
+                var first = card.Prints.FirstOrDefault();
+                if (first == null)
+                {
+                    errors.Add($"no prints found? {card.Name}");
+                    continue;
+                }
+
+                var dc = new DeckCard
+                         {
+                                     OracleId = card.OracleId,
+                                     SelectPrint = first,
+                                     Prints = card.Prints,
+                                     Count = count
+                         };
+
+                deckCards.Add(dc);
+            }
+
+            return deckCards;
         }
 
         private void DownloadPrintSet(Guid oracleId, IEnumerable<CardPrints> prints)

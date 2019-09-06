@@ -45,21 +45,31 @@
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="4*"/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Command="{Binding OpenDeckCommand}" Style="{StaticResource StlFlatButton}" >
+            <Button ToolTip="Create Deck" Grid.Column="0" Command="{Binding AddCardsCommand}" Style="{StaticResource StlFlatButton}" >
                 <Image Source="Resources/create.png" Margin="50" />
             </Button>
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
             </StackPanel>
-            <Button Grid.Column="2" Command="{Binding AddCardsCommand}" Style="{StaticResource StlFlatButton}">
+            <Button ToolTip="Open Deck" Grid.Column="2" Command="{Binding OpenDeckCommand}" Style="{StaticResource StlFlatButton}">
                 <Image Source="Resources/open.png" Margin="50" />
             </Button>
         </Grid>
         <Grid Visibility="{Binding DeckGridVisibility}">
             <Menu VerticalAlignment="Top" Height="Auto">
+                <MenuItem ToolTip="New Deck" Command="{Binding NewDeckCommand}">
+                    <MenuItem.Header>
+                        <Image Height="20" Source="Resources/new.png" Stretch="None" />
+                    </MenuItem.Header>
+                </MenuItem>
                 <MenuItem ToolTip="Add Cards" Command="{Binding AddCardsCommand}">
                     <MenuItem.Header>
                         <Image Height="20" Source="Resources/card_add_multiple.png" Stretch="None" />
+                    </MenuItem.Header>
+                </MenuItem>
+                <MenuItem ToolTip="Save Deck" Command="{Binding SaveDeckCommand}">
+                    <MenuItem.Header>
+                        <Image Height="20" Source="Resources/export.png" Stretch="None" />
                     </MenuItem.Header>
                 </MenuItem>
             </Menu>

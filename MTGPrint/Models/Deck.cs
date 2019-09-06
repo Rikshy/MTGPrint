@@ -10,6 +10,8 @@ namespace MTGPrint.Models
     {
         [JsonIgnore]
         public string FileName { get; set; }
+        [JsonIgnore]
+        public bool HasChanges { get; set; }
 
         [JsonProperty( "cards" )]
         public ObservableCollection<DeckCard> Cards { get; set; } = new ObservableCollection<DeckCard>();

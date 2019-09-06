@@ -15,9 +15,9 @@ namespace MTGPrint
 
         public MainViewModel()
         {
-            CreateDeckCommand = new DelegateCommand(CreateDeck);
             OpenDeckCommand = new DelegateCommand(OpenDeck);
             WindowLoadedCommand = new DelegateCommand(WindowLoaded);
+            AddCardsCommand = new DelegateCommand(AddCards);
 
             model.LocalDataUpdated += delegate
                                       {
@@ -29,8 +29,8 @@ namespace MTGPrint
 
         #region Bindings
         public ICommand OpenDeckCommand { get; }
-        public ICommand CreateDeckCommand { get; }
-        public ICommand WindowLoadedCommand { get; set; }
+        public ICommand WindowLoadedCommand { get; }
+        public ICommand AddCardsCommand { get; }
 
         private Visibility createOpenGridVisibility = Visibility.Visible;
         public Visibility CreateOpenGridVisibility
@@ -143,7 +143,7 @@ namespace MTGPrint
             else
                 StatusText = "Localdata updated";
         }
-        private void CreateDeck(object o)
+        private void AddCards(object o)
         {
             var vm = new ViewModels.AddCardsViewModel();
             var addCardsView = new AddCardsView { DataContext = vm };
@@ -152,7 +152,7 @@ namespace MTGPrint
                 var deckCards = model.ParseCardList( vm.ImportCards.Trim(), out var errors );
                 if (deckCards.Any())
                 {
-                    var tmpDeck = new Deck();
+                    var tmpDeck = Deck ?? new Deck();
                     deckCards.ForEach( dc => tmpDeck.Cards.Add( dc ) );
                     Deck = tmpDeck;
                     CardCount = Deck.Cards.Sum( c => c.Count);

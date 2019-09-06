@@ -51,12 +51,19 @@
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
             </StackPanel>
-            <Button Grid.Column="2" Command="{Binding CreateDeckCommand}" Style="{StaticResource StlFlatButton}">
+            <Button Grid.Column="2" Command="{Binding AddCardsCommand}" Style="{StaticResource StlFlatButton}">
                 <Image Source="Resources/open.png" Margin="50" />
             </Button>
         </Grid>
         <Grid Visibility="{Binding DeckGridVisibility}">
-            <ItemsControl ItemsSource="{Binding Deck.Cards}">
+            <Menu VerticalAlignment="Top" Height="Auto">
+                <MenuItem ToolTip="Add Cards" Command="{Binding AddCardsCommand}">
+                    <MenuItem.Header>
+                        <Image Height="20" Source="Resources/card_add_multiple.png" Stretch="None" />
+                    </MenuItem.Header>
+                </MenuItem>
+            </Menu>
+            <ItemsControl ItemsSource="{Binding Deck.Cards}" Margin="5,20,0,0">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />
@@ -66,18 +73,22 @@
                     <DataTemplate>
                         <StackPanel Margin="5">
                             <Image Width="220.5" Height="308" Source="{Binding SelectPrint.ImageUrls.Png, NotifyOnSourceUpdated=True}" Margin="2" />
-                            <WrapPanel HorizontalAlignment="Stretch">
-                                <Border BorderBrush="{x:Null}" Height="25" Width="25">
-                                    <TextBlock Text="{Binding Count}" TextAlignment="Center" VerticalAlignment="Center"/>
+                            <Grid HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0" BorderBrush="{x:Null}" HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding Count}" TextAlignment="Center" VerticalAlignment="Center" Width="30"/>
                                 </Border>
-                                <ComboBox ItemsSource="{Binding Prints}" SelectedItem="{Binding SelectPrint}" IsSynchronizedWithCurrentItem="True" Width="150" MaxWidth="150" />
-                            </WrapPanel>
+                                <ComboBox Grid.Column="1" ItemsSource="{Binding Prints}" SelectedItem="{Binding SelectPrint}" IsSynchronizedWithCurrentItem="True" Margin="0,1,5,0"/>
+                            </Grid>
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </Grid>
-        <StatusBar VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="20">
+        <StatusBar VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="Auto">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Grid>

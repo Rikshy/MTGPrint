@@ -126,5 +126,11 @@
   <ItemGroup>
     <Resource Include="Resources\ok.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\card_add_multiple.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\export.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

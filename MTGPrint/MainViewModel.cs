@@ -13,8 +13,9 @@ namespace MTGPrint
 
         public MainViewModel()
         {
-            CreateDeckCommand = new RelayCommand(CreateDeck);
-            OpenDeckCommand = new RelayCommand(OpenDeck);
+            CreateDeckCommand = new DelegateCommand(CreateDeck);
+            OpenDeckCommand = new DelegateCommand(OpenDeck);
+            WindowLoadedCommand = new DelegateCommand(WindowLoaded);
 
             model.WorkFinished += delegate { IsEnabled = true; };
 

@@ -3,12 +3,12 @@ using System.Windows.Input;
 
 namespace MTGPrint
 {
-    public class RelayCommand : ICommand
+    public class DelegateCommand : ICommand
     {
         private readonly Predicate<object> canExecute;
         private readonly Action<object> execute;
 
-        public RelayCommand(Action<object> execute, Predicate<object> canExecute = null)
+        public DelegateCommand(Action<object> execute, Predicate<object> canExecute = null)
         {
             this.canExecute = canExecute ?? delegate { return true; };
             this.execute = execute ?? throw new ArgumentNullException(nameof(execute));

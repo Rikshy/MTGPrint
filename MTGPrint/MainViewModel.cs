@@ -1,4 +1,6 @@
-﻿using MTGPrint.Models;
+﻿using System;
+
+using MTGPrint.Models;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -84,6 +86,42 @@ namespace MTGPrint
                 OnPropertyChanged();
             }
         }
+
+        private string loadErrors;
+
+        public string LoadErrors
+        {
+            get => loadErrors;
+            set
+            {
+                loadErrors = value;
+                ErrorSymbol = string.IsNullOrEmpty(loadErrors) ? @"Resources\ok.png" : @"Resources\warning.png";
+                OnPropertyChanged();
+            }
+        }
+
+        private string errorSymbol = @"Resources\ok.png";
+        public string ErrorSymbol
+        {
+            get => errorSymbol;
+            set
+            {
+                errorSymbol = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int cardCount = 0;
+
+        public int CardCount
+        {
+            get => cardCount;
+            set
+            {
+                cardCount = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -102,10 +140,11 @@ namespace MTGPrint
                 IsEnabled = false;
                 MessageBox.Show("The client is updating local data. This might take a while.");
             }
+            else
+                StatusText = "Localdata updated";
         }
         private void CreateDeck(object o)
         {
-            //IsEnabled = false;
             var vm = new ViewModels.AddCardsViewModel();
             var addCardsView = new AddCardsView { DataContext = vm };
             if ( addCardsView.ShowDialog() == true && vm.ImportCards.Trim().Length > 0 )
@@ -115,12 +154,14 @@ namespace MTGPrint
                 {
                     var tmpDeck = new Deck();
                     deckCards.ForEach( dc => tmpDeck.Cards.Add( dc ) );
-                    //model.LoadDeckPrints( tmpDeck );
                     Deck = tmpDeck;
+                    CardCount = Deck.Cards.Sum( c => c.Count);
 
                     CreateOpenGridVisibility = Visibility.Collapsed;
                     DeckGridVisibility = Visibility.Visible;
                 }
+
+                LoadErrors = string.Join(Environment.NewLine, errors);
             }
         }
 

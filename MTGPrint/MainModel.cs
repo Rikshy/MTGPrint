@@ -18,7 +18,7 @@ namespace MTGPrint
         public ScryfallClient Scry { get; } = new ScryfallClient();
 
         private LocalDataInfo localData;
-        private Downloader downloader = new Downloader();
+        private readonly Downloader downloader = new Downloader();
 
         public MainModel()
         {
@@ -72,20 +72,20 @@ namespace MTGPrint
                 var ci = line.Split( new[] { " " }, StringSplitOptions.RemoveEmptyEntries );
                 if ( ci.Length != 2 )
                 {
-                    errors.Add( $"could not parse: {line}" );
+                    errors.Add(line);
                     continue;
                 }
 
                 if ( !int.TryParse( ci[0].Trim(), out var count ) )
                 {
-                    errors.Add( $"could not parse number: {ci[0]}" );
+                    errors.Add(line);
                     continue;
                 }
 
                 var card = localData.Cards.FirstOrDefault( c => c.Name.ToUpper() == ci[1].Trim().ToUpper() );
                 if ( card == null )
                 {
-                    errors.Add( $"no card found with name: {ci[1]}" );
+                    errors.Add(line);
                     continue;
                 }
 
@@ -96,17 +96,14 @@ namespace MTGPrint
                     continue;
                 }
 
-                //DownloadPrintSet( card.OracleId, card.Prints );
-
                 var dc = new DeckCard
                 {
                     OracleId = card.OracleId,
-                    SelectPrint = first, //new DeckPrint { OracleId = card.OracleId, Id = first.Id, Set = first.Set, SetName = first.SetName },
+                    SelectPrint = first,
                     Prints = card.Prints,
                     Count = count
                 };
 
-                //card.Prints.ForEach( cp => dc.Prints.Add( new DeckPrint { OracleId = card.OracleId, Id = cp.Id, Set = cp.Set, SetName = cp.SetName } ) );
                 deckCards.Add( dc );
             }
 
@@ -119,7 +116,6 @@ namespace MTGPrint
             {
                 var lcard = localData.Cards.FirstOrDefault( lc => lc.OracleId == dc.OracleId );
                 if (lcard != null) dc.Prints = lcard.Prints;
-                //lcard.Prints.ForEach( cp => dc.Prints.Add( new DeckPrint { OracleId = lcard.OracleId, Id = cp.Id, Set = cp.Set, SetName = cp.SetName } ) );
             }
         }
 

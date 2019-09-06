@@ -22,6 +22,7 @@ namespace MTGPrint
             OpenDeckCommand = new DelegateCommand(OpenDeck);
             WindowLoadedCommand = new DelegateCommand(WindowLoaded);
             AddCardsCommand = new DelegateCommand(AddCards);
+            SaveDeckAsCommand = new DelegateCommand(SaveDeckAs);
             SaveDeckCommand = new DelegateCommand(SaveDeck);
 
             model.LocalDataUpdated += delegate
@@ -43,6 +44,7 @@ namespace MTGPrint
         public ICommand OpenDeckCommand { get; }
         public ICommand WindowLoadedCommand { get; }
         public ICommand AddCardsCommand { get; }
+        public ICommand SaveDeckAsCommand { get; }
         public ICommand SaveDeckCommand { get; }
 
         private Visibility createOpenGridVisibility = Visibility.Visible;
@@ -181,17 +183,29 @@ namespace MTGPrint
             }
         }
 
-        private void SaveDeck(object o)
+        private void SaveDeckAs(object o)
         {
             var sfd = new SaveFileDialog
-            {
-                Filter = "Deck file (*.jd)|*.jd",
-                InitialDirectory = "decks"
-            };
+                      {
+                                  Filter = "Deck file (*.jd)|*.jd",
+                                  InitialDirectory = "decks"
+                      };
             try
             {
                 if (sfd.ShowDialog() == true)
                     model.SaveDeck(sfd.FileName);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+
+        private void SaveDeck(object o)
+        {
+            try
+            {
+                model.SaveDeck(null);
             }
             catch (Exception e)
             {
@@ -210,6 +224,7 @@ namespace MTGPrint
             try
             {
                 if (ofd.ShowDialog() != true) return;
+                model.OpenDeck(ofd.FileName);
 
                 CreateOpenGridVisibility = Visibility.Collapsed;
                 DeckGridVisibility = Visibility.Visible;

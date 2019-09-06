@@ -62,14 +62,21 @@
                         <Image Height="20" Source="Resources/new.png" Stretch="None" />
                     </MenuItem.Header>
                 </MenuItem>
+                <Separator />
                 <MenuItem ToolTip="Add Cards" Command="{Binding AddCardsCommand}">
                     <MenuItem.Header>
                         <Image Height="20" Source="Resources/card_add_multiple.png" Stretch="None" />
                     </MenuItem.Header>
                 </MenuItem>
-                <MenuItem ToolTip="Save Deck" Command="{Binding SaveDeckCommand}">
+                <Separator />
+                <MenuItem ToolTip="Save Deck As" Command="{Binding SaveDeckAsCommand}">
                     <MenuItem.Header>
                         <Image Height="20" Source="Resources/export.png" Stretch="None" />
+                    </MenuItem.Header>
+                </MenuItem>
+                <MenuItem ToolTip="Save Deck" Command="{Binding SaveDeckCommand}">
+                    <MenuItem.Header>
+                        <Image Height="20" Source="Resources/save.png" Stretch="None" />
                     </MenuItem.Header>
                 </MenuItem>
             </Menu>

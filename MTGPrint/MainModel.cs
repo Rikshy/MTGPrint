@@ -95,7 +95,12 @@ namespace MTGPrint
                 throw new FileLoadException("invalid deck file");
             Deck.Cards.Clear();
             foreach (var c in tempDeck.Cards)
-                Deck.Cards.Add(c);
+            {
+                var lcard = localData.Cards.FirstOrDefault( lc => lc.OracleId == c.OracleId );
+                c.Prints = lcard.Prints;
+                c.SelectPrint = lcard.Prints.FirstOrDefault( p => p.Id == c.SelectPrint.Id );
+                Deck.Cards.Add( c );
+            }
             Deck.FileName = path;
             Deck.HasChanges = false;
         }

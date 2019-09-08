@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:MTGPrint.ViewModels"
-        mc:Ignorable="d" Height="245" Width="110" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ShowInTaskbar="False">
+        mc:Ignorable="d" Height="255" Width="120" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ShowInTaskbar="False">
     <Window.DataContext>
         <local:PrintViewModel />
     </Window.DataContext>

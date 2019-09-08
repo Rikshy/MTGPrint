@@ -195,6 +195,7 @@ namespace MTGPrint
             var addCardsView = new AddCardsView { DataContext = vm };
             if (addCardsView.ShowDialog() == true && !string.IsNullOrEmpty(vm.ImportCards) && vm.ImportCards.Trim().Length > 0)
             {
+                StatusText = "Importing cards";
                 model.AddCardsToDeck(vm.ImportCards.Trim(), out var errors);
                 if (Deck.Cards.Any())
                 {
@@ -204,6 +205,7 @@ namespace MTGPrint
 
                 CardCount = Deck.Cards.Sum(c => c.Count);
                 LoadErrors = string.Join(Environment.NewLine, errors);
+                StatusText = "Cards imported";
             }
         }
 
@@ -277,6 +279,7 @@ namespace MTGPrint
                 if ( sfd.ShowDialog() == true )
                 {
                     IsEnabled = false;
+                    StatusText = "Creating PDF";
                     vm.PrintOptions.FileName = sfd.FileName;
                     model.Print( vm.PrintOptions );
                 }

@@ -24,6 +24,8 @@ namespace MTGPrint
 
         private static float CARD_HEIGHT = 88 * MM_TO_POINT;
         private static float CARD_WIDTH = 63 * MM_TO_POINT;
+        private static float CARD_HEIGHT_WOB = 85 * MM_TO_POINT;
+        private static float CARD_WIDTH_WOB = 60 * MM_TO_POINT;
         private static float CARD_MARGIN = 1 * MM_TO_POINT;
 
         private static WebClient wc = new WebClient();
@@ -113,23 +115,33 @@ namespace MTGPrint
             {
                 var doc = new PdfDocument();
                 PdfPageBase page = doc.Pages.Add( PdfPageSize.A4, new PdfMargins( 25 ) );
+                
+                var cw = po.CardBorder == CardBorder.With
+                        ? CARD_WIDTH
+                        : CARD_WIDTH_WOB;
+                var ch = po.CardBorder == CardBorder.With
+                        ? CARD_HEIGHT
+                        : CARD_HEIGHT_WOB;
+                var cm = po.CardMargin * MM_TO_POINT;
 
                 for ( int i = 0; i < Deck.Cards.Count; i++ )
                 {
                     if ( i != 0 && i % 9 == 0 )
                         page = doc.Pages.Add( PdfPageSize.A4, new PdfMargins( 25 ) );
 
-                    var x = (i % 3) * (CARD_WIDTH + CARD_MARGIN);
-                    var y = ((i / 3) % 3) * (CARD_HEIGHT + CARD_MARGIN);
+                    var x = (i % 3) * (cw + cm);
+                    var y = ((i / 3) % 3) * (ch + cm);
 
                     //Add a image  
                     using ( var mem = new MemoryStream() )
                     {
-                        var b = wc.DownloadData( Deck.Cards[i].SelectPrint.ImageUrls.Normal );
+                        var b = wc.DownloadData( po.CardBorder == CardBorder.With
+                            ? Deck.Cards[i].SelectPrint.ImageUrls.Normal
+                            : Deck.Cards[i].SelectPrint.ImageUrls.BorderCrop );
                         mem.Write( b, 0, b.Length );
                         mem.Seek( 0, SeekOrigin.Begin );
 
-                        page.Canvas.DrawImage( PdfImage.FromStream( mem ), x, y, CARD_WIDTH, CARD_HEIGHT );
+                        page.Canvas.DrawImage( PdfImage.FromStream( mem ), (float) x, (float) y, cw, ch );
                     }
                 }
 

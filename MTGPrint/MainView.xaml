@@ -57,9 +57,9 @@
         </Grid>
         <Grid Visibility="{Binding DeckGridVisibility}">
             <Menu VerticalAlignment="Top" Height="Auto">
-                <MenuItem ToolTip="New Deck" Command="{Binding NewDeckCommand}">
+                <MenuItem ToolTip="Main Menu" Command="{Binding NewDeckCommand}">
                     <MenuItem.Header>
-                        <Image Height="20" Source="Resources/new.png" Stretch="None" />
+                        <Image Height="20" Source="Resources/reminder.png" Stretch="None" />
                     </MenuItem.Header>
                 </MenuItem>
                 <Separator />
@@ -86,7 +86,7 @@
                     </MenuItem.Header>
                 </MenuItem>
             </Menu>
-            <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5,20,5,20">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5,25,5,25">
                 <ItemsControl ItemsSource="{Binding Deck.Cards}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>

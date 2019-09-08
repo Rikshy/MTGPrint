@@ -86,7 +86,6 @@
     <Compile Include="AddCardsView.xaml.cs">
       <DependentUpon>AddCardsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Downloader.cs" />
     <Compile Include="Models\Bulk.cs" />
     <Compile Include="Models\Deck.cs" />
     <Compile Include="Models\LocalDataInfo.cs" />
@@ -170,6 +169,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\reminder.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\print.png" />

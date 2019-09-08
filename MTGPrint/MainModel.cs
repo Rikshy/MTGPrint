@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using MTGPrint.Models;
 
 using Newtonsoft.Json;
@@ -231,20 +232,14 @@ namespace MTGPrint
 
             foreach (string line in splits)
             {
-                var ci = line.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-                if (ci.Length != 2)
+                var match = Regex.Match( line, "([1-9])+ (.*)" );
+                if ( !match.Success )
                 {
                     errors.Add(line);
                     continue;
                 }
 
-                if (!int.TryParse(ci[0].Trim(), out var count))
-                {
-                    errors.Add(line);
-                    continue;
-                }
-
-                var card = localData.Cards.FirstOrDefault(c => c.Name.ToUpper() == ci[1].Trim().ToUpper());
+                var card = localData.Cards.FirstOrDefault(c => c.Name.ToUpper() == match.Groups[2].Value.Trim().ToUpper());
                 if (card == null)
                 {
                     errors.Add(line);
@@ -259,12 +254,12 @@ namespace MTGPrint
                 }
 
                 var dc = new DeckCard
-                         {
-                                     OracleId = card.OracleId,
-                                     SelectPrint = first,
-                                     Prints = card.Prints,
-                                     Count = count
-                         };
+                {
+                    OracleId = card.OracleId,
+                    SelectPrint = first,
+                    Prints = card.Prints,
+                    Count = int.Parse( match.Groups[1].Value )
+                };
 
                 deckCards.Add(dc);
             }

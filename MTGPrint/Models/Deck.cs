@@ -22,18 +22,6 @@ namespace MTGPrint.Models
         [JsonProperty( "oracle_id" )]
         public Guid OracleId { get; set; }
 
-        //private DeckPrint print;
-        //[JsonProperty( "selected_print" )]
-        //public DeckPrint SelectPrint
-        //{
-        //    get => print;
-        //    set
-        //    {
-        //        print = value;
-        //        OnPropertyChanged();
-        //    }
-        //}
-
         private CardPrints print;
         [JsonProperty( "selected_print" )]
         public CardPrints SelectPrint

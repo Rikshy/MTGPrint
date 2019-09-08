@@ -6,30 +6,36 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
-
 using MTGPrint.Models;
 
 using Newtonsoft.Json;
+using Spire.Pdf;
+using Spire.Pdf.Graphics;
 
 namespace MTGPrint
 {
     public class MainModel
     {
         private const string LOCALDATA = @"data\localdata.json";
-        public ScryfallClient Scry { get; } = new ScryfallClient();
+        private const string PRINTSETTINGS = @"data\printsettings.json";
+
+        // 1 inch = 72 point
+        private static float MM_TO_POINT = 2.834645669291339F;
+
+        private static float CARD_HEIGHT = 88 * MM_TO_POINT;
+        private static float CARD_WIDTH = 63 * MM_TO_POINT;
+        private static float CARD_MARGIN = 1 * MM_TO_POINT;
+
+        private static WebClient wc = new WebClient();
+        private ScryfallClient scry = new ScryfallClient();
 
         private LocalDataInfo localData;
 
-        private BackgroundWorker tmpWorker;
-        //private readonly Downloader downloader = new Downloader();
-
-        //public MainModel()
-        //{
-        //    //downloader.DownloadsCompleted += delegate { OnWorkFinished(); };
-        //}
-
-        //public event EventHandler WorkFinished;
+        private BackgroundWorker updateWorker;
         public event EventHandler LocalDataUpdated;
+
+        private BackgroundWorker printWorker;
+        public event EventHandler<RunWorkerCompletedEventArgs> PrintFinished;
 
         public Deck Deck { get; } = new Deck();
 
@@ -45,11 +51,10 @@ namespace MTGPrint
 
             var bulkFile = $@"data\default-temp.json";
 
-            tmpWorker = new BackgroundWorker();
-            tmpWorker.DoWork += delegate
+            updateWorker = new BackgroundWorker();
+            updateWorker.DoWork += delegate
             {
-                using (var wc = new WebClient())
-                    wc.DownloadFile(bulkInfo.PermalinkUri, bulkFile);
+                wc.DownloadFile(bulkInfo.PermalinkUri, bulkFile);
 
                 var cards = JsonConvert.DeserializeObject<ScryCard[]>(File.ReadAllText(bulkFile));
 
@@ -61,8 +66,8 @@ namespace MTGPrint
                 File.WriteAllText(LOCALDATA, JsonConvert.SerializeObject(localData, Formatting.Indented));
                 File.Delete(bulkFile);
             };
-            tmpWorker.RunWorkerCompleted += TmpWorkerFinished;
-            tmpWorker.RunWorkerAsync();
+            updateWorker.RunWorkerCompleted += UpdateWorkerFinished;
+            updateWorker.RunWorkerAsync();
         }
 
         public void AddCardsToDeck(string cardList, out List<string> errors)
@@ -92,23 +97,66 @@ namespace MTGPrint
             Deck.HasChanges = false;
         }
 
-        //public void LoadDeckPrints(Deck deck)
-        //{
-        //    foreach (var dc in deck.Cards)
-        //    {
-        //        var lcard = localData.Cards.FirstOrDefault( lc => lc.OracleId == dc.OracleId );
-        //        if (lcard != null) dc.Prints = lcard.Prints;
-        //    }
-        //}
+        public void Print( PrintOptions po )
+        {
+            try
+            {
+                File.WriteAllText( PRINTSETTINGS, JsonConvert.SerializeObject( po ) );
+            }
+            catch
+            {
+                // ignore
+            }
 
-        //private void OnWorkFinished()
-        //{
-        //    WorkFinished?.Invoke( this, EventArgs.Empty );
-        //}
+            printWorker = new BackgroundWorker();
+            printWorker.DoWork += delegate (object o, DoWorkEventArgs args)
+            {
+                var doc = new PdfDocument();
+                PdfPageBase page = doc.Pages.Add( PdfPageSize.A4, new PdfMargins( 25 ) );
+
+                for ( int i = 0; i < Deck.Cards.Count; i++ )
+                {
+                    if ( i != 0 && i % 9 == 0 )
+                        page = doc.Pages.Add( PdfPageSize.A4, new PdfMargins( 25 ) );
+
+                    var x = (i % 3) * (CARD_WIDTH + CARD_MARGIN);
+                    var y = ((i / 3) % 3) * (CARD_HEIGHT + CARD_MARGIN);
+
+                    //Add a image  
+                    using ( var mem = new MemoryStream() )
+                    {
+                        var b = wc.DownloadData( Deck.Cards[i].SelectPrint.ImageUrls.Normal );
+                        mem.Write( b, 0, b.Length );
+                        mem.Seek( 0, SeekOrigin.Begin );
+
+                        page.Canvas.DrawImage( PdfImage.FromStream( mem ), x, y, CARD_WIDTH, CARD_HEIGHT );
+                    }
+                }
+
+                args.Result = po;
+                doc.SaveToFile( po.FileName, FileFormat.PDF );
+            };
+            printWorker.RunWorkerCompleted += PrintWorkerFinished;
+            printWorker.RunWorkerAsync();
+        }
+
+        public PrintOptions LoadPrintSettings()
+        {
+            if ( !File.Exists( PRINTSETTINGS ) )
+                return new PrintOptions();
+            try
+            {
+                return JsonConvert.DeserializeObject<PrintOptions>( File.ReadAllText( PRINTSETTINGS ) );
+            }
+            catch
+            {
+                return new PrintOptions();
+            }
+        }
 
         private bool UpdateCheck(out Bulk bulkInfo)
         {
-            bulkInfo = Scry.GetBulkInfo().Data.First(b => b.Type == BulkType.DefaultCards);
+            bulkInfo = scry.GetBulkInfo().Data.First(b => b.Type == BulkType.DefaultCards);
 
             if (localData == null)
                 LoadLocalData();
@@ -212,29 +260,16 @@ namespace MTGPrint
             return deckCards;
         }
 
-        private void TmpWorkerFinished(object sender, RunWorkerCompletedEventArgs args)
+        private void UpdateWorkerFinished(object sender, RunWorkerCompletedEventArgs args)
         {
-            LocalDataUpdated?.Invoke(this, EventArgs.Empty);
-            tmpWorker.Dispose();
+            LocalDataUpdated?.Invoke( this, EventArgs.Empty );
+            updateWorker.Dispose();
         }
 
-        //private void DownloadPrintSet(Guid oracleId, IEnumerable<CardPrints> prints)
-        //{
-        //    using ( var wc = new WebClient() )
-        //    {
-        //        foreach ( var print in prints )
-        //        {
-        //            var printSetDir = $@"data\prints\{oracleId}\{print.Id}";
-        //            if ( !print.Downloaded )
-        //            {
-        //                Directory.CreateDirectory( printSetDir );
-        //                downloader.QueueDownload( print.ImageUrls.Png, Path.Combine( printSetDir, "png.png" ) );
-        //                downloader.QueueDownload( print.ImageUrls.BorderCrop, Path.Combine( printSetDir, "border.jpg" ) );
-        //                downloader.QueueDownload( print.ImageUrls.ArtCrop, Path.Combine( printSetDir, "art.jpg" ) );
-        //                print.Downloaded = true;
-        //            }
-        //        }
-        //    }
-        //}
+        private void PrintWorkerFinished(object sender, RunWorkerCompletedEventArgs args)
+        {
+            PrintFinished?.Invoke( this, args );
+            printWorker.Dispose();
+        }
     }
 }

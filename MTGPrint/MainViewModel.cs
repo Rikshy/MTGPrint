@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 
 using Microsoft.Win32;
+using System.Diagnostics;
 
 namespace MTGPrint
 {
@@ -23,7 +24,8 @@ namespace MTGPrint
             WindowLoadedCommand = new DelegateCommand(WindowLoaded);
             AddCardsCommand = new DelegateCommand(AddCards);
             SaveDeckAsCommand = new DelegateCommand(SaveDeckAs);
-            SaveDeckCommand = new DelegateCommand(SaveDeck);
+            SaveDeckCommand = new DelegateCommand( SaveDeck );
+            PrintCommand = new DelegateCommand( Print );
 
             model.LocalDataUpdated += delegate
                                       {
@@ -32,11 +34,31 @@ namespace MTGPrint
                                           MessageBox.Show("Localdata updated!");
                                       };
 
+            model.PrintFinished += delegate (object o, RunWorkerCompletedEventArgs args)
+            {
+                IsEnabled = true;
+                if ( args.Error != null )
+                {
+                    LoadErrors = args.Error.Message;
+                    MessageBox.Show( args.Error.Message );
+                    StatusText = "Deck could not be printed";
+                }
+                else
+                {
+                    LoadErrors = string.Empty;
+                    StatusText = "Deck printed";
+                    if (args.Result is PrintOptions po && po.OpenPDF)
+                        Process.Start( po.FileName );
+                }
+            };
+
             if (Application.Current.MainWindow != null)
                 Application.Current.MainWindow.Closing += CanClose;
 
-            if (!Directory.Exists("decks"))
-                Directory.CreateDirectory("decks");
+            if ( !Directory.Exists( "decks" ) )
+                Directory.CreateDirectory( "decks" );
+            if ( !Directory.Exists( "prints" ) )
+                Directory.CreateDirectory( "prints" );
         }
 
         #region Bindings
@@ -46,6 +68,7 @@ namespace MTGPrint
         public ICommand AddCardsCommand { get; }
         public ICommand SaveDeckAsCommand { get; }
         public ICommand SaveDeckCommand { get; }
+        public ICommand PrintCommand { get; }
 
         private Visibility createOpenGridVisibility = Visibility.Visible;
         public Visibility CreateOpenGridVisibility
@@ -236,6 +259,27 @@ namespace MTGPrint
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
+            }
+        }
+
+        private void Print(object o)
+        {
+            var vm = new ViewModels.PrintViewModel { PrintOptions = model.LoadPrintSettings() };
+            var printView = new PrintView() { DataContext = vm };
+            if ( printView.ShowDialog() == true)
+            {
+                var sfd = new SaveFileDialog
+                {
+                    Filter = "PDF file (*.pdf)|*.pdf",
+                    InitialDirectory = "prints"
+                };
+
+                if ( sfd.ShowDialog() == true )
+                {
+                    IsEnabled = false;
+                    vm.PrintOptions.FileName = sfd.FileName;
+                    model.Print( vm.PrintOptions );
+                }
             }
         }
         #endregion

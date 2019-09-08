@@ -1,0 +1,46 @@
+﻿<Window x:Class="MTGPrint.PrintView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:local="clr-namespace:MTGPrint.ViewModels"
+        mc:Ignorable="d" Height="245" Width="110" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ShowInTaskbar="False">
+    <Window.DataContext>
+        <local:PrintViewModel />
+    </Window.DataContext>
+    <Window.Resources>
+        <local:EnumMatchToBooleanConverter x:Key="enumConverter" />
+    </Window.Resources>
+    <Grid>
+        <StackPanel>
+            <GroupBox Header="Border Settings">
+                <StackPanel>
+                    <RadioButton Content="With" Margin="5" IsChecked="{Binding PrintOptions.CardBorder, Mode=TwoWay, Converter={StaticResource enumConverter}, ConverterParameter=With}" />
+                    <RadioButton Content="Without" Margin="5" IsChecked="{Binding PrintOptions.CardBorder, Mode=TwoWay, Converter={StaticResource enumConverter}, ConverterParameter=Without}" />
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Card margin">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <xctk:DoubleUpDown Value="{Binding PrintOptions.CardMargin}" Increment=".5" Minimum="0" Maximum="5"/>
+                    <TextBlock Text="mm" Margin="5" />
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Card scaling">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <xctk:DoubleUpDown Value="{Binding PrintOptions.CardScaling}" Increment=".5" Minimum="90" Maximum="110"/>
+                    <TextBlock Text="%" Margin="5" />
+                </StackPanel>
+            </GroupBox>
+            <CheckBox Content="Open PDF" HorizontalAlignment="Center" IsChecked="{Binding PrintOptions.OpenPDF}" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5*" />
+                    <ColumnDefinition Width="5*" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="Create" Width="40" Margin="5" IsDefault="True" Click="Button_Click" />
+                <Button Grid.Column="1" Content="Cancel" Width="40"  Margin="5" IsCancel="True" />
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Window>

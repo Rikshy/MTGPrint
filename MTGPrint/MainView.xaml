@@ -79,6 +79,12 @@
                         <Image Height="20" Source="Resources/save.png" Stretch="None" />
                     </MenuItem.Header>
                 </MenuItem>
+                <Separator />
+                <MenuItem ToolTip="Print" Command="{Binding PrintCommand}">
+                    <MenuItem.Header>
+                        <Image Height="20" Source="Resources/print.png" Stretch="None" />
+                    </MenuItem.Header>
+                </MenuItem>
             </Menu>
             <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5,20,5,20">
                 <ItemsControl ItemsSource="{Binding Deck.Cards}">

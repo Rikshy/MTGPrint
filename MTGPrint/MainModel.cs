@@ -237,25 +237,22 @@ namespace MTGPrint
                 else if ( card.ReleasedAt > lcard.LatestPrint )
                     lcard.LatestPrint = card.ReleasedAt;
 
-                if (lcard.Prints.All(p => p.Set != card.Set))
+                var iu = card.ImageUrls;
+                ImageUrls child = null;
+                if ( card.Layout == CardLayout.Transform )
                 {
-                    var iu = card.ImageUrls;
-                    ImageUrls child = null;
-                    if ( card.CardFaces != null )
-                    {
-                        iu = card.CardFaces.First().ImageUrls;
-                        child = card.CardFaces.Last().ImageUrls;
-                    }
-
-                    lcard.Prints.Add( new CardPrints
-                    {
-                        Id = card.Id,
-                        Set = card.Set,
-                        SetName = card.SetName,
-                        ImageUrls = iu,
-                        ChildUrls = child
-                    } );
+                    iu = card.CardFaces.First().ImageUrls;
+                    child = card.CardFaces.Last().ImageUrls;
                 }
+
+                lcard.Prints.Add( new CardPrints
+                {
+                    Id = card.Id,
+                    Set = card.Set,
+                    SetName = card.SetName,
+                    ImageUrls = iu,
+                    ChildUrls = child
+                } );
             }
         }
 

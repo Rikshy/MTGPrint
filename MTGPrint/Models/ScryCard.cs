@@ -77,7 +77,7 @@ namespace MTGPrint.Models
         public Guid Id { get; set; }
 
         [JsonProperty( "name" )]
-        public Guid Name { get; set; }
+        public string Name { get; set; }
 
         [JsonProperty( "component" )]
         [JsonConverter( typeof( CardComponentTypeConverter ) )]

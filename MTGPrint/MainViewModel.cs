@@ -29,6 +29,9 @@ namespace MTGPrint
             SaveDeckAsCommand = new DelegateCommand(SaveDeckAs);
             SaveDeckCommand = new DelegateCommand( SaveDeck );
             PrintCommand = new DelegateCommand( Print );
+            GenerateTokenCommand = new DelegateCommand( GenerateToken );
+            SaveArtCommand = new DelegateCommand( SaveArt );
+            RemoveCardCommand = new DelegateCommand( RemoveCard );
 
             model.LocalDataUpdated += delegate
                                       {
@@ -78,6 +81,7 @@ namespace MTGPrint
         public ICommand SaveDeckAsCommand { get; }
         public ICommand SaveDeckCommand { get; }
         public ICommand PrintCommand { get; }
+        public ICommand GenerateTokenCommand { get; }
 
         private Visibility createOpenGridVisibility = Visibility.Visible;
         public Visibility CreateOpenGridVisibility
@@ -309,6 +313,11 @@ namespace MTGPrint
                     model.Print( vm.PrintOptions );
                 }
             }
+        }
+
+        private void GenerateToken(object o)
+        {
+            model.GenerateTokens();
         }
         #endregion
 

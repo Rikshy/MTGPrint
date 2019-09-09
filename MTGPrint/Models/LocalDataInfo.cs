@@ -31,6 +31,9 @@ namespace MTGPrint.Models
         [JsonProperty( "scryfall_uri" )]
         public string ScryUrl { get; set; }
 
+        [JsonProperty( "all_parts" )]
+        public List<CardParts> Parts { get; set; } = new List<CardParts>();
+
         [JsonProperty( "prints" )]
         public ObservableCollection<CardPrints> Prints { get; set; } = new ObservableCollection<CardPrints>();
     }

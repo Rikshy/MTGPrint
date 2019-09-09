@@ -87,6 +87,11 @@
                         <Image Height="20" Source="Resources/card_add_multiple.png" Stretch="None" />
                     </MenuItem.Header>
                 </MenuItem>
+                <MenuItem ToolTip="Generate Tokens" Command="{Binding GenerateTokenCommand}">
+                    <MenuItem.Header>
+                        <Image Height="20" Source="Resources/gen_tokens.png" Stretch="None" />
+                    </MenuItem.Header>
+                </MenuItem>
                 <Separator />
                 <MenuItem ToolTip="Save Deck As" Command="{Binding SaveDeckAsCommand}">
                     <MenuItem.Header>

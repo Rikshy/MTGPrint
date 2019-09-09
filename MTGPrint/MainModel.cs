@@ -75,9 +75,14 @@ namespace MTGPrint
 
         public void AddCardsToDeck(string cardList, out List<string> errors)
         {
-            var deckCards = ParseCardList(cardList, out errors);
+            var deckCards = ParseCardList(cardList, out var tokens, out errors);
             deckCards.ForEach(dc => Deck.Cards.Add(dc));
             Deck.HasChanges = true;
+            foreach ( var tid in tokens )
+            {
+                if ( !Deck.Tokens.Contains( tid ) )
+                    Deck.Tokens.Add( tid );
+            }
         }
 
         public void SaveDeck(string path)
@@ -103,6 +108,27 @@ namespace MTGPrint
             }
             Deck.FileName = path;
             Deck.HasChanges = false;
+        }
+
+        public void GenerateTokens()
+        {
+            foreach (var token in Deck.Tokens)
+            {
+                var card = localData.Cards.FirstOrDefault( c => c.Prints.Any( cp => cp.Id == token.Id ) );
+
+                Deck.Cards.Add( new DeckCard
+                {
+                    OracleId = card.OracleId,
+                    SelectPrint = card.Prints.First( cp => cp.Id == token.Id ),
+                    Prints = card.Prints,
+                    Count = 5
+                } );
+            }
+        }
+
+        public void RemoveCardFromDeck(DeckCard card)
+        {
+            Deck.Cards.Remove( card );
         }
 
         public void Print( PrintOptions po )
@@ -222,7 +248,9 @@ namespace MTGPrint
 
             foreach (var card in cards)
             {
-                var lcard = localData.Cards.FirstOrDefault( c => c.OracleId == card.OracleId );
+                var lcard = card.Layout != CardLayout.Token 
+                    ? localData.Cards.FirstOrDefault( c => c.OracleId == card.OracleId )
+                    : localData.Cards.FirstOrDefault( c => c.Name == card.Name );
                 if ( lcard == null )
                 {
                     lcard = new LocalCard
@@ -230,12 +258,24 @@ namespace MTGPrint
                         OracleId = card.OracleId,
                         Name = card.Name,
                         ScryUrl = card.ScryUrl,
-                        LatestPrint = card.ReleasedAt
+                        LatestPrint = card.ReleasedAt,
+                        Parts = card.Parts
                     };
                     localData.Cards.Add( lcard );
                 }
-                else if ( card.ReleasedAt > lcard.LatestPrint )
-                    lcard.LatestPrint = card.ReleasedAt;
+                else
+                {
+                    if ( card.ReleasedAt > lcard.LatestPrint )
+                        lcard.LatestPrint = card.ReleasedAt;
+
+                    if ( card.Parts != null )
+                    {
+                        if ( lcard.Parts == null )
+                            lcard.Parts = new List<CardParts>();
+
+                        lcard.Parts.AddRange( card.Parts.Where( cp => cp.Component == CardComponent.Token ) );
+                    }
+                }
 
                 var iu = card.ImageUrls;
                 ImageUrls child = null;
@@ -256,11 +296,12 @@ namespace MTGPrint
             }
         }
 
-        private List<DeckCard> ParseCardList(string cardList, out List<string> errors)
+        private List<DeckCard> ParseCardList(string cardList, out List<CardParts> tokens, out List<string> errors)
         {
             var splits = cardList.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
             var deckCards = new List<DeckCard>();
+            tokens = new List<CardParts>();
             errors = new List<string>();
 
             foreach (string line in splits)
@@ -306,6 +347,15 @@ namespace MTGPrint
                     deckCards.Add( dc );
                 }
 
+                if ( card.Parts != null )
+                {
+                    var tc = card.Parts.Where( p => p.Component == CardComponent.Token || p.Component == CardComponent.ComboPiece );
+                    foreach ( var t in tc )
+                    {
+                        if (tokens.All(t1 => t1.Id != t.Id) && card.Prints.All(cp => cp.Id != t.Id) )
+                            tokens.Add( t );
+                    }
+                }
             }
 
             return deckCards;

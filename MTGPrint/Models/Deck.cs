@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -12,6 +13,9 @@ namespace MTGPrint.Models
         public string FileName { get; set; }
         [JsonIgnore]
         public bool HasChanges { get; set; }
+
+        [JsonProperty( "tokens" )]
+        public List<CardParts> Tokens { get; set; } = new List<CardParts>();
 
         [JsonProperty( "cards" )]
         public ObservableCollection<DeckCard> Cards { get; set; } = new ObservableCollection<DeckCard>();

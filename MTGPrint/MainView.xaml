@@ -92,7 +92,7 @@
                         <Image Height="20" Source="Resources/export.png" Stretch="None" />
                     </MenuItem.Header>
                 </MenuItem>
-                <MenuItem ToolTip="Save Deck" Command="{Binding SaveDeckCommand}">
+                <MenuItem ToolTip="Save Deck" Command="{Binding SaveDeckCommand}" IsEnabled="{Binding CanSave}">
                     <MenuItem.Header>
                         <Image Height="20" Source="Resources/save.png" Stretch="None" />
                     </MenuItem.Header>

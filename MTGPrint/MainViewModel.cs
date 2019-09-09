@@ -153,6 +153,17 @@ namespace MTGPrint
                 OnPropertyChanged();
             }
         }
+
+        public bool canSave = false;
+        public bool CanSave
+        {
+            get => canSave;
+            set
+            {
+                canSave = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -186,6 +197,7 @@ namespace MTGPrint
             Deck.Cards.Clear();
             CardCount = 0;
             Deck.HasChanges = false;
+            CanSave = false;
             LoadErrors = string.Empty;
 
             CreateOpenGridVisibility = Visibility.Visible;
@@ -222,7 +234,10 @@ namespace MTGPrint
             try
             {
                 if (sfd.ShowDialog() == true)
-                    model.SaveDeck(sfd.FileName);
+                {
+                    model.SaveDeck( sfd.FileName );
+                    CanSave = true;
+                }
             }
             catch (Exception e)
             {
@@ -258,6 +273,7 @@ namespace MTGPrint
                 CreateOpenGridVisibility = Visibility.Collapsed;
                 DeckGridVisibility = Visibility.Visible;
 
+                CanSave = true;
                 CardCount = Deck.Cards.Sum(c => c.Count);
                 LoadErrors = string.Empty;
             }

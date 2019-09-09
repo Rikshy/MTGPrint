@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using MTGPrint.Helper;
+using System.Windows;
 
 namespace MTGPrint
 {
@@ -10,6 +11,10 @@ namespace MTGPrint
         public AddCardsView()
         {
             InitializeComponent();
+            SourceInitialized += (x, y) =>
+            {
+                this.HideMinimizeAndMaximizeButtons();
+            };
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

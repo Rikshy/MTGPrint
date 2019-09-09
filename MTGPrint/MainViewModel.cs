@@ -11,6 +11,7 @@ using System.Windows.Input;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.Reflection;
+using MTGPrint.Helper;
 
 namespace MTGPrint
 {

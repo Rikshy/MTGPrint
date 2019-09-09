@@ -86,13 +86,14 @@
     <Compile Include="AddCardsView.xaml.cs">
       <DependentUpon>AddCardsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helper\WindowExtensions.cs" />
     <Compile Include="Models\Bulk.cs" />
     <Compile Include="Models\Deck.cs" />
     <Compile Include="Models\LocalDataInfo.cs" />
     <Compile Include="Models\PrintOptions.cs" />
     <Compile Include="Models\ScryCard.cs" />
     <Compile Include="Models\ScryfallClient.cs" />
-    <Compile Include="DelegateCommand.cs" />
+    <Compile Include="Helper\DelegateCommand.cs" />
     <Compile Include="PrintView.xaml.cs">
       <DependentUpon>PrintView.xaml</DependentUpon>
     </Compile>

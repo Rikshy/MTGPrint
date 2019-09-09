@@ -190,6 +190,7 @@
                             <ColumnDefinition Width="20"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="100"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="100"/>
                         </Grid.ColumnDefinitions>
@@ -201,8 +202,11 @@
             </StatusBarItem>
             <Separator Grid.Column="1"/>
             <StatusBarItem Grid.Column="2" Content="{Binding StatusText}" />
-            <Separator Grid.Column="3"/>
-            <StatusBarItem DockPanel.Dock="Right" Grid.Column="4">
+            <StatusBarItem Grid.Column="3" >
+                <ProgressBar IsIndeterminate="{Binding IsLoading}" Width="100" Height="16" />
+            </StatusBarItem>
+            <Separator Grid.Column="4"/>
+            <StatusBarItem DockPanel.Dock="Right" Grid.Column="5">
                 <WrapPanel HorizontalAlignment="Right">
                     <TextBlock Text="card count: " />
                     <TextBlock Text="{Binding CardCount}" />

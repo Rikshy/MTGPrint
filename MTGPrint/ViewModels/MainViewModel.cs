@@ -38,6 +38,7 @@ namespace MTGPrint.ViewModels
                                       {
                                           StatusText = "Localdata updated";
                                           IsEnabled = true;
+                                          IsLoading = false;
                                           MessageBox.Show("Localdata updated!");
                                       };
 
@@ -57,6 +58,7 @@ namespace MTGPrint.ViewModels
                     if (args.Result is PrintOptions po && po.OpenPDF)
                         Process.Start( po.FileName );
                 }
+                IsLoading = false;
             };
 
             model.ArtDownloaded += delegate (object o, RunWorkerCompletedEventArgs args)
@@ -66,6 +68,7 @@ namespace MTGPrint.ViewModels
                     LoadErrors = args.Error.Message;
                     MessageBox.Show( args.Error.Message );
                 }
+                IsLoading = false;
             };
 
             if (Application.Current.MainWindow != null)
@@ -157,6 +160,17 @@ namespace MTGPrint.ViewModels
             }
         }
 
+        private bool isLoading;
+        public bool IsLoading
+        {
+            get => isLoading;
+            set
+            {
+                isLoading = value;
+                OnPropertyChanged();
+            }
+        }
+
         private string errorSymbol = @"Resources\ok.png";
         public string ErrorSymbol
         {
@@ -214,6 +228,7 @@ namespace MTGPrint.ViewModels
             if (model.CheckForUpdates())
             {
                 StatusText = "Updating localdata";
+                IsLoading = true;
                 model.UpdateBulkData();
                 IsEnabled = false;
                 MessageBox.Show("The client is updating local data. This might take a while.");
@@ -244,7 +259,7 @@ namespace MTGPrint.ViewModels
 
         private void AddCards(object o)
         {
-            var vm = new ViewModels.AddCardsViewModel();
+            var vm = new AddCardsViewModel();
             var addCardsView = new AddCardsView { DataContext = vm };
             if (addCardsView.ShowDialog() == true && !string.IsNullOrEmpty(vm.ImportCards) && vm.ImportCards.Trim().Length > 0)
             {
@@ -338,6 +353,7 @@ namespace MTGPrint.ViewModels
                 if ( sfd.ShowDialog() == true )
                 {
                     IsEnabled = false;
+                    IsLoading = true;
                     StatusText = "Creating PDF";
                     vm.PrintOptions.FileName = sfd.FileName;
                     model.Print( vm.PrintOptions );
@@ -363,7 +379,10 @@ namespace MTGPrint.ViewModels
                 try
                 {
                     if ( sfd.ShowDialog() == true )
+                    {
+                        IsLoading = true;
                         model.SaveArtCrop( card, sfd.FileName );
+                    }
                 }
                 catch ( Exception e )
                 {

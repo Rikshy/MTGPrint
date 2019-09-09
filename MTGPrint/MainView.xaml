@@ -35,6 +35,13 @@
         </Style>
         <DataTemplate x:Key="Standard" DataType="DeckCard">
             <StackPanel Margin="5">
+                <StackPanel.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Remove" 
+                      Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.RemoveCardCommand}"
+                      CommandParameter="{Binding}" />
+                    </ContextMenu>
+                </StackPanel.ContextMenu>
                 <Image Width="220.5" Height="308" Source="{Binding SelectPrint.ImageUrls.Png, NotifyOnSourceUpdated=True}" Margin="2" />
                 <Grid HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
@@ -131,7 +138,7 @@
                 </MenuItem>
             </Menu>
             <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5,25,5,25">
-                <ItemsControl ItemsSource="{Binding Deck.Cards}">
+                <ItemsControl ItemsSource="{Binding Deck.Cards}" x:Name="Root">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel />

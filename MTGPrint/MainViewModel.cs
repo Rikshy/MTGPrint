@@ -82,6 +82,7 @@ namespace MTGPrint
         public ICommand SaveDeckCommand { get; }
         public ICommand PrintCommand { get; }
         public ICommand GenerateTokenCommand { get; }
+        public ICommand RemoveCardCommand { get; }
 
         private Visibility createOpenGridVisibility = Visibility.Visible;
         public Visibility CreateOpenGridVisibility
@@ -332,6 +333,32 @@ namespace MTGPrint
         private void GenerateToken(object o)
         {
             model.GenerateTokens();
+        }
+
+        private void RemoveCard(object o)
+        {
+            if (o is DeckCard card)
+            {
+                model.RemoveCardFromDeck( card );
+                if ( CardCount == 0 )
+                {
+                    if ( !string.IsNullOrEmpty( Deck.FileName ) )
+                    {
+                        try
+                        {
+                            if ( MessageBox.Show( "Do you want to delete current deck from disk?", string.Empty, MessageBoxButton.YesNo ) == MessageBoxResult.Yes )
+                                File.Delete( Deck.FileName );
+                        }
+                        catch
+                        {
+                            MessageBox.Show( "Could not delete deck." );
+                        }
+                    }
+
+                    Deck.HasChanges = false;
+                    NewDeck( null );
+                }
+            }
         }
         #endregion
 

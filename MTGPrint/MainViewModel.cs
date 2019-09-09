@@ -174,6 +174,17 @@ namespace MTGPrint
                 OnPropertyChanged();
             }
         }
+
+        public bool hasTokens = false;
+        public bool HasTokens
+        {
+            get => hasTokens;
+            set
+            {
+                hasTokens = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -208,6 +219,7 @@ namespace MTGPrint
             CardCount = 0;
             Deck.HasChanges = false;
             CanSave = false;
+            HasTokens = false;
             LoadErrors = string.Empty;
 
             CreateOpenGridVisibility = Visibility.Visible;
@@ -231,6 +243,7 @@ namespace MTGPrint
                 CardCount = Deck.Cards.Sum(c => c.Count);
                 LoadErrors = string.Join(Environment.NewLine, errors);
                 StatusText = "Cards imported";
+                HasTokens = Deck.Tokens.Any();
             }
         }
 
@@ -285,6 +298,7 @@ namespace MTGPrint
 
                 CanSave = true;
                 CardCount = Deck.Cards.Sum(c => c.Count);
+                HasTokens = Deck.Tokens.Any();
                 LoadErrors = string.Empty;
             }
             catch (Exception e)

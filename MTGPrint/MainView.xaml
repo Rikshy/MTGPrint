@@ -75,38 +75,58 @@
             </Button>
         </Grid>
         <Grid Visibility="{Binding DeckGridVisibility}">
-            <Menu VerticalAlignment="Top" Height="Auto">
+            <Menu VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="Auto">
                 <MenuItem ToolTip="Main Menu" Command="{Binding NewDeckCommand}">
                     <MenuItem.Header>
-                        <Image Height="20" Source="Resources/reminder.png" Stretch="None" />
+                        <Image Height="15" Width="15" Source="Resources/reminder.png" Stretch="Fill" />
                     </MenuItem.Header>
                 </MenuItem>
                 <Separator />
                 <MenuItem ToolTip="Add Cards" Command="{Binding AddCardsCommand}">
                     <MenuItem.Header>
-                        <Image Height="20" Source="Resources/card_add_multiple.png" Stretch="None" />
+                        <Image Height="15" Width="15" Source="Resources/card_add_multiple.png" Stretch="Fill" />
                     </MenuItem.Header>
                 </MenuItem>
-                <MenuItem ToolTip="Generate Tokens" Command="{Binding GenerateTokenCommand}">
+                <MenuItem ToolTip="Generate Tokens" Command="{Binding GenerateTokenCommand}" IsEnabled="{Binding HasTokens}">
                     <MenuItem.Header>
-                        <Image Height="20" Source="Resources/gen_tokens.png" Stretch="None" />
+                        <Image Height="15" Width="15" Source="Resources/gen_tokens.png" Stretch="Fill">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Opacity" Value="0.5" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
                     </MenuItem.Header>
                 </MenuItem>
                 <Separator />
                 <MenuItem ToolTip="Save Deck As" Command="{Binding SaveDeckAsCommand}">
                     <MenuItem.Header>
-                        <Image Height="20" Source="Resources/export.png" Stretch="None" />
+                        <Image Height="15" Width="15" Source="Resources/export.png" Stretch="Fill" />
                     </MenuItem.Header>
                 </MenuItem>
                 <MenuItem ToolTip="Save Deck" Command="{Binding SaveDeckCommand}" IsEnabled="{Binding CanSave}">
                     <MenuItem.Header>
-                        <Image Height="20" Source="Resources/save.png" Stretch="None" />
+                        <Image Height="15" Width="15" Source="Resources/save.png" Stretch="Fill">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Opacity" Value="0.5" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
                     </MenuItem.Header>
                 </MenuItem>
                 <Separator />
                 <MenuItem ToolTip="Print" Command="{Binding PrintCommand}">
                     <MenuItem.Header>
-                        <Image Height="20" Source="Resources/print.png" Stretch="None" />
+                        <Image Height="15" Width="15" Source="Resources/print.png" Stretch="Fill" />
                     </MenuItem.Header>
                 </MenuItem>
             </Menu>

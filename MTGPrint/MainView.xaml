@@ -40,6 +40,9 @@
                         <MenuItem Header="Remove" 
                       Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.RemoveCardCommand}"
                       CommandParameter="{Binding}" />
+                        <MenuItem Header="Duplicate" 
+                      Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.DuplicardCommand}"
+                      CommandParameter="{Binding}" />
                         <MenuItem Header="Save art" 
                       Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.SaveArtCommand}"
                       CommandParameter="{Binding}" />

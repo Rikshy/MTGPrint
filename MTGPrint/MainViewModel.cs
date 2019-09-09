@@ -31,6 +31,7 @@ namespace MTGPrint
             PrintCommand = new DelegateCommand( Print );
             GenerateTokenCommand = new DelegateCommand( GenerateToken );
             SaveArtCommand = new DelegateCommand( SaveArt );
+            DuplicardCommand = new DelegateCommand( Duplicate );
             RemoveCardCommand = new DelegateCommand( RemoveCard );
 
             model.LocalDataUpdated += delegate
@@ -94,6 +95,7 @@ namespace MTGPrint
         public ICommand PrintCommand { get; }
         public ICommand GenerateTokenCommand { get; }
         public ICommand SaveArtCommand { get; }
+        public ICommand DuplicardCommand { get; }
         public ICommand RemoveCardCommand { get; }
 
         private Visibility createOpenGridVisibility = Visibility.Visible;
@@ -367,6 +369,15 @@ namespace MTGPrint
                 {
                     MessageBox.Show( e.Message );
                 }
+            }
+        }
+
+        private void Duplicate(object o)
+        {
+            if ( o is DeckCard card )
+            {
+                model.DuplicateCard( card );
+                CardCount = Deck.Cards.Sum( c => c.Count );
             }
         }
 

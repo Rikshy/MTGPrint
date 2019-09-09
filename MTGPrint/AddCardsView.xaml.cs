@@ -3,9 +3,6 @@ using System.Windows;
 
 namespace MTGPrint
 {
-    /// <summary>
-    /// Interaktionslogik für AddCards.xaml
-    /// </summary>
     public partial class AddCardsView : Window
     {
         public AddCardsView()

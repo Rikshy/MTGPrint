@@ -435,7 +435,6 @@ namespace MTGPrint
                         var y = ((cardCount / 3) % 3) * (ch + cm) + PAGE_MARGIN_V;
 
                         img.SetAbsolutePosition( (float)x, (float)y );
-                        //page.Canvas.DrawImage( img, (float)x, (float)y, cw, ch );
                         doc.Add( img );
 
                         cardCount++;

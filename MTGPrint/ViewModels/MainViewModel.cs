@@ -13,7 +13,7 @@ using System.Diagnostics;
 using System.Reflection;
 using MTGPrint.Helper;
 
-namespace MTGPrint
+namespace MTGPrint.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {

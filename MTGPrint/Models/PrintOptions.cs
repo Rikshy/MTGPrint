@@ -19,10 +19,4 @@ namespace MTGPrint.Models
         [JsonIgnore]
         public string FileName { get; set; }
     }
-
-    public enum CardBorder
-    {
-        With,
-        Without
-    }
 }

@@ -32,6 +32,19 @@ namespace MTGPrint
         private static int LOCALDATA_VERSION = 1;
 
         private static WebClient wc = new WebClient();
+        public MainModel()
+        {
+            artWorker.DoWork += delegate (object sender, DoWorkEventArgs e)
+            {
+                var pair = (KeyValuePair<string, string>)e.Argument;
+                wc2.DownloadFile( pair.Key, pair.Value );
+            };
+            artWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs args)
+            {
+                ArtDownloaded?.Invoke( this, args );
+            };
+        }
+        private WebClient wc2 = new WebClient();
         private ScryfallClient scry = new ScryfallClient();
 
         private LocalDataInfo localData;
@@ -206,12 +219,23 @@ namespace MTGPrint
                         cardCount++;
                     }
                 }
+        public void SaveArtCrop(DeckCard card, string filePath)
+        {
+            string dlPath;
+            if ( card.IsChild )
+            {
+                var index = Deck.Cards.IndexOf( card );
+                dlPath = Deck.Cards[index - 1].SelectPrint.ChildUrls.ArtCrop;
+            }
+            else
+                dlPath = card.SelectPrint.ImageUrls.ArtCrop;
 
                 args.Result = po;
                 doc.SaveToFile( po.FileName, FileFormat.PDF );
             };
             printWorker.RunWorkerCompleted += PrintWorkerFinished;
             printWorker.RunWorkerAsync();
+            artWorker.RunWorkerAsync( new KeyValuePair<string, string>( dlPath, filePath ) );
         }
 
         public PrintOptions LoadPrintSettings()

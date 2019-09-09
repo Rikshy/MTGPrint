@@ -40,6 +40,9 @@
                         <MenuItem Header="Remove" 
                       Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.RemoveCardCommand}"
                       CommandParameter="{Binding}" />
+                        <MenuItem Header="Save art" 
+                      Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.SaveArtCommand}"
+                      CommandParameter="{Binding}" />
                     </ContextMenu>
                 </StackPanel.ContextMenu>
                 <Image Width="220.5" Height="308" Source="{Binding SelectPrint.ImageUrls.Png, NotifyOnSourceUpdated=True}" Margin="2" />
@@ -56,7 +59,15 @@
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="Child" DataType="DeckCard">
-            <Image Width="220.5" Height="308" Source="{Binding SelectPrint.ChildUrls.Png, NotifyOnSourceUpdated=True, RelativeSource={RelativeSource PreviousData}}" Margin="2" />
+            <Image Width="220.5" Height="308" Source="{Binding SelectPrint.ChildUrls.Png, NotifyOnSourceUpdated=True, RelativeSource={RelativeSource PreviousData}}" Margin="2">
+                <Image.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Save art" 
+                      Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.SaveArtCommand}"
+                      CommandParameter="{Binding}" />
+                    </ContextMenu>
+                </Image.ContextMenu>
+            </Image>
         </DataTemplate>
     </Window.Resources>
     <i:Interaction.Triggers>

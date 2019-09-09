@@ -58,6 +58,15 @@ namespace MTGPrint
                 }
             };
 
+            model.ArtDownloaded += delegate (object o, RunWorkerCompletedEventArgs args)
+            {
+                if ( args.Error != null )
+                {
+                    LoadErrors = args.Error.Message;
+                    MessageBox.Show( args.Error.Message );
+                }
+            };
+
             if (Application.Current.MainWindow != null)
                 Application.Current.MainWindow.Closing += CanClose;
 
@@ -65,6 +74,8 @@ namespace MTGPrint
                 Directory.CreateDirectory( "decks" );
             if ( !Directory.Exists( "prints" ) )
                 Directory.CreateDirectory( "prints" );
+            if ( !Directory.Exists( "art_crops" ) )
+                Directory.CreateDirectory( "art_crops" );
 
             DeckCard.CountChanged += delegate 
             {
@@ -82,6 +93,7 @@ namespace MTGPrint
         public ICommand SaveDeckCommand { get; }
         public ICommand PrintCommand { get; }
         public ICommand GenerateTokenCommand { get; }
+        public ICommand SaveArtCommand { get; }
         public ICommand RemoveCardCommand { get; }
 
         private Visibility createOpenGridVisibility = Visibility.Visible;
@@ -333,6 +345,28 @@ namespace MTGPrint
         private void GenerateToken(object o)
         {
             model.GenerateTokens();
+        }
+
+        private void SaveArt(object o)
+        {
+            if ( o is DeckCard card )
+            {
+                var sfd = new SaveFileDialog
+                {
+                    FileName = card.IsChild ? card.OracleId.ToString() : card.SelectPrint.Id.ToString(),
+                    Filter = "JPEG file (*.jpg)|*.jpg",
+                    InitialDirectory = Path.Combine( EXE_PATH, "art_crops" )
+                };
+                try
+                {
+                    if ( sfd.ShowDialog() == true )
+                        model.SaveArtCrop( card, sfd.FileName );
+                }
+                catch ( Exception e )
+                {
+                    MessageBox.Show( e.Message );
+                }
+            }
         }
 
         private void RemoveCard(object o)

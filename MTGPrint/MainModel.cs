@@ -293,7 +293,7 @@ namespace MTGPrint
 
             foreach (string line in splits)
             {
-                var match = Regex.Match( line, "([1-9])+ (.*)" );
+                var match = Regex.Match( line, "([1-9]+) (.*)" );
                 if ( !match.Success )
                 {
                     errors.Add(line);

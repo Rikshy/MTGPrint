@@ -13,6 +13,9 @@ namespace MTGPrint.Models
         [JsonProperty( "card_count" )]
         public long CardCount { get; set; }
 
+        [JsonProperty( "version" )]
+        public int Version { get; set; }
+
         [JsonProperty( "cards" )]
         public List<LocalCard> Cards { get; set; } = new List<LocalCard>();
     }

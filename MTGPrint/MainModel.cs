@@ -29,6 +29,8 @@ namespace MTGPrint
         private static float CARD_WIDTH_WOB = 60 * MM_TO_POINT;
         private static float CARD_MARGIN = 1 * MM_TO_POINT;
 
+        private static int LOCALDATA_VERSION = 1;
+
         private static WebClient wc = new WebClient();
         private ScryfallClient scry = new ScryfallClient();
 
@@ -65,6 +67,8 @@ namespace MTGPrint
                     return;
 
                 ConvertToLocal(bulkInfo.UpdatedAt, cards);
+
+                localData.Version = LOCALDATA_VERSION;
 
                 File.WriteAllText(LOCALDATA, JsonConvert.SerializeObject(localData, Formatting.Indented));
                 File.Delete(bulkFile);
@@ -227,7 +231,7 @@ namespace MTGPrint
             if (localData == null)
                 LoadLocalData();
 
-            return localData == null || bulkInfo.UpdatedAt < localData.UpdatedAt;
+            return localData == null || bulkInfo.UpdatedAt < localData.UpdatedAt || localData.Version != LOCALDATA_VERSION;
         }
 
         private void LoadLocalData()

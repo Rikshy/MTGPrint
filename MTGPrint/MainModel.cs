@@ -325,7 +325,7 @@ namespace MTGPrint
             foreach (string line in splits)
             {
                 var match = Regex.Match( line, "([0-9]+) (.*)" );
-                if ( !match.Success )
+                if ( !match.Success || !int.TryParse( match.Groups[1].Value, out var count ) || count <= 0 )
                 {
                     errors.Add(line);
                     continue;
@@ -350,7 +350,7 @@ namespace MTGPrint
                     OracleId = card.OracleId,
                     SelectPrint = first,
                     Prints = card.Prints,
-                    Count = int.Parse( match.Groups[1].Value )
+                    Count = count
                 };
 
                 deckCards.Add( dc );

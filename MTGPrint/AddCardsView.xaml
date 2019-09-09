@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MTGPrint.ViewModels"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="AddCards" Height="450" Width="800">
     <Window.DataContext>
@@ -14,7 +15,21 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
-        <TextBox Grid.Row="0" Text="{Binding ImportCards}"  TextWrapping="Wrap" AcceptsReturn="True" />
+        <xctk:WatermarkTextBox Grid.Row="0" Text="{Binding ImportCards}" TextWrapping="Wrap" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <xctk:WatermarkTextBox.Watermark>
+                <TextBlock>
+                    <Run Text="Enter your decklist here in the following format:" />
+                    <LineBreak />
+                    <Run Text="4 Island" />
+                    <LineBreak />
+                    <Run Text="2 Fire // Ice" />
+                    <LineBreak />
+                    <Run Text="1 Zombie" />
+                    <LineBreak />
+                    <Run Text="1 Elspeth, Knight-Errant Emblem" />
+                </TextBlock>
+            </xctk:WatermarkTextBox.Watermark>
+        </xctk:WatermarkTextBox>
         <Button Content="Import" Grid.Row="1" IsDefault="True" Click="Button_Click" />
     </Grid>
 </Window>

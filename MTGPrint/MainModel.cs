@@ -277,7 +277,7 @@ namespace MTGPrint
                         if ( lcard.Parts == null )
                             lcard.Parts = new List<CardParts>();
 
-                        lcard.Parts.AddRange( card.Parts.Where( cp => cp.Component == CardComponent.Token ) );
+                        lcard.Parts.AddRange( card.Parts.Where( part => lcard.Parts.All( p => part.Id != p.Id ) ) );
                     }
                 }
 

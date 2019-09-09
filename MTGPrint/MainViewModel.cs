@@ -10,12 +10,14 @@ using System.Windows.Input;
 
 using Microsoft.Win32;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace MTGPrint
 {
     public class MainViewModel : INotifyPropertyChanged
     {
         private readonly MainModel model = new MainModel();
+        private readonly string EXE_PATH = Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location );
 
         public MainViewModel()
         {
@@ -214,7 +216,7 @@ namespace MTGPrint
             var sfd = new SaveFileDialog
                       {
                                   Filter = "Deck file (*.jd)|*.jd",
-                                  InitialDirectory = "decks"
+                                  InitialDirectory = Path.Combine( EXE_PATH, "decks")
                       };
             try
             {
@@ -245,7 +247,7 @@ namespace MTGPrint
             {
                 Multiselect = false,
                 Filter = "Deck file (*.jd)|*.jd",
-                InitialDirectory = "decks"
+                InitialDirectory = Path.Combine( EXE_PATH, "decks" )
             };
             try
             {
@@ -273,7 +275,7 @@ namespace MTGPrint
                 var sfd = new SaveFileDialog
                 {
                     Filter = "PDF file (*.pdf)|*.pdf",
-                    InitialDirectory = "prints"
+                    InitialDirectory = Path.Combine( EXE_PATH, "prints" )
                 };
 
                 if ( sfd.ShowDialog() == true )

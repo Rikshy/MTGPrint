@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MTGPrint"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" IsEnabled="{Binding IsEnabled}">
     <Window.DataContext>
@@ -41,7 +42,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Border Grid.Column="0" BorderBrush="{x:Null}" HorizontalAlignment="Center">
-                        <TextBlock Text="{Binding Count}" TextAlignment="Center" VerticalAlignment="Center" Width="30"/>
+                        <xctk:IntegerUpDown Value="{Binding Count}" Increment="1" VerticalAlignment="Center" Minimum="0" Maximum="100" Width="40"/>
                     </Border>
                     <ComboBox Grid.Column="1" ItemsSource="{Binding Prints}" SelectedItem="{Binding SelectPrint}" Margin="0,1,5,0"/>
                 </Grid>

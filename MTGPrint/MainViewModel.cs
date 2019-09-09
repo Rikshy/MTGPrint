@@ -62,6 +62,12 @@ namespace MTGPrint
                 Directory.CreateDirectory( "decks" );
             if ( !Directory.Exists( "prints" ) )
                 Directory.CreateDirectory( "prints" );
+
+            DeckCard.CountChanged += delegate 
+            {
+                Deck.HasChanges = true;
+                CardCount = Deck.Cards.Sum( c => c.Count );
+            };
         }
 
         #region Bindings

@@ -43,6 +43,7 @@ namespace MTGPrint.Models
             {
                 count = value;
                 OnPropertyChanged();
+                CountChanged?.Invoke( this, EventArgs.Empty );
             }
         }
 
@@ -57,5 +58,7 @@ namespace MTGPrint.Models
         {
             PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
         }
+
+        public static event EventHandler CountChanged;
     }
 }

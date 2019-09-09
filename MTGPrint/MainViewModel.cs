@@ -374,6 +374,7 @@ namespace MTGPrint
             if (o is DeckCard card)
             {
                 model.RemoveCardFromDeck( card );
+                CardCount = Deck.Cards.Sum( c => c.Count );
                 if ( CardCount == 0 )
                 {
                     if ( !string.IsNullOrEmpty( Deck.FileName ) )

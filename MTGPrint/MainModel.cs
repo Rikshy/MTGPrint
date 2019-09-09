@@ -339,7 +339,7 @@ namespace MTGPrint
                     var tc = card.Parts.Where( p => p.Component == CardComponent.Token || p.Component == CardComponent.ComboPiece );
                     foreach ( var t in tc )
                     {
-                        if (tokens.All(t1 => t1.Id != t.Id) && card.Prints.All(cp => cp.Id != t.Id) )
+                        if ( tokens.All( t1 => t1.Name != t.Name ) && card.Prints.All( cp => cp.Id != t.Id ) )
                             tokens.Add( t );
                     }
                 }

@@ -7,11 +7,11 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 using MTGPrint.Models;
 
 using Newtonsoft.Json;
-using Spire.Pdf;
-using Spire.Pdf.Graphics;
 
 namespace MTGPrint
 {
@@ -28,6 +28,8 @@ namespace MTGPrint
         private static float CARD_HEIGHT_WOB = 85 * MM_TO_POINT;
         private static float CARD_WIDTH_WOB = 60 * MM_TO_POINT;
         private static float CARD_MARGIN = 1 * MM_TO_POINT;
+        private static float PAGE_MARGIN_V = 15 * MM_TO_POINT;
+        private static float PAGE_MARGIN_H = 7.5F * MM_TO_POINT;
 
         private static int LOCALDATA_VERSION = 1;
 
@@ -322,7 +324,7 @@ namespace MTGPrint
 
             foreach (string line in splits)
             {
-                var match = Regex.Match( line, "([1-9]+) (.*)" );
+                var match = Regex.Match( line, "([0-9]+) (.*)" );
                 if ( !match.Success )
                 {
                     errors.Add(line);
@@ -380,8 +382,7 @@ namespace MTGPrint
         private void DoPrintWork(object sender, DoWorkEventArgs args)
         {
             var po = args.Argument as PrintOptions;
-            var doc = new PdfDocument();
-            PdfPageBase page = doc.Pages.Add( PdfPageSize.A4, new PdfMargins( 25 ) );
+            var doc = new Document( PageSize.A4 );
 
             var cw = po.CardBorder == CardBorder.With
                     ? CARD_WIDTH
@@ -392,50 +393,58 @@ namespace MTGPrint
             var cm = po.CardMargin * MM_TO_POINT;
 
             int cardCount = 0;
-            for ( int i = 0; i < Deck.Cards.Count; i++ )
+            using ( var writer = new FileStream( po.FileName, FileMode.Create ) )
             {
-                string cardUrl;
-                DeckCard currentCard = Deck.Cards[i];
-                if ( currentCard.IsChild )
+                PdfWriter.GetInstance( doc, writer );
+                doc.Open();
+                for ( int i = 0; i < Deck.Cards.Count; i++ )
                 {
-                    currentCard = Deck.Cards[i - 1];
-                    cardUrl = po.CardBorder == CardBorder.With
-                        ? currentCard.SelectPrint.ChildUrls.Normal
-                        : currentCard.SelectPrint.ChildUrls.BorderCrop;
+                    string cardUrl;
+                    DeckCard currentCard = Deck.Cards[i];
+                    if ( currentCard.IsChild )
+                    {
+                        currentCard = Deck.Cards[i - 1];
+                        cardUrl = po.CardBorder == CardBorder.With
+                            ? currentCard.SelectPrint.ChildUrls.Normal
+                            : currentCard.SelectPrint.ChildUrls.BorderCrop;
+                    }
+                    else
+                        cardUrl = po.CardBorder == CardBorder.With
+                            ? currentCard.SelectPrint.ImageUrls.Normal
+                            : currentCard.SelectPrint.ImageUrls.BorderCrop;
+
+
+                    Image img;
+                    //get image  
+                    using ( var mem = new MemoryStream() )
+                    {
+                        var b = wc.DownloadData( cardUrl );
+                        mem.Write( b, 0, b.Length );
+                        mem.Seek( 0, SeekOrigin.Begin );
+
+                        img = Image.GetInstance( mem );
+                        img.ScaleToFit( cw, ch );
+                    }
+
+                    for ( int j = 0; j < currentCard.Count; j++ )
+                    {
+                        if ( cardCount != 0 && cardCount % 9 == 0 )
+                            doc.NewPage();
+
+                        var x = (cardCount % 3) * (cw + cm) + PAGE_MARGIN_H;
+                        var y = ((cardCount / 3) % 3) * (ch + cm) + PAGE_MARGIN_V;
+
+                        img.SetAbsolutePosition( (float)x, (float)y );
+                        //page.Canvas.DrawImage( img, (float)x, (float)y, cw, ch );
+                        doc.Add( img );
+
+                        cardCount++;
+                    }
                 }
-                else
-                    cardUrl = po.CardBorder == CardBorder.With
-                        ? currentCard.SelectPrint.ImageUrls.Normal
-                        : currentCard.SelectPrint.ImageUrls.BorderCrop;
+                doc.Close();
 
-
-                PdfImage img;
-                //get image  
-                using ( var mem = new MemoryStream() )
-                {
-                    var b = wc.DownloadData( cardUrl );
-                    mem.Write( b, 0, b.Length );
-                    mem.Seek( 0, SeekOrigin.Begin );
-
-                    img = PdfImage.FromStream( mem );
-                }
-
-                for ( int j = 0; j < currentCard.Count; j++ )
-                {
-                    if ( cardCount != 0 && cardCount % 9 == 0 )
-                        page = doc.Pages.Add( PdfPageSize.A4, new PdfMargins( 25 ) );
-
-                    var x = (cardCount % 3) * (cw + cm);
-                    var y = ((cardCount / 3) % 3) * (ch + cm);
-
-                    page.Canvas.DrawImage( img, (float)x, (float)y, cw, ch );
-
-                    cardCount++;
-                }
+                args.Result = po;
             }
-
-            args.Result = po;
-            doc.SaveToFile( po.FileName, FileFormat.PDF );
         }
     }
 }

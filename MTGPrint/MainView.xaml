@@ -32,6 +32,24 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Template" Value="{StaticResource TplFlatButton}" />
         </Style>
+        <DataTemplate x:Key="Standard" DataType="DeckCard">
+            <StackPanel Margin="5">
+                <Image Width="220.5" Height="308" Source="{Binding SelectPrint.ImageUrls.Png, NotifyOnSourceUpdated=True}" Margin="2" />
+                <Grid HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" BorderBrush="{x:Null}" HorizontalAlignment="Center">
+                        <TextBlock Text="{Binding Count}" TextAlignment="Center" VerticalAlignment="Center" Width="30"/>
+                    </Border>
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding Prints}" SelectedItem="{Binding SelectPrint}" Margin="0,1,5,0"/>
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="Child" DataType="DeckCard">
+            <Image Width="220.5" Height="308" Source="{Binding SelectPrint.ChildUrls.Png, NotifyOnSourceUpdated=True, RelativeSource={RelativeSource PreviousData}}" Margin="2" />
+        </DataTemplate>
     </Window.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
@@ -95,19 +113,20 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Margin="5">
-                                <Image Width="220.5" Height="308" Source="{Binding SelectPrint.ImageUrls.Png, NotifyOnSourceUpdated=True}" Margin="2" />
-                                <Grid HorizontalAlignment="Stretch">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" BorderBrush="{x:Null}" HorizontalAlignment="Center">
-                                        <TextBlock Text="{Binding Count}" TextAlignment="Center" VerticalAlignment="Center" Width="30"/>
-                                    </Border>
-                                    <ComboBox Grid.Column="1" ItemsSource="{Binding Prints}" SelectedItem="{Binding SelectPrint}" Margin="0,1,5,0"/>
-                                </Grid>
-                            </StackPanel>
+                            <ContentControl Content="{Binding}">
+                                <ContentControl.Style>
+                                    <Style TargetType="ContentControl">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsChild}" Value="False">
+                                                <Setter Property="ContentTemplate" Value="{StaticResource Standard}" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsChild}" Value="True">
+                                                <Setter Property="ContentTemplate" Value="{StaticResource Child}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ContentControl.Style>
+                            </ContentControl>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

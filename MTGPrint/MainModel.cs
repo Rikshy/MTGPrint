@@ -130,24 +130,46 @@ namespace MTGPrint
                         : CARD_HEIGHT_WOB;
                 var cm = po.CardMargin * MM_TO_POINT;
 
+                int cardCount = 0;
                 for ( int i = 0; i < Deck.Cards.Count; i++ )
                 {
-                    if ( i != 0 && i % 9 == 0 )
-                        page = doc.Pages.Add( PdfPageSize.A4, new PdfMargins( 25 ) );
+                    string cardUrl;
+                    DeckCard currentCard = Deck.Cards[i];
+                    if ( currentCard.IsChild )
+                    {
+                        currentCard = Deck.Cards[i - 1];
+                        cardUrl = po.CardBorder == CardBorder.With
+                            ? currentCard.SelectPrint.ChildUrls.Normal
+                            : currentCard.SelectPrint.ChildUrls.BorderCrop;
+                    }
+                    else
+                        cardUrl = po.CardBorder == CardBorder.With
+                            ? currentCard.SelectPrint.ImageUrls.Normal
+                            : currentCard.SelectPrint.ImageUrls.BorderCrop;
 
-                    var x = (i % 3) * (cw + cm);
-                    var y = ((i / 3) % 3) * (ch + cm);
 
-                    //Add a image  
+                    PdfImage img;
+                    //get image  
                     using ( var mem = new MemoryStream() )
                     {
-                        var b = wc.DownloadData( po.CardBorder == CardBorder.With
-                            ? Deck.Cards[i].SelectPrint.ImageUrls.Normal
-                            : Deck.Cards[i].SelectPrint.ImageUrls.BorderCrop );
+                        var b = wc.DownloadData( cardUrl );
                         mem.Write( b, 0, b.Length );
                         mem.Seek( 0, SeekOrigin.Begin );
 
-                        page.Canvas.DrawImage( PdfImage.FromStream( mem ), (float) x, (float) y, cw, ch );
+                        img = PdfImage.FromStream( mem );
+                    }
+
+                    for (int j = 0; j < currentCard.Count; j++ )
+                    {
+                        if ( cardCount != 0 && cardCount % 9 == 0 )
+                            page = doc.Pages.Add( PdfPageSize.A4, new PdfMargins( 25 ) );
+
+                        var x = (cardCount % 3) * (cw + cm);
+                        var y = ((cardCount / 3) % 3) * (ch + cm);
+
+                        page.Canvas.DrawImage( img, (float)x, (float)y, cw, ch );
+
+                        cardCount++;
                     }
                 }
 
@@ -217,12 +239,21 @@ namespace MTGPrint
 
                 if (lcard.Prints.All(p => p.Set != card.Set))
                 {
+                    var iu = card.ImageUrls;
+                    ImageUrls child = null;
+                    if ( card.CardFaces != null )
+                    {
+                        iu = card.CardFaces.First().ImageUrls;
+                        child = card.CardFaces.Last().ImageUrls;
+                    }
+
                     lcard.Prints.Add( new CardPrints
                     {
                         Id = card.Id,
                         Set = card.Set,
                         SetName = card.SetName,
-                        ImageUrls = card.ImageUrls
+                        ImageUrls = iu,
+                        ChildUrls = child
                     } );
                 }
             }
@@ -266,7 +297,18 @@ namespace MTGPrint
                     Count = int.Parse( match.Groups[1].Value )
                 };
 
-                deckCards.Add(dc);
+                deckCards.Add( dc );
+
+                if ( first.ChildUrls != null )
+                {
+                    dc = new DeckCard
+                    {
+                        OracleId = card.OracleId,
+                        IsChild = true
+                    };
+                    deckCards.Add( dc );
+                }
+
             }
 
             return deckCards;

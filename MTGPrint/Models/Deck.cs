@@ -46,6 +46,9 @@ namespace MTGPrint.Models
             }
         }
 
+        [JsonProperty( "is_child" )]
+        public bool IsChild { get; set; }
+
         [JsonIgnore]
         public ObservableCollection<CardPrints> Prints { get; set; } = new ObservableCollection<CardPrints>();
 
@@ -54,25 +57,5 @@ namespace MTGPrint.Models
         {
             PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
         }
-    }
-
-    public class DeckPrint
-    {
-        [JsonProperty( "id" )]
-        public Guid Id { get; set; }
-        [JsonProperty( "oracle_id" )]
-        public Guid OracleId { get; set; }
-
-        [JsonProperty( "set" )]
-        public string Set { get; set; }
-
-        [JsonProperty( "set_name" )]
-        public string SetName { get; set; }
-
-        public string Png => $@"data\prints\{OracleId}\{Id}\png.png";
-        public string Border => $@"data\prints\{OracleId}\{Id}\border.jpg";
-        public string Art => $@"data\prints\{OracleId}\{Id}\art.jpg";
-
-        public override string ToString() { return SetName; }
     }
 }

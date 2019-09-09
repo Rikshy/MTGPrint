@@ -49,6 +49,9 @@ namespace MTGPrint.Models
         [JsonProperty( "downloaded" )]
         public bool Downloaded { get; set; }
 
+        [JsonProperty( "child" )]
+        public ImageUrls ChildUrls { get; set; }
+
         [JsonProperty( "image_uris" )]
         public ImageUrls ImageUrls { get; set; }
 

@@ -229,6 +229,7 @@ namespace MTGPrint
                 return;
 
             Deck.Cards.Clear();
+            Deck.Tokens.Clear();
             CardCount = 0;
             Deck.HasChanges = false;
             CanSave = false;

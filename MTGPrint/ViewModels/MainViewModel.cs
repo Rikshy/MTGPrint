@@ -35,8 +35,8 @@ namespace MTGPrint.ViewModels
             InfoCommand = new DelegateCommand( ShowInfo );
 
             OpenScryfallCommand = new DelegateCommand( OpenScryfall );
-            RemoveCardCommand = new DelegateCommand( RemoveCard );
             CanPrintCommand = new DelegateCommand( CanPrintCard );
+            RemoveCardCommand = new DelegateCommand( RemoveCard );
             DuplicardCommand = new DelegateCommand( Duplicate );
             SaveArtCommand = new DelegateCommand( SaveArt );
 
@@ -108,8 +108,8 @@ namespace MTGPrint.ViewModels
         public ICommand InfoCommand { get; }
 
         public ICommand OpenScryfallCommand { get; }
-        public ICommand RemoveCardCommand { get; }
         public ICommand CanPrintCommand { get; }
+        public ICommand RemoveCardCommand { get; }
         public ICommand DuplicardCommand { get; }
         public ICommand SaveArtCommand { get; }
 
@@ -398,6 +398,16 @@ namespace MTGPrint.ViewModels
             }
         }
 
+        private void CanPrintCard(object o)
+        {
+            if ( o is DeckCard card )
+            {
+                card.CanPrint = !card.CanPrint;
+
+                Deck.HasChanges = true;
+            }
+        }
+
         private void RemoveCard(object o)
         {
             if ( o is DeckCard card )
@@ -422,16 +432,6 @@ namespace MTGPrint.ViewModels
                     Deck.HasChanges = false;
                     NewDeck( null );
                 }
-            }
-        }
-
-        private void CanPrintCard(object o)
-        {
-            if ( o is DeckCard card )
-            {
-                card.CanPrint = !card.CanPrint;
-
-                Deck.HasChanges = true;
             }
         }
 

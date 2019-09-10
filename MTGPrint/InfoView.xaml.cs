@@ -2,9 +2,6 @@
 
 namespace MTGPrint
 {
-    /// <summary>
-    /// Interaktionslogik für InfoView.xaml
-    /// </summary>
     public partial class InfoView : Window
     {
         public InfoView()

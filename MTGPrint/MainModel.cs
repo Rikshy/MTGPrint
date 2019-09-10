@@ -188,7 +188,7 @@ namespace MTGPrint
         public void RemoveCardFromDeck(DeckCard card)
         {
             var index = Deck.Cards.IndexOf( card );
-            if (Deck.Cards.Count > index && Deck.Cards[index + 1].IsChild )
+            if (Deck.Cards.Count < index && Deck.Cards[index + 1].IsChild )
                 Deck.Cards.RemoveAt( index + 1 );
             Deck.Cards.Remove( card );
             Deck.HasChanges = true;

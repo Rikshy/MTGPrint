@@ -52,21 +52,23 @@
                         <MenuItem Header="Open Scryfall" 
                       Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.OpenScryfallCommand}"
                       CommandParameter="{Binding}" />
-                        <MenuItem Header="Remove" 
-                      Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.RemoveCardCommand}"
-                      CommandParameter="{Binding}" />
+                        <Separator />
                         <MenuItem Header="Allow Print" IsChecked="{Binding CanPrint}"
                       Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.CanPrintCommand}"
+                      CommandParameter="{Binding}" />
+                        <MenuItem Header="Remove" 
+                      Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.RemoveCardCommand}"
                       CommandParameter="{Binding}" />
                         <MenuItem Header="Duplicate" 
                       Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.DuplicardCommand}"
                       CommandParameter="{Binding}" />
+                        <Separator />
                         <MenuItem Header="Save art" 
                       Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.SaveArtCommand}"
                       CommandParameter="{Binding}" />
                     </ContextMenu>
                 </StackPanel.ContextMenu>
-                <Image Width="220.5" Height="308" Source="{Binding SelectPrint.ImageUrls.Png, NotifyOnSourceUpdated=True}" Margin="2" />
+                <Image Width="300" Height="418" Source="{Binding SelectPrint.ImageUrls.Large, NotifyOnSourceUpdated=True}" Margin="2" />
                 <Grid HorizontalAlignment="Stretch" IsEnabled="{Binding CanPrint}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>

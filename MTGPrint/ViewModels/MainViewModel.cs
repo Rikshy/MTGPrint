@@ -263,6 +263,7 @@ namespace MTGPrint.ViewModels
         {
             var vm = new AddCardsViewModel();
             var addCardsView = new AddCardsView { DataContext = vm };
+            addCardsView.Owner = Application.Current.MainWindow;
             if (addCardsView.ShowDialog() == true && !string.IsNullOrEmpty(vm.ImportCards) && vm.ImportCards.Trim().Length > 0)
             {
                 StatusText = "Importing cards";
@@ -342,8 +343,9 @@ namespace MTGPrint.ViewModels
 
         private void Print(object o)
         {
-            var vm = new ViewModels.PrintViewModel { PrintOptions = model.LoadPrintSettings() };
+            var vm = new PrintViewModel { PrintOptions = model.LoadPrintSettings() };
             var printView = new PrintView() { DataContext = vm };
+            printView.Owner = Application.Current.MainWindow;
             if ( printView.ShowDialog() == true)
             {
                 var sfd = new SaveFileDialog

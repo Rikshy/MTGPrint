@@ -51,6 +51,7 @@ namespace MTGPrint.Models
             {
                 print = value;
                 OnPropertyChanged();
+                ArtChanged?.Invoke( this, EventArgs.Empty );
             }
         }
 
@@ -92,5 +93,6 @@ namespace MTGPrint.Models
         }
 
         public static event EventHandler CountChanged;
+        public static event EventHandler ArtChanged;
     }
 }

@@ -82,7 +82,7 @@
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="Child" DataType="DeckCard">
-            <Image Width="220.5" Height="308" Source="{Binding SelectPrint.ChildUrls.Png, NotifyOnSourceUpdated=True, RelativeSource={RelativeSource PreviousData}}" Margin="2">
+            <Image Width="300" Height="418" Source="{Binding SelectPrint.ChildUrls.Png, NotifyOnSourceUpdated=True, RelativeSource={RelativeSource PreviousData}}" Margin="2">
                 <Image.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Allow Print" IsChecked="{Binding CanPrint}"

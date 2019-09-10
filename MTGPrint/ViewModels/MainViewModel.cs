@@ -92,6 +92,7 @@ namespace MTGPrint.ViewModels
                 Deck.HasChanges = true;
                 CardCount = Deck.Cards.Sum( c => c.Count );
             };
+            DeckCard.ArtChanged += delegate { Deck.HasChanges = true; };
         }
 
         #region Bindings

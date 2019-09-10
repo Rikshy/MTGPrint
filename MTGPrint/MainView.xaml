@@ -49,6 +49,9 @@
                 </StackPanel.Style>
                 <StackPanel.ContextMenu>
                     <ContextMenu>
+                        <MenuItem Header="Open Scryfall" 
+                      Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.OpenScryfallCommand}"
+                      CommandParameter="{Binding}" />
                         <MenuItem Header="Remove" 
                       Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.RemoveCardCommand}"
                       CommandParameter="{Binding}" />
@@ -80,6 +83,9 @@
             <Image Width="220.5" Height="308" Source="{Binding SelectPrint.ChildUrls.Png, NotifyOnSourceUpdated=True, RelativeSource={RelativeSource PreviousData}}" Margin="2">
                 <Image.ContextMenu>
                     <ContextMenu>
+                        <MenuItem Header="Print Card" IsChecked="{Binding CanPrint}"
+                      Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.CanPrintCommand}"
+                      CommandParameter="{Binding}" />
                         <MenuItem Header="Save art" 
                       Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.SaveArtCommand}"
                       CommandParameter="{Binding}" />

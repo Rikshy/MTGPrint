@@ -30,10 +30,12 @@ namespace MTGPrint.ViewModels
             SaveDeckCommand = new DelegateCommand( SaveDeck );
             PrintCommand = new DelegateCommand( Print );
             GenerateTokenCommand = new DelegateCommand( GenerateToken );
-            SaveArtCommand = new DelegateCommand( SaveArt );
-            DuplicardCommand = new DelegateCommand( Duplicate );
+
+            OpenScryfallCommand = new DelegateCommand( OpenScryfall );
             RemoveCardCommand = new DelegateCommand( RemoveCard );
             CanPrintCommand = new DelegateCommand( CanPrintCard );
+            DuplicardCommand = new DelegateCommand( Duplicate );
+            SaveArtCommand = new DelegateCommand( SaveArt );
 
             model.LocalDataUpdated += delegate
                                       {
@@ -98,10 +100,12 @@ namespace MTGPrint.ViewModels
         public ICommand SaveDeckCommand { get; }
         public ICommand PrintCommand { get; }
         public ICommand GenerateTokenCommand { get; }
-        public ICommand SaveArtCommand { get; }
-        public ICommand DuplicardCommand { get; }
+
+        public ICommand OpenScryfallCommand { get; }
         public ICommand RemoveCardCommand { get; }
         public ICommand CanPrintCommand { get; }
+        public ICommand DuplicardCommand { get; }
+        public ICommand SaveArtCommand { get; }
 
         private Visibility createOpenGridVisibility = Visibility.Visible;
         public Visibility CreateOpenGridVisibility
@@ -370,43 +374,18 @@ namespace MTGPrint.ViewModels
             model.GenerateTokens();
         }
 
-        private void SaveArt(object o)
+        #region ContextMenu
+        private void OpenScryfall(object o)
         {
             if ( o is DeckCard card )
             {
-                var sfd = new SaveFileDialog
-                {
-                    FileName = card.IsChild ? card.OracleId.ToString() : card.SelectPrint.Id.ToString(),
-                    Filter = "JPEG file (*.jpg)|*.jpg",
-                    InitialDirectory = Path.Combine( EXE_PATH, "art_crops" )
-                };
-                try
-                {
-                    if ( sfd.ShowDialog() == true )
-                    {
-                        IsLoading = true;
-                        model.SaveArtCrop( card, sfd.FileName );
-                    }
-                }
-                catch ( Exception e )
-                {
-                    MessageBox.Show( e.Message );
-                }
-            }
-        }
-
-        private void Duplicate(object o)
-        {
-            if ( o is DeckCard card )
-            {
-                model.DuplicateCard( card );
-                CardCount = Deck.Cards.Sum( c => c.Count );
+                model.OpenScryfall( card );
             }
         }
 
         private void RemoveCard(object o)
         {
-            if (o is DeckCard card)
+            if ( o is DeckCard card )
             {
                 model.RemoveCardFromDeck( card );
                 CardCount = Deck.Cards.Sum( c => c.Count );
@@ -440,6 +419,41 @@ namespace MTGPrint.ViewModels
                 Deck.HasChanges = true;
             }
         }
+
+        private void Duplicate(object o)
+        {
+            if ( o is DeckCard card )
+            {
+                model.DuplicateCard( card );
+                CardCount = Deck.Cards.Sum( c => c.Count );
+            }
+        }
+
+        private void SaveArt(object o)
+        {
+            if ( o is DeckCard card )
+            {
+                var sfd = new SaveFileDialog
+                {
+                    FileName = card.IsChild ? card.OracleId.ToString() : card.SelectPrint.Id.ToString(),
+                    Filter = "JPEG file (*.jpg)|*.jpg",
+                    InitialDirectory = Path.Combine( EXE_PATH, "art_crops" )
+                };
+                try
+                {
+                    if ( sfd.ShowDialog() == true )
+                    {
+                        IsLoading = true;
+                        model.SaveArtCrop( card, sfd.FileName );
+                    }
+                }
+                catch ( Exception e )
+                {
+                    MessageBox.Show( e.Message );
+                }
+            }
+        }
+        #endregion
         #endregion
 
         private void CanClose(object sender, CancelEventArgs args)

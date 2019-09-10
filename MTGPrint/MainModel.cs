@@ -105,6 +105,7 @@ namespace MTGPrint
             updateWorker.RunWorkerAsync( bulkInfo );
         }
 
+        #region Menu
         public void AddCardsToDeck(string cardList, out List<string> errors)
         {
             var deckCards = ParseCardList(cardList, out var tokens, out errors);
@@ -158,6 +159,32 @@ namespace MTGPrint
             }
         }
 
+        public void Print(PrintOptions po)
+        {
+            try
+            {
+                File.WriteAllText( PRINTSETTINGS, JsonConvert.SerializeObject( po ) );
+            }
+            catch
+            {
+                // ignore
+            }
+
+            printWorker.RunWorkerAsync( po );
+        }
+        #endregion
+
+        #region Context
+        public void OpenScryfall(DeckCard card)
+        {
+            var localCard = localData.Cards.FirstOrDefault( lc => lc.Prints.Any( p => p.Id == card.SelectPrint.Id ) );
+
+            if (localCard != null)
+            {
+                System.Diagnostics.Process.Start( localCard.ScryUrl );
+            }
+        }
+
         public void RemoveCardFromDeck(DeckCard card)
         {
             var index = Deck.Cards.IndexOf( card );
@@ -194,20 +221,6 @@ namespace MTGPrint
             }
 
             Deck.HasChanges = true;
-        }
-
-        public void Print( PrintOptions po )
-        {
-            try
-            {
-                File.WriteAllText( PRINTSETTINGS, JsonConvert.SerializeObject( po ) );
-            }
-            catch
-            {
-                // ignore
-            }
-
-            printWorker.RunWorkerAsync( po );
         }
 
         public void SaveArtCrop(DeckCard card, string filePath)

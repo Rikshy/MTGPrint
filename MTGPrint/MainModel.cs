@@ -134,9 +134,13 @@ namespace MTGPrint
             Deck.Cards.Clear();
             foreach (var c in tempDeck.Cards)
             {
-                var lcard = localData.Cards.FirstOrDefault( lc => lc.OracleId == c.OracleId );
-                c.Prints = lcard.Prints;
-                c.SelectPrint = lcard.Prints.FirstOrDefault( p => p.Id == c.SelectPrint.Id );
+                if ( !c.IsChild )
+                {
+                    var lcard = localData.Cards.FirstOrDefault( lc => lc.OracleId == c.OracleId );
+                    c.Prints = lcard.Prints;
+                    c.SelectPrint = lcard.Prints.FirstOrDefault( p => p.Id == c.SelectPrint.Id );
+                }
+
                 Deck.Cards.Add( c );
             }
             Deck.FileName = path;

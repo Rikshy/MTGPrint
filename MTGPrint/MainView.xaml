@@ -55,7 +55,7 @@
                         <MenuItem Header="Remove" 
                       Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.RemoveCardCommand}"
                       CommandParameter="{Binding}" />
-                        <MenuItem Header="Print Card" IsChecked="{Binding CanPrint}"
+                        <MenuItem Header="Allow Print" IsChecked="{Binding CanPrint}"
                       Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.CanPrintCommand}"
                       CommandParameter="{Binding}" />
                         <MenuItem Header="Duplicate" 
@@ -83,7 +83,7 @@
             <Image Width="220.5" Height="308" Source="{Binding SelectPrint.ChildUrls.Png, NotifyOnSourceUpdated=True, RelativeSource={RelativeSource PreviousData}}" Margin="2">
                 <Image.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Print Card" IsChecked="{Binding CanPrint}"
+                        <MenuItem Header="Allow Print" IsChecked="{Binding CanPrint}"
                       Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.CanPrintCommand}"
                       CommandParameter="{Binding}" />
                         <MenuItem Header="Save art" 
@@ -181,6 +181,12 @@
                 <MenuItem ToolTip="Print" Command="{Binding PrintCommand}">
                     <MenuItem.Header>
                         <Image Height="15" Width="15" Source="Resources/print.png" Stretch="Fill" />
+                    </MenuItem.Header>
+                </MenuItem>
+                <Separator />
+                <MenuItem ToolTip="Info" Command="{Binding InfoCommand}">
+                    <MenuItem.Header>
+                        <Image Height="15" Width="15" Source="Resources/info.png" Stretch="Fill" />
                     </MenuItem.Header>
                 </MenuItem>
             </Menu>

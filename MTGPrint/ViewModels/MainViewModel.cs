@@ -22,14 +22,17 @@ namespace MTGPrint.ViewModels
 
         public MainViewModel()
         {
-            NewDeckCommand = new DelegateCommand(NewDeck);
-            OpenDeckCommand = new DelegateCommand(OpenDeck);
-            WindowLoadedCommand = new DelegateCommand(WindowLoaded);
+            WindowLoadedCommand = new DelegateCommand( WindowLoaded );
+
+            OpenDeckCommand = new DelegateCommand( OpenDeck );
+
+            NewDeckCommand = new DelegateCommand( NewDeck );
             AddCardsCommand = new DelegateCommand(AddCards);
+            GenerateTokenCommand = new DelegateCommand( GenerateToken );
             SaveDeckAsCommand = new DelegateCommand(SaveDeckAs);
             SaveDeckCommand = new DelegateCommand( SaveDeck );
             PrintCommand = new DelegateCommand( Print );
-            GenerateTokenCommand = new DelegateCommand( GenerateToken );
+            InfoCommand = new DelegateCommand( ShowInfo );
 
             OpenScryfallCommand = new DelegateCommand( OpenScryfall );
             RemoveCardCommand = new DelegateCommand( RemoveCard );
@@ -92,14 +95,17 @@ namespace MTGPrint.ViewModels
         }
 
         #region Bindings
-        public ICommand NewDeckCommand { get; }
-        public ICommand OpenDeckCommand { get; }
         public ICommand WindowLoadedCommand { get; }
+
+        public ICommand OpenDeckCommand { get; }
+
+        public ICommand NewDeckCommand { get; }
         public ICommand AddCardsCommand { get; }
+        public ICommand GenerateTokenCommand { get; }
         public ICommand SaveDeckAsCommand { get; }
         public ICommand SaveDeckCommand { get; }
         public ICommand PrintCommand { get; }
-        public ICommand GenerateTokenCommand { get; }
+        public ICommand InfoCommand { get; }
 
         public ICommand OpenScryfallCommand { get; }
         public ICommand RemoveCardCommand { get; }
@@ -243,6 +249,34 @@ namespace MTGPrint.ViewModels
                 StatusText = "Localdata updated";
         }
 
+        private void OpenDeck(object o)
+        {
+            var ofd = new OpenFileDialog
+            {
+                Multiselect = false,
+                Filter = "Deck file (*.jd)|*.jd",
+                InitialDirectory = Path.Combine( EXE_PATH, "decks" )
+            };
+            try
+            {
+                if ( ofd.ShowDialog() != true ) return;
+                model.OpenDeck( ofd.FileName );
+
+                CreateOpenGridVisibility = Visibility.Collapsed;
+                DeckGridVisibility = Visibility.Visible;
+
+                CanSave = true;
+                CardCount = Deck.Cards.Sum( c => c.Count );
+                HasTokens = Deck.Tokens.Any();
+                LoadErrors = string.Empty;
+            }
+            catch ( Exception e )
+            {
+                MessageBox.Show( e.Message );
+            }
+        }
+
+        #region Menu
         private void NewDeck(object o)
         {
             if (model.Deck.HasChanges &&
@@ -285,6 +319,11 @@ namespace MTGPrint.ViewModels
             }
         }
 
+        private void GenerateToken(object o)
+        {
+            model.GenerateTokens();
+        }
+
         private void SaveDeckAs(object o)
         {
             var sfd = new SaveFileDialog
@@ -318,33 +357,6 @@ namespace MTGPrint.ViewModels
             }
         }
 
-        private void OpenDeck(object o)
-        {
-            var ofd = new OpenFileDialog
-            {
-                Multiselect = false,
-                Filter = "Deck file (*.jd)|*.jd",
-                InitialDirectory = Path.Combine( EXE_PATH, "decks" )
-            };
-            try
-            {
-                if (ofd.ShowDialog() != true) return;
-                model.OpenDeck(ofd.FileName);
-
-                CreateOpenGridVisibility = Visibility.Collapsed;
-                DeckGridVisibility = Visibility.Visible;
-
-                CanSave = true;
-                CardCount = Deck.Cards.Sum(c => c.Count);
-                HasTokens = Deck.Tokens.Any();
-                LoadErrors = string.Empty;
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
-        }
-
         private void Print(object o)
         {
             var vm = new PrintViewModel { PrintOptions = model.LoadPrintSettings() };
@@ -369,10 +381,13 @@ namespace MTGPrint.ViewModels
             }
         }
 
-        private void GenerateToken(object o)
+        private void ShowInfo(object o)
         {
-            model.GenerateTokens();
+            var infoWnd = new InfoView();
+            infoWnd.Owner = Application.Current.MainWindow;
+            infoWnd.ShowDialog();
         }
+        #endregion
 
         #region ContextMenu
         private void OpenScryfall(object o)

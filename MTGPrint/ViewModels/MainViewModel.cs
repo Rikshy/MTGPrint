@@ -436,6 +436,8 @@ namespace MTGPrint.ViewModels
             if ( o is DeckCard card )
             {
                 card.CanPrint = !card.CanPrint;
+
+                Deck.HasChanges = true;
             }
         }
         #endregion

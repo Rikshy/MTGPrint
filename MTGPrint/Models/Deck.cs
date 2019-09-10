@@ -7,18 +7,34 @@ using System.Runtime.CompilerServices;
 
 namespace MTGPrint.Models
 {
-    public class Deck
+    public class Deck : INotifyPropertyChanged
     {
         [JsonIgnore]
         public string FileName { get; set; }
+
+        private bool hasChanges = false;
         [JsonIgnore]
-        public bool HasChanges { get; set; }
+        public bool HasChanges
+        {
+            get => hasChanges;
+            set
+            {
+                hasChanges = value;
+                OnPropertyChanged();
+            }
+        }
 
         [JsonProperty( "tokens" )]
         public List<CardParts> Tokens { get; set; } = new List<CardParts>();
 
         [JsonProperty( "cards" )]
         public ObservableCollection<DeckCard> Cards { get; set; } = new ObservableCollection<DeckCard>();
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
+        }
     }
 
     public class DeckCard : INotifyPropertyChanged

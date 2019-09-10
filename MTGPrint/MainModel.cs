@@ -236,6 +236,7 @@ namespace MTGPrint
 
             artWorker.RunWorkerAsync( new KeyValuePair<string, string>( dlPath, filePath ) );
         }
+        #endregion
 
         public PrintOptions LoadPrintSettings()
         {

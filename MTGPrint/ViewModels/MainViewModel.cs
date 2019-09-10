@@ -33,6 +33,7 @@ namespace MTGPrint.ViewModels
             SaveArtCommand = new DelegateCommand( SaveArt );
             DuplicardCommand = new DelegateCommand( Duplicate );
             RemoveCardCommand = new DelegateCommand( RemoveCard );
+            CanPrintCommand = new DelegateCommand( CanPrintCard );
 
             model.LocalDataUpdated += delegate
                                       {
@@ -100,6 +101,7 @@ namespace MTGPrint.ViewModels
         public ICommand SaveArtCommand { get; }
         public ICommand DuplicardCommand { get; }
         public ICommand RemoveCardCommand { get; }
+        public ICommand CanPrintCommand { get; }
 
         private Visibility createOpenGridVisibility = Visibility.Visible;
         public Visibility CreateOpenGridVisibility
@@ -424,6 +426,14 @@ namespace MTGPrint.ViewModels
                     Deck.HasChanges = false;
                     NewDeck( null );
                 }
+            }
+        }
+
+        private void CanPrintCard(object o)
+        {
+            if ( o is DeckCard card )
+            {
+                card.CanPrint = !card.CanPrint;
             }
         }
         #endregion

@@ -401,6 +401,10 @@ namespace MTGPrint
                 {
                     string cardUrl;
                     DeckCard currentCard = Deck.Cards[i];
+
+                    if ( !currentCard.CanPrint )
+                        continue;
+
                     if ( currentCard.IsChild )
                     {
                         currentCard = Deck.Cards[i - 1];

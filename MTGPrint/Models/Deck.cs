@@ -51,6 +51,18 @@ namespace MTGPrint.Models
             }
         }
 
+        private bool canPrint = true;
+        [JsonProperty( "can_print" )]
+        public bool CanPrint
+        {
+            get => canPrint;
+            set
+            {
+                canPrint = value;
+                OnPropertyChanged();
+            }
+        }
+
         [JsonProperty( "is_child" )]
         public bool IsChild { get; set; }
 

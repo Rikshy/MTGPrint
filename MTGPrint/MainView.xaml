@@ -35,10 +35,25 @@
         </Style>
         <DataTemplate x:Key="Standard" DataType="DeckCard">
             <StackPanel Margin="5">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CanPrint}" Value="False">
+                                <Setter Property="Opacity" Value="0.5" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding CanPrint}" Value="True">
+                                <Setter Property="Opacity" Value="1" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
                 <StackPanel.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Remove" 
                       Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.RemoveCardCommand}"
+                      CommandParameter="{Binding}" />
+                        <MenuItem Header="Print Card" IsChecked="{Binding CanPrint}"
+                      Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.CanPrintCommand}"
                       CommandParameter="{Binding}" />
                         <MenuItem Header="Duplicate" 
                       Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.DuplicardCommand}"
@@ -49,7 +64,7 @@
                     </ContextMenu>
                 </StackPanel.ContextMenu>
                 <Image Width="220.5" Height="308" Source="{Binding SelectPrint.ImageUrls.Png, NotifyOnSourceUpdated=True}" Margin="2" />
-                <Grid HorizontalAlignment="Stretch">
+                <Grid HorizontalAlignment="Stretch" IsEnabled="{Binding CanPrint}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>

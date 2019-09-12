@@ -47,7 +47,7 @@ namespace MTGPrint.ViewModels
                                           StatusText = "Localdata updated";
                                           IsEnabled = true;
                                           IsLoading = false;
-                                          MessageBox.Show("Localdata updated!");
+                                          MessageBox.Show( Application.Current.MainWindow, "Localdata updated!" );
                                       };
 
             model.PrintFinished += delegate (object o, RunWorkerCompletedEventArgs args)
@@ -56,15 +56,20 @@ namespace MTGPrint.ViewModels
                 if ( args.Error != null )
                 {
                     LoadErrors = args.Error.Message;
-                    MessageBox.Show( args.Error.Message );
+                    MessageBox.Show( Application.Current.MainWindow, args.Error.Message );
                     StatusText = "Deck could not be printed";
                 }
                 else
                 {
                     LoadErrors = string.Empty;
                     StatusText = "Deck printed";
-                    if (args.Result is PrintOptions po && po.OpenPDF)
+                    foreach ( var dc in Deck.Cards )
+                        dc.CanPrint = false;
+                    Deck.HasChanges = true;
+                    if ( args.Result is PrintOptions po && po.OpenPDF )
                         Process.Start( po.FileName );
+                    else
+                        MessageBox.Show( Application.Current.MainWindow, "Cards printed!" );
                 }
                 IsLoading = false;
             };
@@ -74,7 +79,7 @@ namespace MTGPrint.ViewModels
                 if ( args.Error != null )
                 {
                     LoadErrors = args.Error.Message;
-                    MessageBox.Show( args.Error.Message );
+                    MessageBox.Show( Application.Current.MainWindow, args.Error.Message );
                 }
                 IsLoading = false;
             };
@@ -248,7 +253,7 @@ namespace MTGPrint.ViewModels
                 IsLoading = true;
                 model.UpdateBulkData();
                 IsEnabled = false;
-                MessageBox.Show("The client is updating local data. This might take a while.");
+                MessageBox.Show( Application.Current.MainWindow, "The client is updating local data. This might take a while." );
             }
             else
                 StatusText = "Localdata updated";
@@ -277,7 +282,7 @@ namespace MTGPrint.ViewModels
             }
             catch ( Exception e )
             {
-                MessageBox.Show( e.Message );
+                MessageBox.Show( Application.Current.MainWindow, e.Message );
             }
         }
 
@@ -285,7 +290,7 @@ namespace MTGPrint.ViewModels
         private void NewDeck(object o)
         {
             if (model.Deck.HasChanges &&
-                MessageBox.Show("Your deck has unsaved changes! Continue anyway?",
+                MessageBox.Show( Application.Current.MainWindow, "Your deck has unsaved changes! Continue anyway?",
                                                          "Unsaved Changes",
                                                          MessageBoxButton.YesNo) == MessageBoxResult.No)
                 return;
@@ -354,7 +359,7 @@ namespace MTGPrint.ViewModels
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show( Application.Current.MainWindow, e.Message);
             }
         }
 
@@ -366,7 +371,7 @@ namespace MTGPrint.ViewModels
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show( Application.Current.MainWindow, e.Message);
             }
         }
 
@@ -433,12 +438,12 @@ namespace MTGPrint.ViewModels
                     {
                         try
                         {
-                            if ( MessageBox.Show( "Do you want to delete current deck from disk?", string.Empty, MessageBoxButton.YesNo ) == MessageBoxResult.Yes )
+                            if ( MessageBox.Show( Application.Current.MainWindow, "Do you want to delete current deck from disk?", string.Empty, MessageBoxButton.YesNo ) == MessageBoxResult.Yes )
                                 File.Delete( Deck.FileName );
                         }
                         catch
                         {
-                            MessageBox.Show( "Could not delete deck." );
+                            MessageBox.Show( Application.Current.MainWindow, "Could not delete deck." );
                         }
                     }
 
@@ -477,7 +482,7 @@ namespace MTGPrint.ViewModels
                 }
                 catch ( Exception e )
                 {
-                    MessageBox.Show( e.Message );
+                    MessageBox.Show( Application.Current.MainWindow, e.Message );
                 }
             }
         }
@@ -487,7 +492,7 @@ namespace MTGPrint.ViewModels
         private void CanClose(object sender, CancelEventArgs args)
         {
             if (model.Deck.HasChanges &&
-                MessageBox.Show("Your deck has unsaved changes! Continue anyway?",
+                MessageBox.Show( Application.Current.MainWindow, "Your deck has unsaved changes! Continue anyway?",
                                 "Unsaved Changes",
                                 MessageBoxButton.YesNo)
                 == MessageBoxResult.No)

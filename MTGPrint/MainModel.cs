@@ -402,12 +402,13 @@ namespace MTGPrint
             var po = args.Argument as PrintOptions;
             var doc = new Document( PageSize.A4 );
 
-            var cw = po.CardBorder == CardBorder.With
+            var cs = (float)po.CardScaling / 100F;
+            var cw = (po.CardBorder == CardBorder.Without
                     ? CARD_WIDTH
-                    : CARD_WIDTH_WOB;
-            var ch = po.CardBorder == CardBorder.With
+                    : CARD_WIDTH_WOB) * cs;
+            var ch = (po.CardBorder == CardBorder.With
                     ? CARD_HEIGHT
-                    : CARD_HEIGHT_WOB;
+                    : CARD_HEIGHT_WOB) * cs;
             var cm = po.CardMargin * MM_TO_POINT;
 
             int cardCount = 0;

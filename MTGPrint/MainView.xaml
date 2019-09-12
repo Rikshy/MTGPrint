@@ -159,6 +159,17 @@
                     </MenuItem.Header>
                 </MenuItem>
                 <Separator />
+                <MenuItem ToolTip="Mark all cards printed" Command="{Binding MarkPrintedCommand}">
+                    <MenuItem.Header>
+                        <Image Height="15" Width="15" Source="Resources/mark_printed.png" Stretch="Fill" />
+                    </MenuItem.Header>
+                </MenuItem>
+                <MenuItem ToolTip="Mark all cards not printed" Command="{Binding MarkNotPrintedCommand}">
+                    <MenuItem.Header>
+                        <Image Height="15" Width="15" Source="Resources/mark_not_printed.png" Stretch="Fill" />
+                    </MenuItem.Header>
+                </MenuItem>
+                <Separator />
                 <MenuItem ToolTip="Save Deck As" Command="{Binding SaveDeckAsCommand}">
                     <MenuItem.Header>
                         <Image Height="15" Width="15" Source="Resources/export.png" Stretch="Fill" />

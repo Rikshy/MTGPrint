@@ -29,6 +29,8 @@ namespace MTGPrint.ViewModels
             NewDeckCommand = new DelegateCommand( NewDeck );
             AddCardsCommand = new DelegateCommand(AddCards);
             GenerateTokenCommand = new DelegateCommand( GenerateToken );
+            MarkPrintedCommand = new DelegateCommand( (object o) => MarkDeckPrinted( false ) );
+            MarkNotPrintedCommand = new DelegateCommand( (object o) => MarkDeckPrinted(true) );
             SaveDeckAsCommand = new DelegateCommand(SaveDeckAs);
             SaveDeckCommand = new DelegateCommand( SaveDeck );
             PrintCommand = new DelegateCommand( Print );
@@ -103,6 +105,8 @@ namespace MTGPrint.ViewModels
         public ICommand NewDeckCommand { get; }
         public ICommand AddCardsCommand { get; }
         public ICommand GenerateTokenCommand { get; }
+        public ICommand MarkPrintedCommand { get; }
+        public ICommand MarkNotPrintedCommand { get; }
         public ICommand SaveDeckAsCommand { get; }
         public ICommand SaveDeckCommand { get; }
         public ICommand PrintCommand { get; }
@@ -323,6 +327,14 @@ namespace MTGPrint.ViewModels
         private void GenerateToken(object o)
         {
             model.GenerateTokens();
+        }
+
+        private void MarkDeckPrinted(bool canPrint)
+        {
+            foreach ( var dc in Deck.Cards )
+                dc.CanPrint = canPrint;
+
+            Deck.HasChanges = true;
         }
 
         private void SaveDeckAs(object o)

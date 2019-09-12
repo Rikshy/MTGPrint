@@ -182,5 +182,11 @@
   <ItemGroup>
     <Resource Include="Resources\window_cards.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\mark_printed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\mark_not_printed.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

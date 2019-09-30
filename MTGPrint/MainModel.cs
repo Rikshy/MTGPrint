@@ -403,7 +403,7 @@ namespace MTGPrint
             var doc = new Document( PageSize.A4 );
 
             var cs = (float)po.CardScaling / 100F;
-            var cw = (po.CardBorder == CardBorder.Without
+            var cw = (po.CardBorder == CardBorder.With
                     ? CARD_WIDTH
                     : CARD_WIDTH_WOB) * cs;
             var ch = (po.CardBorder == CardBorder.With

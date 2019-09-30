@@ -21,17 +21,16 @@ namespace MTGPrint
         private const string PRINTSETTINGS = @"data\printsettings.json";
 
         // 1 inch = 72 point
-        private static float MM_TO_POINT = 2.834645669291339F;
+        private const float MM_TO_POINT = 2.834645669291339F;
 
-        private static float CARD_HEIGHT = 88 * MM_TO_POINT;
-        private static float CARD_WIDTH = 63 * MM_TO_POINT;
-        private static float CARD_HEIGHT_WOB = 85 * MM_TO_POINT;
-        private static float CARD_WIDTH_WOB = 60 * MM_TO_POINT;
-        private static float CARD_MARGIN = 1 * MM_TO_POINT;
-        private static float PAGE_MARGIN_V = 15 * MM_TO_POINT;
-        private static float PAGE_MARGIN_H = 7.5F * MM_TO_POINT;
+        private const float CARD_HEIGHT = 88 * MM_TO_POINT;
+        private const float CARD_WIDTH = 63 * MM_TO_POINT;
+        private const float CARD_HEIGHT_WOB = 85 * MM_TO_POINT;
+        private const float CARD_WIDTH_WOB = 60 * MM_TO_POINT;
+        private const float PAGE_MARGIN_V = 15 * MM_TO_POINT;
+        private const float PAGE_MARGIN_H = 7.5F * MM_TO_POINT;
 
-        private static int LOCALDATA_VERSION = 1;
+        private const int LOCALDATA_VERSION = 1;
 
         public MainModel()
         {
@@ -39,7 +38,7 @@ namespace MTGPrint
             {
                 var bulkFile = $@"data\default-temp.json";
                 var bulkInfo = e.Argument as Bulk;
-                wc.DownloadFile( bulkInfo.PermalinkUri, bulkFile );
+                cardLoader.DownloadFile( bulkInfo.PermalinkUri, bulkFile );
 
                 var cards = JsonConvert.DeserializeObject<ScryCard[]>( File.ReadAllText( bulkFile ) );
 
@@ -67,7 +66,7 @@ namespace MTGPrint
             artWorker.DoWork += delegate (object sender, DoWorkEventArgs e)
             {
                 var pair = (KeyValuePair<string, string>)e.Argument;
-                wc2.DownloadFile( pair.Key, pair.Value );
+                artLoader.DownloadFile( pair.Key, pair.Value );
             };
             artWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs args)
             {
@@ -75,19 +74,19 @@ namespace MTGPrint
             };
         }
 
-        private WebClient wc = new WebClient();
-        private WebClient wc2 = new WebClient();
-        private ScryfallClient scry = new ScryfallClient();
+        private readonly WebClient cardLoader = new WebClient();
+        private readonly WebClient artLoader = new WebClient();
+        private readonly ScryfallClient scry = new ScryfallClient();
 
         private LocalDataInfo localData;
 
-        private BackgroundWorker updateWorker = new BackgroundWorker();
+        private readonly BackgroundWorker updateWorker = new BackgroundWorker();
         public event EventHandler LocalDataUpdated;
 
-        private BackgroundWorker printWorker = new BackgroundWorker();
+        private readonly BackgroundWorker printWorker = new BackgroundWorker();
         public event EventHandler<RunWorkerCompletedEventArgs> PrintFinished;
 
-        private BackgroundWorker artWorker = new BackgroundWorker();
+        private readonly BackgroundWorker artWorker = new BackgroundWorker();
         public event EventHandler<RunWorkerCompletedEventArgs> ArtDownloaded;
 
         public Deck Deck { get; } = new Deck();
@@ -419,7 +418,7 @@ namespace MTGPrint
                 for ( int i = 0; i < Deck.Cards.Count; i++ )
                 {
                     string cardUrl;
-                    DeckCard currentCard = Deck.Cards[i];
+                    var currentCard = Deck.Cards[i];
 
                     if ( !currentCard.CanPrint )
                         continue;
@@ -441,7 +440,7 @@ namespace MTGPrint
                     //get image  
                     using ( var mem = new MemoryStream() )
                     {
-                        var b = wc.DownloadData( cardUrl );
+                        var b = cardLoader.DownloadData( cardUrl );
                         mem.Write( b, 0, b.Length );
                         mem.Seek( 0, SeekOrigin.Begin );
 

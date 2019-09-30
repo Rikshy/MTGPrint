@@ -12,10 +12,10 @@ namespace MTGPrint.Helper
                           WS_MINIMIZEBOX = 0x20000;
 
         [DllImport( "user32.dll" )]
-        extern private static int GetWindowLong(IntPtr hwnd, int index);
+        private static extern int GetWindowLong(IntPtr hwnd, int index);
 
         [DllImport( "user32.dll" )]
-        extern private static int SetWindowLong(IntPtr hwnd, int index, int value);
+        private static extern int SetWindowLong(IntPtr hwnd, int index, int value);
 
         internal static void HideMinimizeAndMaximizeButtons(this Window window)
         {

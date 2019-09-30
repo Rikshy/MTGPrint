@@ -29,8 +29,8 @@ namespace MTGPrint.ViewModels
             NewDeckCommand = new DelegateCommand( NewDeck );
             AddCardsCommand = new DelegateCommand(AddCards);
             GenerateTokenCommand = new DelegateCommand( GenerateToken );
-            MarkPrintedCommand = new DelegateCommand( (object o) => MarkDeckPrinted( false ) );
-            MarkNotPrintedCommand = new DelegateCommand( (object o) => MarkDeckPrinted(true) );
+            MarkPrintedCommand = new DelegateCommand( o => MarkDeckPrinted( false ) );
+            MarkNotPrintedCommand = new DelegateCommand( o => MarkDeckPrinted(true) );
             SaveDeckAsCommand = new DelegateCommand(SaveDeckAs);
             SaveDeckCommand = new DelegateCommand( SaveDeck );
             PrintCommand = new DelegateCommand( Print );
@@ -310,8 +310,7 @@ namespace MTGPrint.ViewModels
         private void AddCards(object o)
         {
             var vm = new AddCardsViewModel();
-            var addCardsView = new AddCardsView { DataContext = vm };
-            addCardsView.Owner = Application.Current.MainWindow;
+            var addCardsView = new AddCardsView { DataContext = vm, Owner = Application.Current.MainWindow };
             if (addCardsView.ShowDialog() == true && !string.IsNullOrEmpty(vm.ImportCards) && vm.ImportCards.Trim().Length > 0)
             {
                 StatusText = "Importing cards";
@@ -378,8 +377,7 @@ namespace MTGPrint.ViewModels
         private void Print(object o)
         {
             var vm = new PrintViewModel { PrintOptions = model.LoadPrintSettings() };
-            var printView = new PrintView() { DataContext = vm };
-            printView.Owner = Application.Current.MainWindow;
+            var printView = new PrintView { DataContext = vm, Owner = Application.Current.MainWindow };
             if ( printView.ShowDialog() == true)
             {
                 var sfd = new SaveFileDialog
@@ -401,9 +399,7 @@ namespace MTGPrint.ViewModels
 
         private void ShowInfo(object o)
         {
-            var infoWnd = new InfoView();
-            infoWnd.Owner = Application.Current.MainWindow;
-            infoWnd.ShowDialog();
+            new InfoView { Owner = Application.Current.MainWindow }.ShowDialog();
         }
         #endregion
 

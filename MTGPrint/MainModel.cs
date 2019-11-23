@@ -353,8 +353,10 @@ namespace MTGPrint
             tokens = new List<CardParts>();
             errors = new List<string>();
 
-            foreach (string line in splits)
+            foreach (string line in splits.Where(l => !l.StartsWith("//") && !string.IsNullOrEmpty(l.Trim())))
             {
+                bool isCommander = false;
+
                 var match = Regex.Match( line, "([0-9]+) (.*)" );
                 if ( !match.Success || !int.TryParse( match.Groups[1].Value, out var count ) || count <= 0 )
                 {
@@ -362,7 +364,14 @@ namespace MTGPrint
                     continue;
                 }
 
-                var card = localData.Cards.FirstOrDefault(c => c.Name.ToUpper() == match.Groups[2].Value.Trim().ToUpper());
+                var parsedName = match.Groups[2].Value;
+                if (parsedName.EndsWith( "# !Commander" ))
+                {
+                    isCommander = true;
+                    parsedName = parsedName.Substring( 0, parsedName.IndexOf( "# !Commander" ) );
+                }
+
+                var card = localData.Cards.FirstOrDefault(c => c.Name.ToUpper() == parsedName.Trim().ToUpper());
                 if (card == null)
                 {
                     errors.Add(line);
@@ -384,7 +393,10 @@ namespace MTGPrint
                     Count = count
                 };
 
-                deckCards.Add( dc );
+                if ( isCommander )
+                    deckCards.Insert( 0, dc );
+                else
+                    deckCards.Add( dc );
 
                 if ( first.ChildUrls != null )
                 {
@@ -393,7 +405,11 @@ namespace MTGPrint
                         OracleId = card.OracleId,
                         IsChild = true
                     };
-                    deckCards.Add( dc );
+
+                    if ( isCommander )
+                        deckCards.Insert( 1, dc );
+                    else
+                        deckCards.Add( dc );
                 }
 
                 if ( card.Parts != null )

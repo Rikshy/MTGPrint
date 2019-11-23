@@ -328,14 +328,15 @@ namespace MTGPrint
                     child = card.CardFaces.Last().ImageUrls;
                 }
 
-                lcard.Prints.Add( new CardPrints
-                {
-                    Id = card.Id,
-                    Set = card.Set,
-                    SetName = card.SetName,
-                    ImageUrls = iu,
-                    ChildUrls = child
-                } );
+                if (lcard.Prints.All( p => p.Id != card.Id ))
+                    lcard.Prints.Add( new CardPrints
+                    {
+                        Id = card.Id,
+                        Set = card.Set,
+                        SetName = card.SetName,
+                        ImageUrls = iu,
+                        ChildUrls = child
+                    } );
             }
         }
 

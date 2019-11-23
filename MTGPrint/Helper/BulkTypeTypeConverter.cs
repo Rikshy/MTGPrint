@@ -25,6 +25,8 @@ namespace MTGPrint.Helper
                     return BulkType.Rulings;
                 case "all_cards":
                     return BulkType.AllCards;
+                case "artworks":
+                    return BulkType.ArtWorks;
                 case "default_cards":
                     return BulkType.DefaultCards;
                 default:
@@ -47,6 +49,9 @@ namespace MTGPrint.Helper
                     break;
                 case BulkType.AllCards:
                     writer.WriteValue( "all_cards" );
+                    break;
+                case BulkType.ArtWorks:
+                    writer.WriteValue( "artworks" );
                     break;
                 case BulkType.DefaultCards:
                     writer.WriteValue( "default_cards" );

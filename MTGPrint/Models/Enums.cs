@@ -38,6 +38,7 @@
         OracleCards,
         Rulings,
         AllCards,
+        ArtWorks,
         DefaultCards
     }
 }

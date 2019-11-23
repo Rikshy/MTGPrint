@@ -23,6 +23,7 @@ namespace MTGPrint.ViewModels
         public MainViewModel()
         {
             WindowLoadedCommand = new DelegateCommand( WindowLoaded );
+            WindowClosedCommand = new DelegateCommand( WindowClosed );
 
             OpenDeckCommand = new DelegateCommand( OpenDeck );
 
@@ -40,6 +41,7 @@ namespace MTGPrint.ViewModels
             CanPrintCommand = new DelegateCommand( CanPrintCard );
             RemoveCardCommand = new DelegateCommand( RemoveCard );
             DuplicardCommand = new DelegateCommand( Duplicate );
+            MarkArtDefaultCommand = new DelegateCommand( MarkArtDefault );
             SaveArtCommand = new DelegateCommand( SaveArt );
 
             model.LocalDataUpdated += delegate
@@ -84,7 +86,7 @@ namespace MTGPrint.ViewModels
                 IsLoading = false;
             };
 
-            if (Application.Current.MainWindow != null)
+            if ( Application.Current.MainWindow != null )
                 Application.Current.MainWindow.Closing += CanClose;
 
             if ( !Directory.Exists( "decks" ) )
@@ -104,6 +106,7 @@ namespace MTGPrint.ViewModels
 
         #region Bindings
         public ICommand WindowLoadedCommand { get; }
+        public ICommand WindowClosedCommand { get; }
 
         public ICommand OpenDeckCommand { get; }
 
@@ -121,6 +124,7 @@ namespace MTGPrint.ViewModels
         public ICommand CanPrintCommand { get; }
         public ICommand RemoveCardCommand { get; }
         public ICommand DuplicardCommand { get; }
+        public ICommand MarkArtDefaultCommand { get; }
         public ICommand SaveArtCommand { get; }
 
         private Visibility createOpenGridVisibility = Visibility.Visible;
@@ -258,6 +262,8 @@ namespace MTGPrint.ViewModels
             else
                 StatusText = "Localdata updated";
         }
+
+        private void WindowClosed(object o) { model.SaveLocalData(); }
 
         private void OpenDeck(object o)
         {
@@ -456,6 +462,12 @@ namespace MTGPrint.ViewModels
                 model.DuplicateCard( card );
                 CardCount = Deck.Cards.Sum( c => c.Count );
             }
+        }
+
+        private void MarkArtDefault(object o)
+        {
+            if ( o is DeckCard card )
+                model.MarkArtDefault( card );
         }
 
         private void SaveArt(object o)

@@ -30,7 +30,7 @@ namespace MTGPrint
         private const float PAGE_MARGIN_V = 15 * MM_TO_POINT;
         private const float PAGE_MARGIN_H = 7.5F * MM_TO_POINT;
 
-        private const int LOCALDATA_VERSION = 1;
+        private const int LOCALDATA_VERSION = 2;
 
         public MainModel()
         {
@@ -42,14 +42,11 @@ namespace MTGPrint
 
                 var cards = JsonConvert.DeserializeObject<ScryCard[]>( File.ReadAllText( bulkFile ) );
 
-                if ( localData != null && localData.CardCount != cards.LongLength )
-                    return;
-
                 ConvertToLocal( bulkInfo.UpdatedAt, cards );
 
                 localData.Version = LOCALDATA_VERSION;
 
-                File.WriteAllText( LOCALDATA, JsonConvert.SerializeObject( localData, Formatting.Indented ) );
+                SaveLocalData();
                 File.Delete( bulkFile );
             };
             updateWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs args)
@@ -104,6 +101,11 @@ namespace MTGPrint
             updateWorker.RunWorkerAsync( bulkInfo );
         }
 
+        public void SaveLocalData()
+        {
+            File.WriteAllText( LOCALDATA, JsonConvert.SerializeObject( localData, Formatting.Indented ) );
+        }
+
         #region Menu
         public void AddCardsToDeck(string cardList, out List<string> errors)
         {
@@ -137,7 +139,8 @@ namespace MTGPrint
                 {
                     var lcard = localData.Cards.FirstOrDefault( lc => lc.OracleId == c.OracleId );
                     c.Prints = lcard.Prints;
-                    c.SelectPrint = lcard.Prints.FirstOrDefault( p => p.Id == c.SelectPrint.Id );
+                    if ( c.SelectedPrintId == null )
+                        c.SelectedPrintId = lcard.DefaultPrint ?? lcard.Prints.First().Id;
                 }
 
                 Deck.Cards.Add( c );
@@ -224,6 +227,11 @@ namespace MTGPrint
             }
 
             Deck.HasChanges = true;
+        }
+
+        public void MarkArtDefault(DeckCard card)
+        {
+            localData.Cards.First( c => c.OracleId == card.OracleId ).DefaultPrint = card.SelectedPrintId;
         }
 
         public void SaveArtCrop(DeckCard card, string filePath)
@@ -365,7 +373,7 @@ namespace MTGPrint
                 var dc = new DeckCard
                 {
                     OracleId = card.OracleId,
-                    SelectPrint = first,
+                    SelectedPrintId = card.DefaultPrint ?? first.Id,
                     Prints = card.Prints,
                     Count = count
                 };

@@ -63,6 +63,9 @@
                       Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.DuplicardCommand}"
                       CommandParameter="{Binding}" />
                         <Separator />
+                        <MenuItem Header="Mark art default" 
+                      Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.MarkArtDefaultCommand}"
+                      CommandParameter="{Binding}" />
                         <MenuItem Header="Save art" 
                       Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.SaveArtCommand}"
                       CommandParameter="{Binding}" />
@@ -111,6 +114,9 @@
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding WindowLoadedCommand}" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Close">
+            <i:InvokeCommandAction Command="{Binding WindowCloseCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid>

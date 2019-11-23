@@ -31,6 +31,9 @@ namespace MTGPrint.Models
         [JsonProperty( "latest_print" )]
         public DateTimeOffset LatestPrint { get; set; }
 
+        [JsonProperty( "default_print" )]
+        public Guid? DefaultPrint { get; set; }
+
         [JsonProperty( "scryfall_uri" )]
         public string ScryUrl { get; set; }
 
@@ -51,9 +54,6 @@ namespace MTGPrint.Models
 
         [JsonProperty( "set_name" )]
         public string SetName { get; set; }
-
-        [JsonProperty( "downloaded" )]
-        public bool Downloaded { get; set; }
 
         [JsonProperty( "child" )]
         public ImageUrls ChildUrls { get; set; }

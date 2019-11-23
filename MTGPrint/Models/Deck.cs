@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace MTGPrint.Models
@@ -24,6 +25,9 @@ namespace MTGPrint.Models
             }
         }
 
+        [JsonProperty( "version" )]
+        public int Version { get; set; }
+
         [JsonProperty( "tokens" )]
         public List<CardParts> Tokens { get; set; } = new List<CardParts>();
 
@@ -42,15 +46,15 @@ namespace MTGPrint.Models
         [JsonProperty( "oracle_id" )]
         public Guid OracleId { get; set; }
 
-        private CardPrints print;
-        [JsonProperty( "selected_print" )]
-        public CardPrints SelectPrint
+        private Guid? selectedPrintId;
+        [JsonProperty( "selected_print_id" )]
+        public Guid? SelectedPrintId
         {
-            get => print;
+            get => selectedPrintId;
             set
             {
-                print = value;
-                OnPropertyChanged();
+                selectedPrintId = value;
+                OnPropertyChanged( "SelectPrint" );
                 ArtChanged?.Invoke( this, EventArgs.Empty );
             }
         }
@@ -82,6 +86,13 @@ namespace MTGPrint.Models
 
         [JsonProperty( "is_child" )]
         public bool IsChild { get; set; }
+
+        [JsonIgnore]
+        public CardPrints SelectPrint
+        {
+            get => Prints.FirstOrDefault( p => p.Id == SelectedPrintId );
+            set => SelectedPrintId = value?.Id;
+        }
 
         [JsonIgnore]
         public ObservableCollection<CardPrints> Prints { get; set; } = new ObservableCollection<CardPrints>();

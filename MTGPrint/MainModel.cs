@@ -132,6 +132,7 @@ namespace MTGPrint
             var tempDeck = JsonConvert.DeserializeObject<Deck>(File.ReadAllText(path));
             if (!tempDeck.Cards.Any())
                 throw new FileLoadException("invalid deck file");
+
             Deck.Cards.Clear();
             foreach (var c in tempDeck.Cards)
             {
@@ -145,6 +146,10 @@ namespace MTGPrint
 
                 Deck.Cards.Add( c );
             }
+
+            Deck.Tokens = tempDeck.Tokens;
+            Deck.Version = tempDeck.Version;
+
             Deck.FileName = path;
             Deck.HasChanges = false;
         }

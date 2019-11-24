@@ -262,7 +262,7 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="100"/>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="200"/>
                         </Grid.ColumnDefinitions>
                     </Grid>
                 </ItemsPanelTemplate>
@@ -278,8 +278,9 @@
             <Separator Grid.Column="4"/>
             <StatusBarItem DockPanel.Dock="Right" Grid.Column="5">
                 <WrapPanel HorizontalAlignment="Right">
-                    <TextBlock Text="card count: " />
-                    <TextBlock Text="{Binding Deck.CardCount}" />
+                    <TextBlock Text="{Binding Deck.CardCount, StringFormat='card count: {0}'}"  />
+                    <TextBlock Text=" | "  />
+                    <TextBlock Text="{Binding Deck.TokenCount, StringFormat='token count: {0}'}" />
                 </WrapPanel>
             </StatusBarItem>
         </StatusBar>

@@ -389,7 +389,7 @@ namespace MTGPrint.ViewModels
             if ( o is DeckCard card )
             {
                 model.RemoveCardFromDeck( card );
-                if ( Deck.CardCount == 0 )
+                if ( Deck.CardCount + Deck.TokenCount == 0 )
                 {
                     if ( !string.IsNullOrEmpty( Deck.FileName ) )
                     {

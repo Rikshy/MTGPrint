@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -19,27 +18,32 @@ namespace MTGPrint.Models
         {
             if ( isTemp ) return;
 
-            Cards.CollectionChanged += delegate(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs ne)
+            Cards.CollectionChanged += delegate ( object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs ne )
             {
                 HasChanges = true;
                 OnPropertyChanged( nameof( HasChanges ) );
                 OnPropertyChanged( nameof( CardCount ) );
+                OnPropertyChanged( nameof( TokenCount ) );
 
-                if (ne.NewItems != null)
+                if ( ne.NewItems != null )
                 {
                     foreach ( var i in ne.NewItems )
                     {
-                        (i as DeckCard).PropertyChanged += delegate (object s, PropertyChangedEventArgs pe)
-                        {
-                            if ( pe.PropertyName == "SelectPrint" || pe.PropertyName == "Count" || pe.PropertyName == "CanPrint" )
-                            {
-                                HasChanges = true;
-                                OnPropertyChanged( nameof( HasChanges ) );
-                                if ( pe.PropertyName == "Count" )
-                                    OnPropertyChanged( nameof(CardCount) );
-
-                            }
-                        };
+                        ( i as DeckCard ).PropertyChanged += delegate ( object s, PropertyChangedEventArgs pe )
+                          {
+                              if ( pe.PropertyName == "SelectPrint" || pe.PropertyName == "Count" || pe.PropertyName == "CanPrint" )
+                              {
+                                  HasChanges = true;
+                                  OnPropertyChanged( nameof( HasChanges ) );
+                                  if ( pe.PropertyName == "Count" )
+                                  {
+                                      if ( ( s as DeckCard ).IsToken )
+                                          OnPropertyChanged( nameof( TokenCount ) );
+                                      else
+                                          OnPropertyChanged( nameof( CardCount ) );
+                                  }
+                              }
+                          };
                     }
                 }
             };
@@ -69,7 +73,10 @@ namespace MTGPrint.Models
         public ObservableCollection<DeckCard> Cards { get; set; } = new ObservableCollection<DeckCard>();
 
         [JsonIgnore]
-        public int CardCount => Cards.Sum( c => c.Count );
+        public int CardCount => Cards.Where(c => !c.IsToken && !c.IsChild).Sum(c => c.Count);
+
+        [JsonIgnore]
+        public int TokenCount => Cards.Where(c => c.IsToken || c.IsChild).Sum(c => c.Count);
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -119,8 +126,11 @@ namespace MTGPrint.Models
             }
         }
 
-        [JsonProperty( "is_child" )]
+        [JsonProperty("is_child")]
         public bool IsChild { get; set; }
+
+        [JsonProperty("is_token")]
+        public bool IsToken { get; set; }
 
         [JsonIgnore]
         public CardPrints SelectPrint

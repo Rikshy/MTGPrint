@@ -177,6 +177,7 @@ namespace MTGPrint
                     OracleId = card.OracleId,
                     SelectPrint = card.Prints.First( cp => cp.Id == token.Id ),
                     Prints = card.Prints,
+                    IsToken = true,
                     Count = 5
                 } );
             }

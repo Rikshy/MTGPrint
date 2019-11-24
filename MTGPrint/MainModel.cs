@@ -372,10 +372,10 @@ namespace MTGPrint
                 }
 
                 var parsedName = match.Groups[2].Value;
-                if (parsedName.EndsWith( "# !Commander" ))
+                if (parsedName.EndsWith( "#!Commander" ))
                 {
                     isCommander = true;
-                    parsedName = parsedName.Substring( 0, parsedName.IndexOf( "# !Commander" ) );
+                    parsedName = parsedName.Substring( 0, parsedName.IndexOf( "#!Commander" ) );
                 }
 
                 var card = localData.Cards.FirstOrDefault(c => c.Name.ToUpper() == parsedName.Trim().ToUpper());

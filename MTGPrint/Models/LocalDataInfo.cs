@@ -61,9 +61,27 @@ namespace MTGPrint.Models
         [JsonProperty( "image_uris" )]
         public ImageUrls ImageUrls { get; set; }
 
+        [JsonProperty( "gameplay_info" )]
+        public GameplayInfo Gameplay { get; set; }
+
         public override string ToString()
         {
             return SetName;
         }
+    }
+
+    public class GameplayInfo
+    {
+        [JsonProperty( "cmc" )]
+        public float CMC { get; set; }
+
+        [JsonProperty( "mana_cost" )]
+        public string ManaCost { get; set; }
+
+        [JsonProperty( "colors" )]
+        public IEnumerable<string> Colors { get; set; }
+
+        [JsonProperty( "type" )]
+        public string Type { get; set; }
     }
 }

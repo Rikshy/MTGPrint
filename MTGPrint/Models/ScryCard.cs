@@ -40,6 +40,18 @@ namespace MTGPrint.Models
         [JsonProperty( "image_uris" )]
         public ImageUrls ImageUrls { get; set; }
 
+        [JsonProperty( "mana_cost" )]
+        public string ManaCost { get; set; }
+
+        [JsonProperty( "cmc" )]
+        public float CMC { get; set; }
+
+        [JsonProperty( "color_identity" )]
+        public string[] ColorIdentity { get; set; }
+
+        [JsonProperty( "type_line" )]
+        public string TypeLine { get; set; }
+
 
         [JsonProperty( "lang" )]
         public string Lang { get; set; }

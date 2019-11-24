@@ -344,6 +344,12 @@ namespace MTGPrint.ViewModels
 
         private void Print(object o)
         {
+            if (Deck.Cards.All(c => !c.CanPrint))
+            {
+                MessageBox.Show("No cards to print");
+                return;
+            }
+
             var vm = new PrintViewModel { PrintOptions = model.LoadPrintSettings() };
             var printView = new PrintView { DataContext = vm, Owner = Application.Current.MainWindow };
             if ( printView.ShowDialog() == true)

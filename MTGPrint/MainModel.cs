@@ -28,7 +28,7 @@ namespace MTGPrint
         private const float CARD_HEIGHT_WOB = 85 * MM_TO_POINT;
         private const float CARD_WIDTH_WOB = 60 * MM_TO_POINT;
         private const float PAGE_MARGIN_V = 15 * MM_TO_POINT;
-        private const float PAGE_MARGIN_H = 7.5F * MM_TO_POINT;
+        private const float PAGE_MARGIN_H = 5.5F * MM_TO_POINT;
 
         private const int LOCALDATA_VERSION = 2;
 

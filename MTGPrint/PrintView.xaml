@@ -22,13 +22,13 @@
             </GroupBox>
             <GroupBox Header="Card margin">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <xctk:DoubleUpDown Value="{Binding PrintOptions.CardMargin}" Increment=".5" Minimum="0" Maximum="5"/>
+                    <xctk:DoubleUpDown Value="{Binding PrintOptions.CardMargin}" Increment=".5" Minimum="0" Maximum="4"/>
                     <TextBlock Text="mm" Margin="5" />
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Card scaling">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <xctk:DoubleUpDown Value="{Binding PrintOptions.CardScaling}" Increment=".5" Minimum="95" Maximum="105"/>
+                    <xctk:DoubleUpDown Value="{Binding PrintOptions.CardScaling}" Increment=".5" Minimum="95" Maximum="102.5"/>
                     <TextBlock Text="%" Margin="5" />
                 </StackPanel>
             </GroupBox>

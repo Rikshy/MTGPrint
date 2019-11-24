@@ -8,7 +8,6 @@ using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using iText.IO.Image;
-using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;

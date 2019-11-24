@@ -68,7 +68,7 @@ namespace MTGPrint.ViewModels
                     foreach ( var dc in Deck.Cards )
                         dc.CanPrint = false;
                     if ( args.Result is PrintOptions po && po.OpenPDF )
-                        Process.Start( po.FileName );
+                        Process.Start( new ProcessStartInfo(po.FileName) { UseShellExecute = true });
                     else
                         MessageBox.Show( Application.Current.MainWindow, "Cards printed!" );
                 }

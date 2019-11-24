@@ -1,6 +1,8 @@
-﻿using MTGPrint.Models;
+﻿using System;
+
 using Newtonsoft.Json;
-using System;
+
+using MTGPrint.Models;
 
 namespace MTGPrint.Helper
 {

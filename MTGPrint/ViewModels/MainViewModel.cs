@@ -1,16 +1,16 @@
 ﻿using System;
-
-using MTGPrint.Models;
+using System.Diagnostics;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 
 using Microsoft.Win32;
-using System.Diagnostics;
-using System.Reflection;
+
+using MTGPrint.Models;
 using MTGPrint.Helper;
 
 namespace MTGPrint.ViewModels

@@ -1,19 +1,20 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
+
 using iText.IO.Image;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
-using MTGPrint.Models;
 
 using Newtonsoft.Json;
+
+using MTGPrint.Models;
 
 namespace MTGPrint
 {
@@ -136,28 +137,20 @@ namespace MTGPrint
 
             Deck.Cards.Clear();
             Deck.Tokens.Clear();
-            foreach (var c in tempDeck.Cards)
+            foreach (var tempCard in tempDeck.Cards)
             {
-                var lcard = localData.Cards.FirstOrDefault( lc => lc.OracleId == c.OracleId );
+                var lcard = localData.Cards.FirstOrDefault( lc => lc.OracleId == tempCard.OracleId );
 
-                if ( !c.IsChild )
+                if ( !tempCard.IsChild )
                 {
-                    c.Prints = lcard.Prints;
-                    if ( c.SelectedPrintId == null )
-                        c.SelectedPrintId = lcard.DefaultPrint ?? lcard.Prints.First().Id;
+                    tempCard.Prints = lcard.Prints;
+                    if ( tempCard.SelectedPrintId == null )
+                        tempCard.SelectedPrintId = lcard.DefaultPrint ?? lcard.Prints.First().Id;
                 }
 
-                Deck.Cards.Add( c );
+                Deck.Cards.Add( tempCard );
 
-                if ( lcard.Parts != null )
-                {
-                    var tc = lcard.Parts.Where( p => p.Component == CardComponent.Token || p.Component == CardComponent.ComboPiece );
-                    foreach ( var t in tc )
-                    {
-                        if ( Deck.Tokens.All( t1 => t1.Name != t.Name ) && lcard.Prints.All( cp => cp.Id != t.Id ) )
-                            Deck.Tokens.Add( t );
-                    }
-                }
+                AddTokensToDeck( lcard );
             }
             
             Deck.Version = tempDeck.Version;
@@ -204,9 +197,7 @@ namespace MTGPrint
             var localCard = localData.Cards.FirstOrDefault( lc => lc.Prints.Any( p => p.Id == card.SelectPrint.Id ) );
 
             if (localCard != null)
-            {
-                System.Diagnostics.Process.Start( localCard.ScryUrl );
-            }
+                Process.Start( new ProcessStartInfo( localCard.ScryUrl ) { UseShellExecute = true } );
         }
 
         public void RemoveCardFromDeck(DeckCard card)
@@ -214,6 +205,7 @@ namespace MTGPrint
             var index = Deck.Cards.IndexOf( card );
             if (Deck.Cards.Count < index && Deck.Cards[index + 1].IsChild )
                 Deck.Cards.RemoveAt( index + 1 );
+
             Deck.Cards.Remove( card );
         }
 
@@ -226,9 +218,7 @@ namespace MTGPrint
                 Prints = card.Prints,
                 SelectPrint = card.SelectPrint
             };
-
             Deck.Cards.Add( newCard );
-
 
             var index = Deck.Cards.IndexOf( card );
             if ( Deck.Cards.Count > index && Deck.Cards[index + 1].IsChild )
@@ -374,6 +364,7 @@ namespace MTGPrint
                     continue;
                 }
 
+                //deckstats commander parsing
                 var parsedName = match.Groups[2].Value;
                 if (parsedName.EndsWith( "#!Commander" ))
                 {
@@ -384,14 +375,14 @@ namespace MTGPrint
                 var card = localData.Cards.FirstOrDefault(c => c.Name.ToUpper() == parsedName.Trim().ToUpper());
                 if (card == null)
                 {
-                    errors.Add(line);
+                    errors.Add( $"card '{line}' not found" );
                     continue;
                 }
 
                 var first = card.Prints.FirstOrDefault();
                 if (first == null)
                 {
-                    errors.Add($"no prints found? {card.Name}");
+                    errors.Add( $"no print found for card '{card.Name}'" );
                     continue;
                 }
 
@@ -422,18 +413,23 @@ namespace MTGPrint
                         deckCards.Add( dc );
                 }
 
-                if ( card.Parts != null )
-                {
-                    var tc = card.Parts.Where( p => p.Component == CardComponent.Token || p.Component == CardComponent.ComboPiece );
-                    foreach ( var t in tc )
-                    {
-                        if ( tokens.All( t1 => t1.Name != t.Name ) && card.Prints.All( cp => cp.Id != t.Id ) )
-                            tokens.Add( t );
-                    }
-                }
+                AddTokensToDeck( card );
             }
 
             return deckCards;
+        }
+
+        private void AddTokensToDeck( LocalCard lcard )
+        {
+            if ( lcard.Parts == null )
+                return;
+
+            var tc = lcard.Parts.Where( p => p.Component == CardComponent.Token || p.Component == CardComponent.ComboPiece );
+            foreach ( var t in tc )
+            {
+                if ( Deck.Tokens.All( t1 => t1.Name != t.Name ) && lcard.Prints.All( cp => cp.Id != t.Id ) )
+                    Deck.Tokens.Add( t );
+            }
         }
 
         private void DoPrintWork(object sender, DoWorkEventArgs args)
@@ -441,62 +437,57 @@ namespace MTGPrint
             var po = args.Argument as PrintOptions;
 
             var cs = (float)po.CardScaling / 100F;
-            var cw = (po.CardBorder == CardBorder.With
-                    ? CARD_WIDTH
-                    : CARD_WIDTH_WOB) * cs;
-            var ch = (po.CardBorder == CardBorder.With
-                    ? CARD_HEIGHT
-                    : CARD_HEIGHT_WOB) * cs;
+            var cw = ( po.CardBorder == CardBorder.With ? CARD_WIDTH : CARD_WIDTH_WOB ) * cs;
+            var ch = ( po.CardBorder == CardBorder.With ? CARD_HEIGHT : CARD_HEIGHT_WOB ) * cs;
             var cm = po.CardMargin * MM_TO_POINT;
 
+            using var stream = new FileStream( po.FileName, FileMode.Create );
+            using var writer = new PdfWriter( stream );
+            var doc = new Document( new PdfDocument( writer ) );
+
             int cardCount = 0;
-            using ( var stream = new FileStream( po.FileName, FileMode.Create ) )
-            using (var writer = new PdfWriter(stream))
+            for ( int i = 0; i < Deck.Cards.Count; i++ )
             {
-                var doc = new Document(new PdfDocument(writer));
+                var currentCard = Deck.Cards[i];
 
-                for (int i = 0; i < Deck.Cards.Count; i++)
+                if ( !currentCard.CanPrint )
+                    continue;
+
+                string cardUrl;
+                if ( currentCard.IsChild )
                 {
-                    string cardUrl;
-                    var currentCard = Deck.Cards[i];
-
-                    if (!currentCard.CanPrint)
-                        continue;
-
-                    if (currentCard.IsChild)
-                    {
-                        currentCard = Deck.Cards[i - 1];
-                        cardUrl = po.CardBorder == CardBorder.With
-                            ? currentCard.SelectPrint.ChildUrls.Normal
-                            : currentCard.SelectPrint.ChildUrls.BorderCrop;
-                    }
-                    else
-                        cardUrl = po.CardBorder == CardBorder.With
-                            ? currentCard.SelectPrint.ImageUrls.Normal
-                            : currentCard.SelectPrint.ImageUrls.BorderCrop;
-
-
-                    //get image  
-                    var b = cardLoader.DownloadData(cardUrl);
-                    var img = new Image(ImageDataFactory.Create(b));
-                    img.ScaleToFit(cw, ch);
-
-                    for (int j = 0; j < currentCard.Count; j++)
-                    {
-                        var x = (cardCount % 3) * (cw + cm) + PAGE_MARGIN_H;
-                        var y = ((cardCount / 3) % 3) * (ch + cm) + PAGE_MARGIN_V;
-
-                        img.SetFixedPosition((cardCount / 9) + 1, (float)x, (float)y);
-
-                        doc.Add(img);
-
-                        cardCount++;
-                    }
+                    currentCard = Deck.Cards[i - 1];
+                    cardUrl = po.CardBorder == CardBorder.With
+                        ? currentCard.SelectPrint.ChildUrls.Normal
+                        : currentCard.SelectPrint.ChildUrls.BorderCrop;
                 }
-                doc.Close();
+                else
+                {
+                    cardUrl = po.CardBorder == CardBorder.With
+                        ? currentCard.SelectPrint.ImageUrls.Normal
+                        : currentCard.SelectPrint.ImageUrls.BorderCrop;
+                }
 
-                args.Result = po;
+                //get image  
+                var b = cardLoader.DownloadData( cardUrl );
+                var img = new Image( ImageDataFactory.Create( b ) );
+                img.ScaleToFit( cw, ch );
+
+                for ( int j = 0; j < currentCard.Count; j++ )
+                {
+                    var x = ( cardCount % 3 ) * ( cw + cm ) + PAGE_MARGIN_H;
+                    var y = ( ( cardCount / 3 ) % 3 ) * ( ch + cm ) + PAGE_MARGIN_V;
+
+                    img.SetFixedPosition( ( cardCount / 9 ) + 1, (float) x, (float) y );
+
+                    doc.Add( img );
+
+                    cardCount++;
+                }
             }
+            doc.Close();
+
+            args.Result = po;
         }
     }
 }

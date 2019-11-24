@@ -7,6 +7,7 @@
         MeldResult,
         ComboPiece
     }
+
     public enum CardLayout
     {
         Normal,
@@ -28,11 +29,13 @@
         ArtSeries,
         DoubleSided
     }
+
     public enum CardBorder
     {
         With,
         Without
     }
+
     public enum BulkType
     {
         OracleCards,

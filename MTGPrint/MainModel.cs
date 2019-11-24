@@ -86,7 +86,7 @@ namespace MTGPrint
         private readonly BackgroundWorker artWorker = new BackgroundWorker();
         public event EventHandler<RunWorkerCompletedEventArgs> ArtDownloaded;
 
-        public Deck Deck { get; } = new Deck();
+        public Deck Deck { get; } = new Deck(false);
 
         public bool CheckForUpdates() { return UpdateCheck(out _); }
 
@@ -111,7 +111,6 @@ namespace MTGPrint
         {
             var deckCards = ParseCardList(cardList, out var tokens, out errors);
             deckCards.ForEach(dc => Deck.Cards.Add(dc));
-            Deck.HasChanges = true;
             foreach ( var tid in tokens )
             {
                 if ( !Deck.Tokens.Contains( tid ) )
@@ -134,20 +133,31 @@ namespace MTGPrint
                 throw new FileLoadException("invalid deck file");
 
             Deck.Cards.Clear();
+            Deck.Tokens.Clear();
             foreach (var c in tempDeck.Cards)
             {
+                var lcard = localData.Cards.FirstOrDefault( lc => lc.OracleId == c.OracleId );
+
                 if ( !c.IsChild )
                 {
-                    var lcard = localData.Cards.FirstOrDefault( lc => lc.OracleId == c.OracleId );
                     c.Prints = lcard.Prints;
                     if ( c.SelectedPrintId == null )
                         c.SelectedPrintId = lcard.DefaultPrint ?? lcard.Prints.First().Id;
                 }
 
                 Deck.Cards.Add( c );
-            }
 
-            Deck.Tokens = tempDeck.Tokens;
+                if ( lcard.Parts != null )
+                {
+                    var tc = lcard.Parts.Where( p => p.Component == CardComponent.Token || p.Component == CardComponent.ComboPiece );
+                    foreach ( var t in tc )
+                    {
+                        if ( Deck.Tokens.All( t1 => t1.Name != t.Name ) && lcard.Prints.All( cp => cp.Id != t.Id ) )
+                            Deck.Tokens.Add( t );
+                    }
+                }
+            }
+            
             Deck.Version = tempDeck.Version;
 
             Deck.FileName = path;
@@ -202,7 +212,6 @@ namespace MTGPrint
             if (Deck.Cards.Count < index && Deck.Cards[index + 1].IsChild )
                 Deck.Cards.RemoveAt( index + 1 );
             Deck.Cards.Remove( card );
-            Deck.HasChanges = true;
         }
 
         public void DuplicateCard(DeckCard card)
@@ -230,8 +239,6 @@ namespace MTGPrint
 
                 Deck.Cards.Add( newCard );
             }
-
-            Deck.HasChanges = true;
         }
 
         public void MarkArtDefault(DeckCard card)

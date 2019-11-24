@@ -67,7 +67,6 @@ namespace MTGPrint.ViewModels
                     StatusText = "Deck printed";
                     foreach ( var dc in Deck.Cards )
                         dc.CanPrint = false;
-                    Deck.HasChanges = true;
                     if ( args.Result is PrintOptions po && po.OpenPDF )
                         Process.Start( po.FileName );
                     else
@@ -95,13 +94,6 @@ namespace MTGPrint.ViewModels
                 Directory.CreateDirectory( "prints" );
             if ( !Directory.Exists( "art_crops" ) )
                 Directory.CreateDirectory( "art_crops" );
-
-            DeckCard.CountChanged += delegate 
-            {
-                Deck.HasChanges = true;
-                CardCount = Deck.Cards.Sum( c => c.Count );
-            };
-            DeckCard.ArtChanged += delegate { Deck.HasChanges = true; };
         }
 
         #region Bindings
@@ -208,17 +200,6 @@ namespace MTGPrint.ViewModels
             }
         }
 
-        private int cardCount = 0;
-        public int CardCount
-        {
-            get => cardCount;
-            set
-            {
-                cardCount = value;
-                OnPropertyChanged();
-            }
-        }
-
         public bool canSave = false;
         public bool CanSave
         {
@@ -226,17 +207,6 @@ namespace MTGPrint.ViewModels
             set
             {
                 canSave = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool hasTokens = false;
-        public bool HasTokens
-        {
-            get => hasTokens;
-            set
-            {
-                hasTokens = value;
                 OnPropertyChanged();
             }
         }
@@ -282,8 +252,6 @@ namespace MTGPrint.ViewModels
                 DeckGridVisibility = Visibility.Visible;
 
                 CanSave = true;
-                CardCount = Deck.Cards.Sum( c => c.Count );
-                HasTokens = Deck.Tokens.Any();
                 LoadErrors = string.Empty;
             }
             catch ( Exception e )
@@ -303,10 +271,8 @@ namespace MTGPrint.ViewModels
 
             Deck.Cards.Clear();
             Deck.Tokens.Clear();
-            CardCount = 0;
             Deck.HasChanges = false;
             CanSave = false;
-            HasTokens = false;
             LoadErrors = string.Empty;
 
             CreateOpenGridVisibility = Visibility.Visible;
@@ -327,10 +293,8 @@ namespace MTGPrint.ViewModels
                     DeckGridVisibility = Visibility.Visible;
                 }
 
-                CardCount = Deck.Cards.Sum(c => c.Count);
                 LoadErrors = string.Join(Environment.NewLine, errors);
                 StatusText = "Cards imported";
-                HasTokens = Deck.Tokens.Any();
             }
         }
 
@@ -343,8 +307,6 @@ namespace MTGPrint.ViewModels
         {
             foreach ( var dc in Deck.Cards )
                 dc.CanPrint = canPrint;
-
-            Deck.HasChanges = true;
         }
 
         private void SaveDeckAs(object o)
@@ -413,19 +375,13 @@ namespace MTGPrint.ViewModels
         private void OpenScryfall(object o)
         {
             if ( o is DeckCard card )
-            {
                 model.OpenScryfall( card );
-            }
         }
 
         private void CanPrintCard(object o)
         {
             if ( o is DeckCard card )
-            {
                 card.CanPrint = !card.CanPrint;
-
-                Deck.HasChanges = true;
-            }
         }
 
         private void RemoveCard(object o)
@@ -433,8 +389,7 @@ namespace MTGPrint.ViewModels
             if ( o is DeckCard card )
             {
                 model.RemoveCardFromDeck( card );
-                CardCount = Deck.Cards.Sum( c => c.Count );
-                if ( CardCount == 0 )
+                if ( Deck.CardCount == 0 )
                 {
                     if ( !string.IsNullOrEmpty( Deck.FileName ) )
                     {
@@ -458,10 +413,7 @@ namespace MTGPrint.ViewModels
         private void Duplicate(object o)
         {
             if ( o is DeckCard card )
-            {
                 model.DuplicateCard( card );
-                CardCount = Deck.Cards.Sum( c => c.Count );
-            }
         }
 
         private void MarkArtDefault(object o)

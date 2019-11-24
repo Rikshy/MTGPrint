@@ -149,7 +149,7 @@
                         <Image Height="15" Width="15" Source="Resources/card_add_multiple.png" Stretch="Fill" />
                     </MenuItem.Header>
                 </MenuItem>
-                <MenuItem ToolTip="Generate Tokens" Command="{Binding GenerateTokenCommand}" IsEnabled="{Binding HasTokens}">
+                <MenuItem ToolTip="Generate Tokens" Command="{Binding GenerateTokenCommand}" IsEnabled="{Binding Deck.HasTokens}">
                     <MenuItem.Header>
                         <Image Height="15" Width="15" Source="Resources/gen_tokens.png" Stretch="Fill">
                             <Image.Style>
@@ -279,7 +279,7 @@
             <StatusBarItem DockPanel.Dock="Right" Grid.Column="5">
                 <WrapPanel HorizontalAlignment="Right">
                     <TextBlock Text="card count: " />
-                    <TextBlock Text="{Binding CardCount}" />
+                    <TextBlock Text="{Binding Deck.CardCount}" />
                 </WrapPanel>
             </StatusBarItem>
         </StatusBar>

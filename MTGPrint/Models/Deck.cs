@@ -10,29 +10,66 @@ namespace MTGPrint.Models
 {
     public class Deck : INotifyPropertyChanged
     {
+        public Deck()
+        {
+            //parse constructor
+        }
+
+        public Deck(bool isTemp)
+        {
+            if ( isTemp ) return;
+
+            Cards.CollectionChanged += delegate(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs ne)
+            {
+                HasChanges = true;
+                OnPropertyChanged( nameof( HasChanges ) );
+                OnPropertyChanged( nameof( CardCount ) );
+
+                if (ne.NewItems != null)
+                {
+                    foreach ( var i in ne.NewItems )
+                    {
+                        (i as DeckCard).PropertyChanged += delegate (object s, PropertyChangedEventArgs pe)
+                        {
+                            if ( pe.PropertyName == "SelectPrint" || pe.PropertyName == "Count" || pe.PropertyName == "CanPrint" )
+                            {
+                                HasChanges = true;
+                                OnPropertyChanged( nameof( HasChanges ) );
+                                if ( pe.PropertyName == "Count" )
+                                    OnPropertyChanged( nameof(CardCount) );
+
+                            }
+                        };
+                    }
+                }
+            };
+            Tokens.CollectionChanged += delegate 
+            {
+                HasTokens = Tokens.Any();
+                OnPropertyChanged( nameof( HasTokens ) );
+            };
+        }
+
         [JsonIgnore]
         public string FileName { get; set; }
 
-        private bool hasChanges = false;
         [JsonIgnore]
-        public bool HasChanges
-        {
-            get => hasChanges;
-            set
-            {
-                hasChanges = value;
-                OnPropertyChanged();
-            }
-        }
+        public bool HasChanges { get; set; }
+
+        [JsonIgnore]
+        public bool HasTokens { get; set; }
+
+        [JsonIgnore]
+        public ObservableCollection<CardParts> Tokens { get; set; } = new ObservableCollection<CardParts>();
 
         [JsonProperty( "version" )]
         public int Version { get; set; }
 
-        [JsonProperty( "tokens" )]
-        public List<CardParts> Tokens { get; set; } = new List<CardParts>();
-
         [JsonProperty( "cards" )]
         public ObservableCollection<DeckCard> Cards { get; set; } = new ObservableCollection<DeckCard>();
+
+        [JsonIgnore]
+        public int CardCount => Cards.Sum( c => c.Count );
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -54,8 +91,7 @@ namespace MTGPrint.Models
             set
             {
                 selectedPrintId = value;
-                OnPropertyChanged( "SelectPrint" );
-                ArtChanged?.Invoke( this, EventArgs.Empty );
+                OnPropertyChanged( nameof(SelectPrint) );
             }
         }
 
@@ -68,7 +104,6 @@ namespace MTGPrint.Models
             {
                 count = value;
                 OnPropertyChanged();
-                CountChanged?.Invoke( this, EventArgs.Empty );
             }
         }
 
@@ -102,8 +137,5 @@ namespace MTGPrint.Models
         {
             PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
         }
-
-        public static event EventHandler CountChanged;
-        public static event EventHandler ArtChanged;
     }
 }

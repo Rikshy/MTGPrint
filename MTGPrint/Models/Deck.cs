@@ -1,15 +1,23 @@
-﻿using System;
+﻿using System.Runtime.CompilerServices;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Reflection;
+using System.Windows;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using System.IO;
+using System;
 
+using Microsoft.Win32;
+using MTGPrint.Helper;
 using Newtonsoft.Json;
 
 namespace MTGPrint.Models
 {
     public class Deck : INotifyPropertyChanged
     {
+        private bool hasChanges;
+
         public Deck()
         {
             //parse constructor
@@ -17,60 +25,30 @@ namespace MTGPrint.Models
 
         public Deck(bool isTemp)
         {
-            if ( isTemp ) return;
+            if (isTemp)
+                return;
 
-            Cards.CollectionChanged += delegate ( object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs ne )
-            {
-                HasChanges = true;
-                OnPropertyChanged( nameof( HasChanges ) );
-                OnPropertyChanged( nameof( CardCount ) );
-                OnPropertyChanged( nameof( TokenCount ) );
-
-                if ( ne.NewItems != null )
-                {
-                    foreach ( var i in ne.NewItems )
-                    {
-                        ( i as DeckCard ).PropertyChanged += delegate ( object s, PropertyChangedEventArgs pe )
-                          {
-                              if ( pe.PropertyName == "SelectPrint" || pe.PropertyName == "Count" || pe.PropertyName == "CanPrint" )
-                              {
-                                  HasChanges = true;
-                                  OnPropertyChanged( nameof( HasChanges ) );
-                                  if ( pe.PropertyName == "Count" )
-                                  {
-                                      if ( ( s as DeckCard ).IsToken )
-                                          OnPropertyChanged( nameof( TokenCount ) );
-                                      else
-                                          OnPropertyChanged( nameof( CardCount ) );
-                                  }
-                              }
-                          };
-                    }
-                }
-            };
-            Tokens.CollectionChanged += delegate 
-            {
-                HasTokens = Tokens.Any();
-                OnPropertyChanged( nameof( HasTokens ) );
-            };
+            Cards.CollectionChanged += OnCardCollectionChanged;
         }
 
         [JsonIgnore]
         public string FileName { get; set; }
 
         [JsonIgnore]
-        public bool HasChanges { get; set; }
+        public bool HasChanges
+        {
+            get => hasChanges;
+            set
+            {
+                hasChanges = value;
+                OnPropertyChanged();
+            }
+        }
 
-        [JsonIgnore]
-        public bool HasTokens { get; set; }
-
-        [JsonIgnore]
-        public ObservableCollection<CardParts> Tokens { get; set; } = new ObservableCollection<CardParts>();
-
-        [JsonProperty( "version" )]
+        [JsonProperty("version")]
         public int Version { get; set; }
 
-        [JsonProperty( "cards" )]
+        [JsonProperty("cards")]
         public ObservableCollection<DeckCard> Cards { get; set; } = new ObservableCollection<DeckCard>();
 
         [JsonIgnore]
@@ -82,71 +60,110 @@ namespace MTGPrint.Models
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-    }
 
-    public class DeckCard : INotifyPropertyChanged
-    {
-        [JsonProperty( "oracle_id" )]
-        public Guid OracleId { get; set; }
-
-        private Guid? selectedPrintId;
-        [JsonProperty( "selected_print_id" )]
-        public Guid? SelectedPrintId
+        private void OnCardCollectionChanged(object sender, NotifyCollectionChangedEventArgs ne)
         {
-            get => selectedPrintId;
-            set
+            HasChanges = true;
+            OnPropertyChanged(nameof(CardCount));
+            OnPropertyChanged(nameof(TokenCount));
+
+            if (ne.NewItems != null)
             {
-                selectedPrintId = value;
-                OnPropertyChanged( nameof(SelectPrint) );
+                foreach (var card in ne.NewItems.Cast<DeckCard>())
+                {
+                    card.PropertyChanged += OnCardPropertyChanged;
+                    card.DeleteRequest += OnCardRequestCardDelete;
+                    card.DuplicateRequest += OnCardRequestDuplicate;
+                    card.SaveArtCropRequest += OnCardRequestSaveArtCrop;
+                }
+            }
+            if (ne.OldItems != null)
+            {
+                foreach (var card in ne.OldItems.Cast<DeckCard>())
+                {
+                    card.PropertyChanged -= OnCardPropertyChanged;
+                    card.DeleteRequest -= OnCardRequestCardDelete;
+                    card.DuplicateRequest -= OnCardRequestDuplicate;
+                    card.SaveArtCropRequest -= OnCardRequestSaveArtCrop;
+                }
             }
         }
 
-        private int count;
-        [JsonProperty( "count" )]
-        public int Count
+        private void OnCardPropertyChanged(object s, PropertyChangedEventArgs pe)
         {
-            get => count;
-            set
+            if (pe.PropertyName == "SelectPrint" || pe.PropertyName == "Count" || pe.PropertyName == "CanPrint")
             {
-                count = value;
-                OnPropertyChanged();
+                HasChanges = true;
+                if (pe.PropertyName == "Count")
+                {
+                    OnPropertyChanged((s as DeckCard).IsToken ? nameof(TokenCount) : nameof(CardCount));
+                }
             }
         }
 
-        private bool canPrint = true;
-        [JsonProperty( "can_print" )]
-        public bool CanPrint
+        private void OnCardRequestCardDelete(DeckCard card)
         {
-            get => canPrint;
-            set
+            var index = Cards.IndexOf( card );
+            if (Cards.Count < index && Cards[index + 1].IsChild)
+                Cards.RemoveAt(index + 1);
+
+            Cards.Remove(card);
+        }
+        private void OnCardRequestDuplicate(DeckCard card)
+        {
+            var newCard = new DeckCard
             {
-                canPrint = value;
-                OnPropertyChanged();
+                Count = card.Count,
+                OracleId = card.OracleId,
+                Prints = card.Prints,
+                SelectPrint = card.SelectPrint
+            };
+
+            Cards.Add(newCard);
+
+            var index = Cards.IndexOf( card );
+            if (Cards.Count > index && Cards[index + 1].IsChild)
+            {
+                var child = Cards[index + 1];
+                newCard = new DeckCard
+                {
+                    IsChild = child.IsChild,
+                    OracleId = child.OracleId
+                };
+
+                Cards.Add(newCard);
             }
         }
-
-        [JsonProperty("is_child")]
-        public bool IsChild { get; set; }
-
-        [JsonProperty("is_token")]
-        public bool IsToken { get; set; }
-
-        [JsonIgnore]
-        public CardPrints SelectPrint
+        private void OnCardRequestSaveArtCrop(DeckCard card)
         {
-            get => Prints.FirstOrDefault( p => p.Id == SelectedPrintId );
-            set => SelectedPrintId = value?.Id;
-        }
+            var sfd = new SaveFileDialog
+            {
+                FileName = card.IsChild ? card.OracleId.ToString() : card.SelectPrint.Id.ToString(),
+                Filter = "JPEG file (*.jpg)|*.jpg",
+                InitialDirectory = Path.Combine( Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location ), "art_crops" )
+            };
+            try
+            {
+                if (sfd.ShowDialog() == true)
+                {
+                    string dlPath;
+                    if (card.IsChild)
+                    {
+                        var index = Cards.IndexOf( card );
+                        dlPath = Cards[index - 1].SelectPrint.ChildUrls.ArtCrop;
+                    }
+                    else
+                        dlPath = card.SelectPrint.ImageUrls.ArtCrop;
 
-        [JsonIgnore]
-        public ObservableCollection<CardPrints> Prints { get; set; } = new ObservableCollection<CardPrints>();
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
+                    BackgroundLoader.RunAsync(dlPath, sfd.FileName);
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(Application.Current.MainWindow, e.Message);
+            }
         }
     }
 }

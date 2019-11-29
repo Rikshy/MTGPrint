@@ -1,6 +1,8 @@
 ﻿using System;
-using MTGPrint.Helper;
+
 using Newtonsoft.Json;
+
+using MTGPrint.Helper;
 
 namespace MTGPrint.Models
 {
@@ -36,7 +38,6 @@ namespace MTGPrint.Models
 
         [JsonProperty("content_encoding")]
         public string ContentEncoding { get; set; }
-
     }
 
     public class BulkBase

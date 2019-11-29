@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System;
+
+using Newtonsoft.Json;
 
 namespace MTGPrint.Models
 {

@@ -1,58 +1,53 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Runtime.CompilerServices;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Windows;
 using System.Windows.Input;
+using System.Diagnostics;
+using System.Reflection;
+using System.Windows;
+using System.Linq;
+using System.IO;
+using System;
 
 using Microsoft.Win32;
 
-using MTGPrint.Models;
+using Newtonsoft.Json;
+
 using MTGPrint.Helper;
+using MTGPrint.Models;
 
 namespace MTGPrint.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private readonly MainModel model = new MainModel();
-        private readonly string EXE_PATH = Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location );
+        private readonly LocalDataStorage model = new LocalDataStorage();
+        public readonly string EXE_PATH = Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location );
 
         public MainViewModel()
         {
-            WindowLoadedCommand = new DelegateCommand( WindowLoaded );
-            WindowClosedCommand = new DelegateCommand( WindowClosed );
+            WindowLoadedCommand = new LightCommand(WindowLoaded);
+            WindowClosedCommand = new LightCommand(WindowClosed);
 
-            OpenDeckCommand = new DelegateCommand( OpenDeck );
+            OpenDeckCommand = new LightCommand(OpenDeck);
 
-            NewDeckCommand = new DelegateCommand( NewDeck );
-            AddCardsCommand = new DelegateCommand(AddCards);
-            GenerateTokenCommand = new DelegateCommand( GenerateToken );
-            MarkPrintedCommand = new DelegateCommand( o => MarkDeckPrinted( false ) );
-            MarkNotPrintedCommand = new DelegateCommand( o => MarkDeckPrinted(true) );
-            SaveDeckAsCommand = new DelegateCommand(SaveDeckAs);
-            SaveDeckCommand = new DelegateCommand( SaveDeck );
-            PrintCommand = new DelegateCommand( Print );
-            InfoCommand = new DelegateCommand( ShowInfo );
+            NewDeckCommand = new LightCommand(NewDeck);
+            AddCardsCommand = new LightCommand(AddCards);
+            GenerateTokenCommand = new LightCommand(GenerateToken);
+            MarkPrintedCommand = new LightCommand(() => MarkDeckPrinted(false));
+            MarkNotPrintedCommand = new LightCommand(() => MarkDeckPrinted(true));
+            SaveDeckAsCommand = new LightCommand(SaveDeckAs);
+            SaveDeckCommand = new LightCommand(SaveDeck);
+            PrintCommand = new LightCommand(Print);
+            InfoCommand = new LightCommand(ShowInfo);
 
-            OpenScryfallCommand = new DelegateCommand( OpenScryfall );
-            CanPrintCommand = new DelegateCommand( CanPrintCard );
-            RemoveCardCommand = new DelegateCommand( RemoveCard );
-            DuplicardCommand = new DelegateCommand( Duplicate );
-            MarkArtDefaultCommand = new DelegateCommand( MarkArtDefault );
-            SaveArtCommand = new DelegateCommand( SaveArt );
-
-            model.LocalDataUpdated += delegate
+            LocalDataStorage.LocalDataUpdated += delegate
                                       {
                                           StatusText = "Localdata updated";
                                           IsEnabled = true;
                                           IsLoading = false;
-                                          MessageBox.Show( Application.Current.MainWindow, "Localdata updated!" );
+                                          MessageBox.Show(Application.Current.MainWindow, "Localdata updated!");
                                       };
 
-            model.PrintFinished += delegate (object o, RunWorkerCompletedEventArgs args)
+            BackgroundPrinter.PrintFinished += delegate (object o, RunWorkerCompletedEventArgs args)
             {
                 IsEnabled = true;
                 if ( args.Error != null )
@@ -74,8 +69,8 @@ namespace MTGPrint.ViewModels
                 }
                 IsLoading = false;
             };
-
-            model.ArtDownloaded += delegate (object o, RunWorkerCompletedEventArgs args)
+            BackgroundLoader.DownloadStarted += delegate { IsLoading = true; };
+            BackgroundLoader.DownloadComplete += delegate (object o, RunWorkerCompletedEventArgs args)
             {
                 if ( args.Error != null )
                 {
@@ -101,8 +96,8 @@ namespace MTGPrint.ViewModels
         public ICommand WindowClosedCommand { get; }
 
         public ICommand OpenDeckCommand { get; }
-
         public ICommand NewDeckCommand { get; }
+
         public ICommand AddCardsCommand { get; }
         public ICommand GenerateTokenCommand { get; }
         public ICommand MarkPrintedCommand { get; }
@@ -111,13 +106,6 @@ namespace MTGPrint.ViewModels
         public ICommand SaveDeckCommand { get; }
         public ICommand PrintCommand { get; }
         public ICommand InfoCommand { get; }
-
-        public ICommand OpenScryfallCommand { get; }
-        public ICommand CanPrintCommand { get; }
-        public ICommand RemoveCardCommand { get; }
-        public ICommand DuplicardCommand { get; }
-        public ICommand MarkArtDefaultCommand { get; }
-        public ICommand SaveArtCommand { get; }
 
         private Visibility createOpenGridVisibility = Visibility.Visible;
         public Visibility CreateOpenGridVisibility
@@ -152,7 +140,7 @@ namespace MTGPrint.ViewModels
             }
         }
 
-        public Deck Deck => model.Deck;
+        public Deck Deck { get; } = new Deck(false);
 
         private string statusText;
         public string StatusText
@@ -219,13 +207,13 @@ namespace MTGPrint.ViewModels
         }
 
         #region CommandActions
-        private void WindowLoaded(object o)
+        private void WindowLoaded()
         {
-            if (model.CheckForUpdates())
+            if (LocalDataStorage.CheckForUpdates())
             {
                 StatusText = "Updating localdata";
                 IsLoading = true;
-                model.UpdateBulkData();
+                LocalDataStorage.UpdateBulkData();
                 IsEnabled = false;
                 MessageBox.Show( Application.Current.MainWindow, "The client is updating local data. This might take a while." );
             }
@@ -233,9 +221,9 @@ namespace MTGPrint.ViewModels
                 StatusText = "Localdata updated";
         }
 
-        private void WindowClosed(object o) { model.SaveLocalData(); }
+        private void WindowClosed() { LocalDataStorage.SaveLocalData(); }
 
-        private void OpenDeck(object o)
+        private void OpenDeck()
         {
             var ofd = new OpenFileDialog
             {
@@ -246,7 +234,7 @@ namespace MTGPrint.ViewModels
             try
             {
                 if ( ofd.ShowDialog() != true ) return;
-                model.OpenDeck( ofd.FileName );
+                LoadDeck(ofd.FileName);
 
                 CreateOpenGridVisibility = Visibility.Collapsed;
                 DeckGridVisibility = Visibility.Visible;
@@ -261,16 +249,15 @@ namespace MTGPrint.ViewModels
         }
 
         #region Menu
-        private void NewDeck(object o)
+        private void NewDeck()
         {
-            if (model.Deck.HasChanges &&
+            if (Deck.HasChanges &&
                 MessageBox.Show( Application.Current.MainWindow, "Your deck has unsaved changes! Continue anyway?",
                                                          "Unsaved Changes",
                                                          MessageBoxButton.YesNo) == MessageBoxResult.No)
                 return;
 
             Deck.Cards.Clear();
-            Deck.Tokens.Clear();
             Deck.HasChanges = false;
             CanSave = false;
             LoadErrors = string.Empty;
@@ -279,14 +266,15 @@ namespace MTGPrint.ViewModels
             DeckGridVisibility = Visibility.Collapsed;
         }
 
-        private void AddCards(object o)
+        private void AddCards()
         {
             var vm = new AddCardsViewModel();
             var addCardsView = new AddCardsView { DataContext = vm, Owner = Application.Current.MainWindow };
             if (addCardsView.ShowDialog() == true && !string.IsNullOrEmpty(vm.ImportCards) && vm.ImportCards.Trim().Length > 0)
             {
                 StatusText = "Importing cards";
-                model.AddCardsToDeck(vm.ImportCards.Trim(), out var errors);
+                var parsedCards = LocalDataStorage.ParseCardList(vm.ImportCards.Trim(), out var errors);
+                parsedCards.ForEach(dc => Deck.Cards.Add(dc));
                 if (Deck.Cards.Any())
                 {
                     CreateOpenGridVisibility = Visibility.Collapsed;
@@ -298,9 +286,27 @@ namespace MTGPrint.ViewModels
             }
         }
 
-        private void GenerateToken(object o)
+        private void GenerateToken()
         {
-            model.GenerateTokens();
+            foreach (var card in Deck.Cards.Where(c => c.LocalData.Parts != null))
+            {
+                var parts = card.LocalData.Parts.Where( p => p.Component == CardComponent.Token || p.Component == CardComponent.ComboPiece );
+                foreach (var part in parts)
+                {
+                    if (!Deck.Cards.Any(c => c.SelectedPrintId == part.Id))
+                    {
+                        Deck.Cards.Add(new DeckCard
+                        {
+                            OracleId = card.OracleId,
+                            LocalData = card.LocalData,
+                            SelectPrint = card.Prints.First(cp => cp.Id == part.Id),
+                            Prints = card.Prints,
+                            IsToken = true,
+                            Count = 5
+                        });
+                    }
+                }
+            }
         }
 
         private void MarkDeckPrinted(bool canPrint)
@@ -309,18 +315,19 @@ namespace MTGPrint.ViewModels
                 dc.CanPrint = canPrint;
         }
 
-        private void SaveDeckAs(object o)
+        private void SaveDeckAs()
         {
             var sfd = new SaveFileDialog
-                      {
-                                  Filter = "Deck file (*.jd)|*.jd",
-                                  InitialDirectory = Path.Combine( EXE_PATH, "decks")
-                      };
+            {
+                Filter = "Deck file (*.jd)|*.jd",
+                InitialDirectory = Path.Combine( EXE_PATH, "decks")
+            };
+
             try
             {
                 if (sfd.ShowDialog() == true)
                 {
-                    model.SaveDeck( sfd.FileName );
+                    SaveDeck(sfd.FileName);
                     CanSave = true;
                 }
             }
@@ -330,11 +337,11 @@ namespace MTGPrint.ViewModels
             }
         }
 
-        private void SaveDeck(object o)
+        private void SaveDeck()
         {
             try
             {
-                model.SaveDeck(null);
+                SaveDeck(null);
             }
             catch (Exception e)
             {
@@ -342,9 +349,9 @@ namespace MTGPrint.ViewModels
             }
         }
 
-        private void Print(object o)
+        private void Print()
         {
-            var vm = new PrintViewModel { PrintOptions = model.LoadPrintSettings() };
+            var vm = new PrintViewModel { PrintOptions = BackgroundPrinter.LoadPrintSettings() };
             var printView = new PrintView { DataContext = vm, Owner = Application.Current.MainWindow };
             if ( printView.ShowDialog() == true)
             {
@@ -360,98 +367,57 @@ namespace MTGPrint.ViewModels
                     IsLoading = true;
                     StatusText = "Creating PDF";
                     vm.PrintOptions.FileName = sfd.FileName;
-                    model.Print( vm.PrintOptions );
+                    BackgroundPrinter.Print(Deck, vm.PrintOptions);
                 }
             }
         }
 
-        private void ShowInfo(object o)
+        private void ShowInfo()
         {
             new InfoView { Owner = Application.Current.MainWindow }.ShowDialog();
         }
         #endregion
-
-        #region ContextMenu
-        private void OpenScryfall(object o)
-        {
-            if ( o is DeckCard card )
-                model.OpenScryfall( card );
-        }
-
-        private void CanPrintCard(object o)
-        {
-            if ( o is DeckCard card )
-                card.CanPrint = !card.CanPrint;
-        }
-
-        private void RemoveCard(object o)
-        {
-            if ( o is DeckCard card )
-            {
-                model.RemoveCardFromDeck( card );
-                if ( Deck.CardCount + Deck.TokenCount == 0 )
-                {
-                    if ( !string.IsNullOrEmpty( Deck.FileName ) )
-                    {
-                        try
-                        {
-                            if ( MessageBox.Show( Application.Current.MainWindow, "Do you want to delete current deck from disk?", string.Empty, MessageBoxButton.YesNo ) == MessageBoxResult.Yes )
-                                File.Delete( Deck.FileName );
-                        }
-                        catch
-                        {
-                            MessageBox.Show( Application.Current.MainWindow, "Could not delete deck." );
-                        }
-                    }
-
-                    Deck.HasChanges = false;
-                    NewDeck( null );
-                }
-            }
-        }
-
-        private void Duplicate(object o)
-        {
-            if ( o is DeckCard card )
-                model.DuplicateCard( card );
-        }
-
-        private void MarkArtDefault(object o)
-        {
-            if ( o is DeckCard card )
-                model.MarkArtDefault( card );
-        }
-
-        private void SaveArt(object o)
-        {
-            if ( o is DeckCard card )
-            {
-                var sfd = new SaveFileDialog
-                {
-                    FileName = card.IsChild ? card.OracleId.ToString() : card.SelectPrint.Id.ToString(),
-                    Filter = "JPEG file (*.jpg)|*.jpg",
-                    InitialDirectory = Path.Combine( EXE_PATH, "art_crops" )
-                };
-                try
-                {
-                    if ( sfd.ShowDialog() == true )
-                    {
-                        IsLoading = true;
-                        model.SaveArtCrop( card, sfd.FileName );
-                    }
-                }
-                catch ( Exception e )
-                {
-                    MessageBox.Show( Application.Current.MainWindow, e.Message );
-                }
-            }
-        }
         #endregion
-        #endregion
+
+        private void SaveDeck(string path)
+        {
+            var savePath = string.IsNullOrEmpty(path) ? Deck.FileName : path;
+            Deck.FileName = savePath;
+            File.WriteAllText(savePath, JsonConvert.SerializeObject(Deck));
+            Deck.HasChanges = false;
+        }
+
+        private void LoadDeck(string path)
+        {
+            var tempDeck = JsonConvert.DeserializeObject<Deck>(File.ReadAllText(path));
+            if (!tempDeck.Cards.Any())
+                throw new FileLoadException("invalid deck file");
+
+            Deck.Cards.Clear();
+            foreach (var tempCard in tempDeck.Cards)
+            {
+                var lcard = LocalDataStorage.LocalCards.FirstOrDefault( lc => lc.OracleId == tempCard.OracleId );
+
+                if (!tempCard.IsChild)
+                {
+                    tempCard.Prints = lcard.Prints;
+                    if (tempCard.SelectedPrintId == null)
+                        tempCard.SelectedPrintId = lcard.DefaultPrint ?? lcard.Prints.First().Id;
+                }
+                tempCard.LocalData = lcard;
+
+                Deck.Cards.Add(tempCard);
+            }
+
+            Deck.Version = tempDeck.Version;
+
+            Deck.FileName = path;
+            Deck.HasChanges = false;
+        }
 
         private void CanClose(object sender, CancelEventArgs args)
         {
-            if (model.Deck.HasChanges &&
+            if (Deck.HasChanges &&
                 MessageBox.Show( Application.Current.MainWindow, "Your deck has unsaved changes! Continue anyway?",
                                 "Unsaved Changes",
                                 MessageBoxButton.YesNo)

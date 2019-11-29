@@ -1,7 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using MTGPrint.Helper;
+﻿using System.Collections.Generic;
+using System;
+
 using Newtonsoft.Json;
+
+using MTGPrint.Helper;
 
 namespace MTGPrint.Models
 {

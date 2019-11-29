@@ -49,26 +49,14 @@
                 </StackPanel.Style>
                 <StackPanel.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Open Scryfall" 
-                      Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.OpenScryfallCommand}"
-                      CommandParameter="{Binding}" />
+                        <MenuItem Header="Open Scryfall" Command="{Binding OpenScryfallCommand}" />
                         <Separator />
-                        <MenuItem Header="Allow Print" IsChecked="{Binding CanPrint}"
-                      Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.CanPrintCommand}"
-                      CommandParameter="{Binding}" />
-                        <MenuItem Header="Remove" 
-                      Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.RemoveCardCommand}"
-                      CommandParameter="{Binding}" />
-                        <MenuItem Header="Duplicate" 
-                      Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.DuplicardCommand}"
-                      CommandParameter="{Binding}" />
+                        <MenuItem Header="Allow Print" IsChecked="{Binding CanPrint}" Command="{Binding CanPrintCommand}"/>
+                        <MenuItem Header="Remove" Command="{Binding RemoveCardCommand}"/>
+                        <MenuItem Header="Duplicate" Command="{Binding DuplicardCommand}" CommandParameter="{Binding}" />
                         <Separator />
-                        <MenuItem Header="Mark art default" 
-                      Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.MarkArtDefaultCommand}"
-                      CommandParameter="{Binding}" />
-                        <MenuItem Header="Save art" 
-                      Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.SaveArtCommand}"
-                      CommandParameter="{Binding}" />
+                        <MenuItem Header="Mark art default" Command="{Binding MarkArtDefaultCommand}" />
+                        <MenuItem Header="Save art" Command="{Binding SaveArtCommand}" />
                     </ContextMenu>
                 </StackPanel.ContextMenu>
                 <Image Width="300" Height="418" Source="{Binding SelectPrint.ImageUrls.Large, NotifyOnSourceUpdated=True}" Margin="2" />
@@ -100,12 +88,8 @@
                 </Image.Style>
                 <Image.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Allow Print" IsChecked="{Binding CanPrint}"
-                      Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.CanPrintCommand}"
-                      CommandParameter="{Binding}" />
-                        <MenuItem Header="Save art" 
-                      Command="{Binding Source={x:Reference Name=Root}, Path=DataContext.SaveArtCommand}"
-                      CommandParameter="{Binding}" />
+                        <MenuItem Header="Allow Print" IsChecked="{Binding CanPrint}" Command="{Binding CanPrintCommand}" />
+                        <MenuItem Header="Save art" Command="{Binding SaveArtCommand}" />
                     </ContextMenu>
                 </Image.ContextMenu>
             </Image>
@@ -149,7 +133,7 @@
                         <Image Height="15" Width="15" Source="Resources/card_add_multiple.png" Stretch="Fill" />
                     </MenuItem.Header>
                 </MenuItem>
-                <MenuItem ToolTip="Generate Tokens" Command="{Binding GenerateTokenCommand}" IsEnabled="{Binding Deck.HasTokens}">
+                <MenuItem ToolTip="Generate Tokens" Command="{Binding GenerateTokenCommand}">
                     <MenuItem.Header>
                         <Image Height="15" Width="15" Source="Resources/gen_tokens.png" Stretch="Fill">
                             <Image.Style>

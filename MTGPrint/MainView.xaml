@@ -124,7 +124,7 @@
             <StackPanel Grid.Column="3" Orientation="Horizontal">
                 <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
             </StackPanel>
-            <Button ToolTip="Open Deck" Grid.Column="4" Command="{Binding EditLocalDataCommand}" Style="{StaticResource StlFlatButton}">
+            <Button ToolTip="Edit Localdata" Grid.Column="4" Command="{Binding EditLocalDataCommand}" Style="{StaticResource StlFlatButton}">
                 <Image Source="Resources/localdata.png" Margin="50" />
             </Button>
         </Grid>

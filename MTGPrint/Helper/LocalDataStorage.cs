@@ -33,6 +33,7 @@ namespace MTGPrint
 
                 localData.Version = LOCALDATA_VERSION;
 
+                HasChanges = true;
                 SaveLocalData();
                 File.Delete( bulkFile );
             };
@@ -45,6 +46,8 @@ namespace MTGPrint
         private static readonly ScryfallClient scry = new ScryfallClient();
 
         private static LocalDataInfo localData;
+
+        public static bool HasChanges { get; set; }
 
         public static List<LocalCard> LocalCards => localData.Cards;
 
@@ -66,7 +69,9 @@ namespace MTGPrint
 
         public static void SaveLocalData()
         {
-            File.WriteAllText( LOCALDATA, JsonConvert.SerializeObject( localData, Formatting.Indented ) );
+            if (HasChanges)
+                File.WriteAllText( LOCALDATA, JsonConvert.SerializeObject( localData, Formatting.Indented ) );
+            HasChanges = false;
         }
 
         public static List<DeckCard> ParseCardList(string cardList, out List<string> errors)

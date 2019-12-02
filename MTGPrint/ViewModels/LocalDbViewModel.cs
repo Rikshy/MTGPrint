@@ -117,6 +117,7 @@ namespace MTGPrint.ViewModels
                     SearchText = "";
                     Cards = LocalDataStorage.LocalCards;
                     SelectedItem = card;
+                    LocalDataStorage.HasChanges = true;
                 }
                 catch (Exception e)
                 {
@@ -134,6 +135,7 @@ namespace MTGPrint.ViewModels
                     return;
 
                 SelectedItem.Prints.Add(print);
+                LocalDataStorage.HasChanges = true;
             }
             catch (Exception e)
             {
@@ -143,7 +145,6 @@ namespace MTGPrint.ViewModels
 
         private CardPrint CreateCardPrint()
         {
-
             var ofd = new OpenFileDialog
             {
                 Multiselect = false,

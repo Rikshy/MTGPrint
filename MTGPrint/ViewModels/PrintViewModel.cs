@@ -1,9 +1,10 @@
-﻿using MTGPrint.Models;
-using System;
+﻿using System.Runtime.CompilerServices;
 using System.ComponentModel;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using System.Windows.Data;
+using System;
+
+using MTGPrint.Models;
 
 namespace MTGPrint.ViewModels
 {

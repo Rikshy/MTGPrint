@@ -46,4 +46,25 @@ namespace MTGPrint.Helper
 
         public void Execute(object parameter) { execute(); }
     }
+    public class EventCommand<T> : ICommand where T:EventArgs
+    {
+        private readonly Predicate<object> canExecute;
+        private readonly Action<T> execute;
+
+        public EventCommand(Action<T> execute, Predicate<object> canExecute = null)
+        {
+            this.canExecute = canExecute ?? delegate { return true; };
+            this.execute = execute ?? throw new ArgumentNullException(nameof(execute));
+        }
+
+        public event EventHandler CanExecuteChanged
+        {
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
+        }
+
+        public bool CanExecute(object parameter) { return canExecute(parameter); }
+
+        public void Execute(object parameter) { execute(parameter as T); }
+    }
 }

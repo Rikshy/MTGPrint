@@ -14,12 +14,14 @@
     <None Remove="Resources\export.png" />
     <None Remove="Resources\gen_tokens.png" />
     <None Remove="Resources\info.png" />
+    <None Remove="Resources\localdata.png" />
     <None Remove="Resources\mark_not_printed.png" />
     <None Remove="Resources\mark_printed.png" />
     <None Remove="Resources\new.png" />
     <None Remove="Resources\ok.png" />
     <None Remove="Resources\open.png" />
     <None Remove="Resources\print.png" />
+    <None Remove="Resources\question.png" />
     <None Remove="Resources\reminder.png" />
     <None Remove="Resources\save.png" />
     <None Remove="Resources\warning.png" />
@@ -31,6 +33,7 @@
     <PackageReference Include="itext7" Version="7.1.8" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.3" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="System.Drawing.Common" Version="4.6.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,6 +55,9 @@
     <Resource Include="Resources\info.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\localdata.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\mark_not_printed.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -68,6 +74,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\print.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\question.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\reminder.png">

@@ -46,7 +46,7 @@ namespace MTGPrint
 
         private static LocalDataInfo localData;
 
-        public static IEnumerable<LocalCard> LocalCards => localData.Cards;
+        public static List<LocalCard> LocalCards => localData.Cards;
 
         private static readonly BackgroundWorker updateWorker = new BackgroundWorker();
         public static event EventHandler LocalDataUpdated;
@@ -206,7 +206,7 @@ namespace MTGPrint
                 }
 
                 if (lcard.Prints.All( p => p.Id != card.Id ))
-                    lcard.Prints.Add( new CardPrints
+                    lcard.Prints.Add( new CardPrint
                     {
                         Id = card.Id,
                         Set = card.Set,

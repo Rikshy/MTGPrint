@@ -9,8 +9,10 @@ using System.IO;
 using System;
 
 using Microsoft.Win32;
-using MTGPrint.Helper;
+
 using Newtonsoft.Json;
+
+using MTGPrint.Helper;
 
 namespace MTGPrint.Models
 {

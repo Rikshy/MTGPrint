@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Windows.Input;
 using System.Diagnostics;
-using System.Reflection;
 using System.Windows;
 using System.Linq;
 using System.IO;
@@ -14,20 +13,19 @@ using Newtonsoft.Json;
 
 using MTGPrint.Helper;
 using MTGPrint.Models;
+using MTGPrint.Windows;
 
 namespace MTGPrint.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private readonly LocalDataStorage model = new LocalDataStorage();
-        public readonly string EXE_PATH = Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location );
-
         public MainViewModel()
         {
             WindowLoadedCommand = new LightCommand(WindowLoaded);
             WindowClosedCommand = new LightCommand(WindowClosed);
 
             OpenDeckCommand = new LightCommand(OpenDeck);
+            EditLocalDataCommand = new LightCommand(EditLocalData);
 
             NewDeckCommand = new LightCommand(NewDeck);
             AddCardsCommand = new LightCommand(AddCards);
@@ -97,6 +95,7 @@ namespace MTGPrint.ViewModels
 
         public ICommand OpenDeckCommand { get; }
         public ICommand NewDeckCommand { get; }
+        public ICommand EditLocalDataCommand { get; }
 
         public ICommand AddCardsCommand { get; }
         public ICommand GenerateTokenCommand { get; }
@@ -229,7 +228,7 @@ namespace MTGPrint.ViewModels
             {
                 Multiselect = false,
                 Filter = "Deck file (*.jd)|*.jd",
-                InitialDirectory = Path.Combine( EXE_PATH, "decks" )
+                InitialDirectory = Path.Combine( Constants.EXE_PATH, "decks" )
             };
             try
             {
@@ -248,11 +247,16 @@ namespace MTGPrint.ViewModels
             }
         }
 
+        private void EditLocalData()
+        {
+            new LocalDbView().ShowDialog();
+        }
+
         #region Menu
         private void NewDeck()
         {
             if (Deck.HasChanges &&
-                MessageBox.Show( Application.Current.MainWindow, "Your deck has unsaved changes! Continue anyway?",
+                MessageBox.Show(Application.Current.MainWindow, "Your deck has unsaved changes! Continue anyway?",
                                                          "Unsaved Changes",
                                                          MessageBoxButton.YesNo) == MessageBoxResult.No)
                 return;
@@ -320,7 +324,7 @@ namespace MTGPrint.ViewModels
             var sfd = new SaveFileDialog
             {
                 Filter = "Deck file (*.jd)|*.jd",
-                InitialDirectory = Path.Combine( EXE_PATH, "decks")
+                InitialDirectory = Path.Combine( Constants.EXE_PATH, "decks")
             };
 
             try
@@ -358,7 +362,7 @@ namespace MTGPrint.ViewModels
                 var sfd = new SaveFileDialog
                 {
                     Filter = "PDF file (*.pdf)|*.pdf",
-                    InitialDirectory = Path.Combine( EXE_PATH, "prints" )
+                    InitialDirectory = Path.Combine( Constants.EXE_PATH, "prints" )
                 };
 
                 if ( sfd.ShowDialog() == true )

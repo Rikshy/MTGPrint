@@ -73,14 +73,14 @@ namespace MTGPrint.Models
         public bool IsToken { get; set; }
 
         [JsonIgnore]
-        public CardPrints SelectPrint
+        public CardPrint SelectPrint
         {
             get => Prints.FirstOrDefault(p => p.Id == SelectedPrintId);
             set => SelectedPrintId = value?.Id;
         }
 
         [JsonIgnore]
-        public ObservableCollection<CardPrints> Prints { get; set; } = new ObservableCollection<CardPrints>();
+        public ObservableCollection<CardPrint> Prints { get; set; } = new ObservableCollection<CardPrint>();
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

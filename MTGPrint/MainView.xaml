@@ -49,14 +49,14 @@
                 </StackPanel.Style>
                 <StackPanel.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Open Scryfall" Command="{Binding OpenScryfallCommand}" />
+                        <MenuItem Header="Open Scryfall" Command="{Binding OpenScryfallCommand}" IsEnabled="{Binding LocalData.IsOfficial}" />
                         <Separator />
                         <MenuItem Header="Allow Print" IsChecked="{Binding CanPrint}" Command="{Binding CanPrintCommand}"/>
                         <MenuItem Header="Remove" Command="{Binding RemoveCardCommand}"/>
                         <MenuItem Header="Duplicate" Command="{Binding DuplicardCommand}" CommandParameter="{Binding}" />
                         <Separator />
                         <MenuItem Header="Mark art default" Command="{Binding MarkArtDefaultCommand}" />
-                        <MenuItem Header="Save art" Command="{Binding SaveArtCommand}" />
+                        <MenuItem Header="Save art" Command="{Binding SaveArtCommand}" IsEnabled="{Binding SelectPrint.IsOfficial}" />
                     </ContextMenu>
                 </StackPanel.ContextMenu>
                 <Image Width="300" Height="418" Source="{Binding SelectPrint.ImageUrls.Large, NotifyOnSourceUpdated=True}" Margin="2" />
@@ -99,13 +99,15 @@
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding WindowLoadedCommand}" />
         </i:EventTrigger>
-        <i:EventTrigger EventName="Close">
-            <i:InvokeCommandAction Command="{Binding WindowCloseCommand}" />
+        <i:EventTrigger EventName="Closed">
+            <i:InvokeCommandAction Command="{Binding WindowClosedCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid>
         <Grid Visibility="{Binding CreateOpenGridVisibility}">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="4*"/>
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="4*"/>
@@ -118,6 +120,12 @@
             </StackPanel>
             <Button ToolTip="Open Deck" Grid.Column="2" Command="{Binding OpenDeckCommand}" Style="{StaticResource StlFlatButton}">
                 <Image Source="Resources/open.png" Margin="50" />
+            </Button>
+            <StackPanel Grid.Column="3" Orientation="Horizontal">
+                <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+            </StackPanel>
+            <Button ToolTip="Open Deck" Grid.Column="4" Command="{Binding EditLocalDataCommand}" Style="{StaticResource StlFlatButton}">
+                <Image Source="Resources/localdata.png" Margin="50" />
             </Button>
         </Grid>
         <Grid Visibility="{Binding DeckGridVisibility}">

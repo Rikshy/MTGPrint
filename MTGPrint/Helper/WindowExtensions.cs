@@ -1,6 +1,6 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Windows;
+using System;
 
 namespace MTGPrint.Helper
 {

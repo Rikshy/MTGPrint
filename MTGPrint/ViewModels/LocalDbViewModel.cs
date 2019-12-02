@@ -123,7 +123,6 @@ namespace MTGPrint.ViewModels
                     MessageBox.Show(e.Message);
                 }
             }
-
         }
 
         private void AddCustomArt()

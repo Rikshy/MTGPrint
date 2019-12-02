@@ -402,6 +402,12 @@ namespace MTGPrint.ViewModels
             {
                 var lcard = LocalDataStorage.LocalCards.FirstOrDefault( lc => lc.OracleId == tempCard.OracleId );
 
+                if (lcard == null)
+                {
+                    LoadErrors = "Failed to load some cards (custom cards?)";
+                    continue;
+                }
+
                 if (!tempCard.IsChild)
                 {
                     tempCard.Prints = lcard.Prints;

@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using System.ComponentModel;
-using System.Windows.Input;
 using System.Threading;
 using System.Windows;
 using System.Linq;
@@ -9,12 +8,11 @@ using System.IO;
 using Caliburn.Micro;
 
 using MTGPrint.EventModels;
-using MTGPrint.Helper.UI;
 using MTGPrint.Helper;
 
 namespace MTGPrint.ViewModels
 {
-    public class ShellViewModel : Conductor<object>, IHandle<OpenDeckEvent>, IHandle<EditLocalDataEvent>, IHandle<CreateDeckEvent>, IHandle<CloseScreenEvent>, IHandle<UpdateStatusEvent>
+    public class ShellViewModel : Conductor<object>.Collection.OneActive, IScreen, IHandle<OpenDeckEvent>, IHandle<EditLocalDataEvent>, IHandle<CreateDeckEvent>, IHandle<CloseScreenEvent>, IHandle<UpdateStatusEvent>
     {
         private readonly LocalDataStorage localData;
         private readonly SimpleContainer container;
@@ -26,9 +24,6 @@ namespace MTGPrint.ViewModels
 
             events.SubscribeOnPublishedThread(this);
 
-            WindowClosedCommand = new LightCommand(WindowClosed);
-
-
             localData.LocalDataUpdated += delegate
                                       {
                                           StatusText = "Localdata updated";
@@ -36,7 +31,7 @@ namespace MTGPrint.ViewModels
                                           IsLoading = false;
                                           MessageBox.Show(Application.Current.MainWindow, "Localdata updated!");
                                       };
-            
+
             var loader = container.GetInstance<BackgroundLoader>();
             loader.DownloadStarted += delegate { IsLoading = true; };
             loader.DownloadComplete += delegate (object o, RunWorkerCompletedEventArgs args)
@@ -49,7 +44,6 @@ namespace MTGPrint.ViewModels
 
                 IsLoading = false;
             };
-
 
             if ( !Directory.Exists( "decks" ) )
                 Directory.CreateDirectory( "decks" );
@@ -76,11 +70,14 @@ namespace MTGPrint.ViewModels
 
             await base.OnInitializeAsync(cancellationToken);
         }
-        
+
+        public override async Task<bool> CanCloseAsync(CancellationToken cancellationToken)
+        {
+            localData.SaveLocalData();
+            return await base.CanCloseAsync(cancellationToken);
+        }
+
         #region Bindings
-        public ICommand WindowClosedCommand { get; }
-
-
         public bool isEnabled = true;
         public bool IsEnabled
         {
@@ -150,11 +147,6 @@ namespace MTGPrint.ViewModels
                 NotifyOfPropertyChange();
             }
         }
-        #endregion
-
-
-        #region CommandActions
-        private void WindowClosed() { localData.SaveLocalData(); }
         #endregion
 
         public async Task HandleAsync(OpenDeckEvent message, CancellationToken cancellationToken)

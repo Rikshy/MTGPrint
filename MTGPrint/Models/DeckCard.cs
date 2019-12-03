@@ -89,11 +89,17 @@ namespace MTGPrint.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        [JsonIgnore]
         public ICommand OpenScryfallCommand { get; }
+        [JsonIgnore]
         public ICommand CanPrintCommand { get; }
+        [JsonIgnore]
         public ICommand RemoveCardCommand { get; }
+        [JsonIgnore]
         public ICommand DuplicardCommand { get; }
+        [JsonIgnore]
         public ICommand MarkArtDefaultCommand { get; }
+        [JsonIgnore]
         public ICommand SaveArtCommand { get; }
 
         public event DeckCardEventHandler DeleteRequest;

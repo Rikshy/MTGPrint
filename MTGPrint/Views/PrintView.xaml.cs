@@ -1,12 +1,8 @@
-﻿using System.Windows;
-
-namespace MTGPrint.Views
+﻿namespace MTGPrint.Views
 {
-    public partial class PrintView : Window
+    public partial class PrintView
     {
         public PrintView()
-        {
-            InitializeComponent();
-        }
+            => InitializeComponent();
     }
 }

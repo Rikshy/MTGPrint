@@ -1,12 +1,8 @@
-﻿using System.Windows.Controls;
-
-namespace MTGPrint.Views
+﻿namespace MTGPrint.Views
 {
-    public partial class DeckView : UserControl
+    public partial class DeckView
     {
         public DeckView()
-        {
-            InitializeComponent();
-        }
+            => InitializeComponent();
     }
 }

@@ -1,17 +1,8 @@
-﻿using MTGPrint.Helper.UI;
-using System.Windows;
-
-namespace MTGPrint.Views
+﻿namespace MTGPrint.Views
 {
-    public partial class AddCardsView : Window
+    public partial class AddCardsView
     {
         public AddCardsView()
-        {
-            InitializeComponent();
-            SourceInitialized += (x, y) =>
-            {
-                this.HideMinimizeAndMaximizeButtons();
-            };
-        }
+            => InitializeComponent();
     }
 }

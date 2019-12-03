@@ -1,12 +1,8 @@
-﻿using System.Windows;
-
-namespace MTGPrint.Views
+﻿namespace MTGPrint.Views
 {
-    public partial class InfoView : Window
+    public partial class InfoView
     {
         public InfoView()
-        {
-            InitializeComponent();
-        }
+            =>  InitializeComponent();
     }
 }

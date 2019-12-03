@@ -3,9 +3,7 @@
     public class OpenDeckEvent
     {
         public OpenDeckEvent(string path)
-        {
-            DeckPath = path;
-        }
+            => DeckPath = path;
 
         public string DeckPath { get; }
     }

@@ -2,9 +2,9 @@
 
 namespace MTGPrint.Views
 {
-    public partial class InputWindow : Window
+    public partial class InputView : Window
     {
-        public InputWindow()
+        public InputView()
         {
             InitializeComponent();
         }

@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MTGPrint.ViewModels"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="AddCards" Height="450" Width="400" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
@@ -27,6 +26,6 @@
                 </TextBlock>
             </xctk:WatermarkTextBox.Watermark>
         </xctk:WatermarkTextBox>
-        <Button Content="Import" Grid.Row="1" IsDefault="True" Click="Button_Click" />
+        <Button x:Name="AddCards" Content="Import" Grid.Row="1" IsDefault="True" />
     </Grid>
 </Window>

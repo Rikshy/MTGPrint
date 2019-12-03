@@ -92,8 +92,4 @@
     <Resource Include="Resources\window_cards.ico" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="UIHelper\" />
-  </ItemGroup>
-
 </Project>

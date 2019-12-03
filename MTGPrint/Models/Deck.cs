@@ -158,7 +158,7 @@ namespace MTGPrint.Models
                     else
                         dlPath = card.SelectPrint.ImageUrls.ArtCrop;
 
-                    Caliburn.Micro.IoC.Get<BackgroundLoader>().RunAsync(dlPath, sfd.FileName);
+                    IoC.Get<BackgroundLoader>().RunAsync(dlPath, sfd.FileName);
                 }
             }
             catch (Exception e)

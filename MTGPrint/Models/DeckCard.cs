@@ -8,7 +8,7 @@ using System;
 
 using Newtonsoft.Json;
 
-using MTGPrint.Helper;
+using MTGPrint.Helper.UI;
 
 namespace MTGPrint.Models
 {

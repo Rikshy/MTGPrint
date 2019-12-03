@@ -1,4 +1,4 @@
-﻿using MTGPrint.Helper;
+﻿using MTGPrint.Helper.UI;
 using System.Windows;
 
 namespace MTGPrint.Views

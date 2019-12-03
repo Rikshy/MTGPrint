@@ -9,6 +9,7 @@ using System.IO;
 using Caliburn.Micro;
 
 using MTGPrint.EventModels;
+using MTGPrint.Helper.UI;
 using MTGPrint.Helper;
 
 namespace MTGPrint.ViewModels

@@ -15,8 +15,9 @@ using Newtonsoft.Json;
 using Caliburn.Micro;
 
 using MTGPrint.EventModels;
-using MTGPrint.Helper;
+using MTGPrint.Helper.UI;
 using MTGPrint.Models;
+using MTGPrint.Helper;
 
 namespace MTGPrint.ViewModels
 {

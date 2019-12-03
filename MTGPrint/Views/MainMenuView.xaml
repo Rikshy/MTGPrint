@@ -36,19 +36,19 @@
             <ColumnDefinition Width="5"/>
             <ColumnDefinition Width="4*"/>
         </Grid.ColumnDefinitions>
-        <Button ToolTip="Create Deck" Grid.Column="0" Command="{Binding AddCardsCommand}" Style="{StaticResource StlFlatButton}" >
+        <Button x:Name="CreateDeck" ToolTip="Create Deck" Grid.Column="0" Style="{StaticResource StlFlatButton}" >
             <Image Source="../Resources/create.png" Margin="50" />
         </Button>
         <StackPanel Grid.Column="1" Orientation="Horizontal">
             <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
         </StackPanel>
-        <Button ToolTip="Open Deck" Grid.Column="2" Command="{Binding OpenDeckCommand}" Style="{StaticResource StlFlatButton}">
+        <Button x:Name="OpenDeck" ToolTip="Open Deck" Grid.Column="2" Style="{StaticResource StlFlatButton}">
             <Image Source="../Resources/open.png" Margin="50" />
         </Button>
         <StackPanel Grid.Column="3" Orientation="Horizontal">
             <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
         </StackPanel>
-        <Button ToolTip="Edit Localdata" Grid.Column="4" Command="{Binding EditLocalDataCommand}" Style="{StaticResource StlFlatButton}">
+        <Button x:Name="EditLocalData" ToolTip="Edit Localdata" Grid.Column="4" Style="{StaticResource StlFlatButton}">
             <Image Source="../Resources/localdata.png" Margin="50" />
         </Button>
     </Grid>

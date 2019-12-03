@@ -71,18 +71,18 @@
     </UserControl.Resources>
     <Grid>
         <Menu VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="Auto">
-            <MenuItem ToolTip="Main Menu" Command="{Binding OpenMainMenuCommand}">
+            <MenuItem x:Name="OpenMainMenu" ToolTip="Main Menu">
                 <MenuItem.Header>
                     <Image Height="15" Width="15" Source="../Resources/reminder.png" Stretch="Fill" />
                 </MenuItem.Header>
             </MenuItem>
             <Separator />
-            <MenuItem ToolTip="Add Cards" Command="{Binding AddCardsCommand}">
+            <MenuItem x:Name="AddCards" ToolTip="Add Cards">
                 <MenuItem.Header>
                     <Image Height="15" Width="15" Source="../Resources/card_add_multiple.png" Stretch="Fill" />
                 </MenuItem.Header>
             </MenuItem>
-            <MenuItem ToolTip="Generate Tokens" Command="{Binding GenerateTokenCommand}">
+            <MenuItem x:Name="GenerateTokens" ToolTip="Generate Tokens">
                 <MenuItem.Header>
                     <Image Height="15" Width="15" Source="../Resources/gen_tokens.png" Stretch="Fill">
                         <Image.Style>
@@ -109,12 +109,12 @@
                 </MenuItem.Header>
             </MenuItem>
             <Separator />
-            <MenuItem ToolTip="Save Deck As" Command="{Binding SaveDeckAsCommand}">
+            <MenuItem x:Name="SaveDeckAs" ToolTip="Save Deck As">
                 <MenuItem.Header>
                     <Image Height="15" Width="15" Source="../Resources/export.png" Stretch="Fill" />
                 </MenuItem.Header>
             </MenuItem>
-            <MenuItem ToolTip="Save Deck" Command="{Binding SaveDeckCommand}">
+            <MenuItem x:Name="SaveDeck" ToolTip="Save Deck">
                 <MenuItem.Style>
                     <Style TargetType="MenuItem">
                         <Style.Triggers>
@@ -142,13 +142,13 @@
                 </MenuItem.Header>
             </MenuItem>
             <Separator />
-            <MenuItem ToolTip="Print" Command="{Binding PrintCommand}">
+            <MenuItem x:Name="Print" ToolTip="Print">
                 <MenuItem.Header>
                     <Image Height="15" Width="15" Source="../Resources/print.png" Stretch="Fill" />
                 </MenuItem.Header>
             </MenuItem>
             <Separator />
-            <MenuItem ToolTip="Info" Command="{Binding InfoCommand}">
+            <MenuItem x:Name="ShowInfo" ToolTip="Info">
                 <MenuItem.Header>
                     <Image Height="15" Width="15" Source="../Resources/info.png" Stretch="Fill" />
                 </MenuItem.Header>

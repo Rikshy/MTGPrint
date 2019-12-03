@@ -61,9 +61,7 @@ namespace MTGPrint.Models
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         private void OnCardCollectionChanged(object sender, NotifyCollectionChangedEventArgs ne)
         {
@@ -159,7 +157,7 @@ namespace MTGPrint.Models
                     else
                         dlPath = card.SelectPrint.ImageUrls.ArtCrop;
 
-                    BackgroundLoader.RunAsync(dlPath, sfd.FileName);
+                    Caliburn.Micro.IoC.Get<BackgroundLoader>().RunAsync(dlPath, sfd.FileName);
                 }
             }
             catch (Exception e)

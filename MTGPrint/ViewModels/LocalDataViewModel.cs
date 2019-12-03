@@ -1,46 +1,45 @@
-﻿using System.Runtime.CompilerServices;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Generic;
-using System.Windows.Controls;
-using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Threading;
 using System.Windows;
 using System.Linq;
 using System;
 
 using Microsoft.Win32;
 
-using MTGPrint.Views;
-using MTGPrint.Helper;
-using MTGPrint.Models;
 using Caliburn.Micro;
+
+using MTGPrint.EventModels;
+using MTGPrint.Models;
 
 namespace MTGPrint.ViewModels
 {
     class LocalDataViewModel : Screen
     {
+        private readonly SimpleContainer container;
         private readonly LocalDataStorage localData;
+        private readonly IEventAggregator events;
 
-        public LocalDataViewModel(LocalDataStorage localData)
+        public LocalDataViewModel(SimpleContainer container)
         {
-            this.localData = localData;
-            var cards = localData.LocalCards;
-            searchCards = cards;
-            WindowClosedCommand = new LightCommand(() => localData.SaveLocalData());
-            SearchChangedCommand = new EventCommand<TextChangedEventArgs>((e) =>
-            {
-                var txt = ((TextBox)e.Source).Text.Trim();
-                Cards = txt.Length == 0 ? cards : cards.Where(c => c.Name.Contains(txt, StringComparison.OrdinalIgnoreCase));
-            });
-            AddCustomCardCommand = new LightCommand(AddCustomCard);
-            AddCustomPrintCommand = new LightCommand(AddCustomArt);
+            localData = container.GetInstance<LocalDataStorage>();
+            events = container.GetInstance<IEventAggregator>();
 
+            searchCards = localData.LocalCards;
+            this.container = container;
         }
-
 
         private string searchText;
         private IEnumerable<LocalCard> searchCards;
         private LocalCard selectedItem;
+
+        public override async Task<bool> CanCloseAsync(CancellationToken cancellationToken)
+        {
+            localData.SaveLocalData();
+            return await base.CanCloseAsync(cancellationToken);
+        }
 
         public IEnumerable<LocalCard> Cards
         {
@@ -48,6 +47,7 @@ namespace MTGPrint.ViewModels
             set
             {
                 searchCards = value;
+                events.PublishOnUIThreadAsync(new UpdateStatusEvent { Info = $"search found {searchCards.Count()} cards" });
                 NotifyOfPropertyChange();
             }
         }
@@ -59,6 +59,7 @@ namespace MTGPrint.ViewModels
             {
                 selectedItem = value;
                 NotifyOfPropertyChange();
+                NotifyOfPropertyChange(() => CanAddCustomPrint);
             }
         }
 
@@ -68,22 +69,26 @@ namespace MTGPrint.ViewModels
             set
             {
                 searchText = value;
+                Cards = searchText.Length == 0 ? 
+                    localData.LocalCards : 
+                    localData.LocalCards.Where(c => c.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase));
                 NotifyOfPropertyChange();
             }
         }
 
-        public ICommand WindowClosedCommand { get; }
-
         public ICommand SearchChangedCommand { get; }
 
-        public ICommand AddCustomCardCommand { get; }
-        public ICommand AddCustomPrintCommand { get; }
+        public void OpenMainMenu()
+           => events.PublishOnUIThreadAsync(new CloseScreenEvent());
+        public void ShowInfo()
+            => container.GetInstance<IWindowManager>().ShowDialogAsync(container.GetInstance<InfoViewModel>()).Wait();
 
-        private void AddCustomCard()
+        public void AddCustomCard()
         {
-            var vm = new InputViewModel { Text = "Enter the card name:" };
-            var input = new InputWindow { DataContext = vm, Owner = Application.Current.MainWindow };
-            if (input.ShowDialog() == true)
+            var vm = container.GetInstance<InputViewModel>();
+            vm.Text = "Enter the card name:";
+            var result = container.GetInstance<IWindowManager>().ShowDialogAsync(vm).Result;
+            if (result == true)
             {
                 if (string.IsNullOrEmpty(vm.Input.Trim()))
                 {
@@ -125,7 +130,7 @@ namespace MTGPrint.ViewModels
             }
         }
 
-        private void AddCustomArt()
+        public void AddCustomPrint()
         {
             try
             {
@@ -141,6 +146,9 @@ namespace MTGPrint.ViewModels
                 MessageBox.Show(e.Message);
             }
         }
+
+        public bool CanAddCustomPrint
+            => SelectedItem != null;
 
         private CardPrint CreateCardPrint()
         {

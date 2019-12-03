@@ -39,7 +39,7 @@
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
             <StatusBarItem Grid.Column="0">
-                <Image Source="{Binding ErrorSymbol}" ToolTip="{Binding LoadErrors}" />
+                <Image Source="{Binding ErrorSymbol}" ToolTip="{Binding Errors}" />
             </StatusBarItem>
             <Separator Grid.Column="1"/>
             <StatusBarItem Grid.Column="2" Content="{Binding StatusText}" />
@@ -48,11 +48,7 @@
             </StatusBarItem>
             <Separator Grid.Column="4"/>
             <StatusBarItem DockPanel.Dock="Right" Grid.Column="5">
-                <WrapPanel HorizontalAlignment="Right">
-                    <TextBlock Text="{Binding Deck.CardCount, StringFormat='card count: {0}'}"  />
-                    <TextBlock Text=" | "  />
-                    <TextBlock Text="{Binding Deck.TokenCount, StringFormat='token count: {0}'}" />
-                </WrapPanel>
+                <TextBlock Text="{Binding InfoText}" />
             </StatusBarItem>
         </StatusBar>
     </Grid>

@@ -35,7 +35,7 @@
                     <ColumnDefinition Width="5*" />
                     <ColumnDefinition Width="5*" />
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Content="Create" Width="40" Margin="5" IsDefault="True" Click="Button_Click" />
+                <Button x:Name="Print" Grid.Column="0" Content="Print" Width="40" Margin="5" IsDefault="True" />
                 <Button Grid.Column="1" Content="Cancel" Width="40"  Margin="5" IsCancel="True" />
             </Grid>
         </StackPanel>

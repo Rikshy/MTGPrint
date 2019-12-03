@@ -1,11 +1,13 @@
-﻿using Caliburn.Micro;
+﻿using System.Windows;
+using System.IO;
+using System;
+
 using Microsoft.Win32;
+
+using Caliburn.Micro;
+
 using MTGPrint.EventModels;
 using MTGPrint.Helper;
-using System;
-using System.IO;
-using System.Windows;
-using System.Windows.Input;
 
 namespace MTGPrint.ViewModels
 {
@@ -13,20 +15,16 @@ namespace MTGPrint.ViewModels
     {
         private readonly IEventAggregator events;
 
-        public MainMenuViewModel(IEventAggregator events)
-        {
-            this.events = events;
-            OpenDeckCommand = new LightCommand(OpenDeck);
-            EditLocalDataCommand = new LightCommand(() => events.PublishOnUIThreadAsync(new EditLocalDataEvent()));
+        public MainMenuViewModel(IEventAggregator events) 
+            => this.events = events;
 
-            NewDeckCommand = new LightCommand(() => events.PublishOnUIThreadAsync(new CreateDeckEvent()));
-        }
+        public void CreateDeck() 
+            => events.PublishOnUIThreadAsync(new CreateDeckEvent());
 
-        public ICommand OpenDeckCommand { get; }
-        public ICommand NewDeckCommand { get; }
-        public ICommand EditLocalDataCommand { get; }
+        public void EditLocalData() 
+            => events.PublishOnUIThreadAsync(new EditLocalDataEvent());
 
-        private void OpenDeck()
+        public void OpenDeck()
         {
             var ofd = new OpenFileDialog
             {

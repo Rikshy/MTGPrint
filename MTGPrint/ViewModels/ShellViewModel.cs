@@ -1,29 +1,21 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Windows.Input;
-using System.Diagnostics;
+using System.Threading;
 using System.Windows;
 using System.Linq;
 using System.IO;
-using System;
 
-using Microsoft.Win32;
-
-using Newtonsoft.Json;
-
-using MTGPrint.Helper;
-using MTGPrint.Models;
-using MTGPrint.Views;
 using Caliburn.Micro;
+
 using MTGPrint.EventModels;
-using System.Threading;
-using System.Threading.Tasks;
+using MTGPrint.Helper;
 
 namespace MTGPrint.ViewModels
 {
-    public class ShellViewModel : Conductor<object>, IHandle<OpenDeckEvent>, IHandle<EditLocalDataEvent>, IHandle<CreateDeckEvent>, IHandle<CloseScreenEvent>
+    public class ShellViewModel : Conductor<object>, IHandle<OpenDeckEvent>, IHandle<EditLocalDataEvent>, IHandle<CreateDeckEvent>, IHandle<CloseScreenEvent>, IHandle<UpdateStatusEvent>
     {
-        private LocalDataStorage localData;
+        private readonly LocalDataStorage localData;
         private readonly SimpleContainer container;
 
         public ShellViewModel(LocalDataStorage localData, IEventAggregator events, SimpleContainer container)
@@ -44,42 +36,19 @@ namespace MTGPrint.ViewModels
                                           IsLoading = false;
                                           MessageBox.Show(Application.Current.MainWindow, "Localdata updated!");
                                       };
-
-            BackgroundPrinter.PrintFinished += delegate (object o, RunWorkerCompletedEventArgs args)
+            
+            var loader = container.GetInstance<BackgroundLoader>();
+            loader.DownloadStarted += delegate { IsLoading = true; };
+            loader.DownloadComplete += delegate (object o, RunWorkerCompletedEventArgs args)
             {
-                IsEnabled = true;
-                if ( args.Error != null )
+                if (args.Error != null)
                 {
-                    LoadErrors = args.Error.Message;
-                    MessageBox.Show( Application.Current.MainWindow, args.Error.Message );
-                    StatusText = "Deck could not be printed";
-                }
-                else
-                {
-                    LoadErrors = string.Empty;
-                    StatusText = "Deck printed";
-                    foreach ( var dc in Deck.Cards )
-                        dc.CanPrint = false;
-                    if ( args.Result is PrintOptions po && po.OpenPDF )
-                        Process.Start( new ProcessStartInfo(po.FileName) { UseShellExecute = true });
-                    else
-                        MessageBox.Show( Application.Current.MainWindow, "Cards printed!" );
-                }
-                IsLoading = false;
-            };
-            BackgroundLoader.DownloadStarted += delegate { IsLoading = true; };
-            BackgroundLoader.DownloadComplete += delegate (object o, RunWorkerCompletedEventArgs args)
-            {
-                if ( args.Error != null )
-                {
-                    LoadErrors = args.Error.Message;
-                    MessageBox.Show( Application.Current.MainWindow, args.Error.Message );
+                    Errors = args.Error.Message;
+                    MessageBox.Show(Application.Current.MainWindow, args.Error.Message);
                 }
                 IsLoading = false;
             };
 
-            if ( Application.Current.MainWindow != null )
-                Application.Current.MainWindow.Closing += CanClose;
 
             if ( !Directory.Exists( "decks" ) )
                 Directory.CreateDirectory( "decks" );
@@ -107,8 +76,6 @@ namespace MTGPrint.ViewModels
             }
         }
 
-        public Deck Deck { get; } = new Deck(false);
-
         private string statusText;
         public string StatusText
         {
@@ -120,18 +87,30 @@ namespace MTGPrint.ViewModels
             }
         }
 
-        private string loadErrors;
-
-        public string LoadErrors
+        private string infoText;
+        public string InfoText
         {
-            get => loadErrors;
+            get => infoText;
             set
             {
-                loadErrors = value;
-                ErrorSymbol = string.IsNullOrEmpty(loadErrors) ? @"..\Resources\ok.png" : @"..\Resources\warning.png";
+                infoText = value;
                 NotifyOfPropertyChange();
             }
         }
+
+
+        private string errors;
+        public string Errors
+        {
+            get => errors;
+            set
+            {
+                errors = value;
+                ErrorSymbol = string.IsNullOrEmpty(errors) ? @"..\Resources\ok.png" : @"..\Resources\warning.png";
+                NotifyOfPropertyChange();
+            }
+        }
+
 
         private bool isLoading;
         public bool IsLoading
@@ -143,6 +122,7 @@ namespace MTGPrint.ViewModels
                 NotifyOfPropertyChange();
             }
         }
+
 
         private string errorSymbol = @"..\Resources\ok.png";
         public string ErrorSymbol
@@ -169,24 +149,11 @@ namespace MTGPrint.ViewModels
                 MessageBox.Show( Application.Current.MainWindow, "The client is updating local data. This might take a while." );
             }
             else
-                StatusText = "Localdata updated";
+                StatusText = "Localdata is up to date";
         }
 
         private void WindowClosed() { localData.SaveLocalData(); }
-
-
         #endregion
-
-        private void CanClose(object sender, CancelEventArgs args)
-        {
-            if (Deck.HasChanges &&
-                MessageBox.Show( Application.Current.MainWindow, "Your deck has unsaved changes! Continue anyway?",
-                                "Unsaved Changes",
-                                MessageBoxButton.YesNo)
-                == MessageBoxResult.No)
-                args.Cancel = true;
-
-        }
 
         public async Task HandleAsync(OpenDeckEvent message, CancellationToken cancellationToken)
         {
@@ -202,25 +169,24 @@ namespace MTGPrint.ViewModels
 
         public async Task HandleAsync(CreateDeckEvent message, CancellationToken cancellationToken)
         {
-            var vm = container.GetInstance<AddCardsViewModel>();
-            var result = await container.GetInstance<IWindowManager>().ShowDialogAsync(vm, this);
-
-            if (result == true && !string.IsNullOrEmpty(vm.ImportCards) && vm.ImportCards.Trim().Length > 0)
-            {
-                StatusText = "Importing cards";
-                var parsedCards = localData.ParseCardList(vm.ImportCards.Trim(), out var errors);
-                parsedCards.ForEach(dc => Deck.Cards.Add(dc));
-                if (Deck.Cards.Any())
-                    await ActivateItemAsync(container.GetInstance<DeckViewModel>(), cancellationToken);
-
-                LoadErrors = string.Join(Environment.NewLine, errors);
-                StatusText = "Cards imported";
-            }
+            var vm = container.GetInstance<DeckViewModel>();
+            vm.AddCards();
+            if (vm.Deck.Cards.Any())
+                await ActivateItemAsync(vm, cancellationToken);
         }
 
         public async Task HandleAsync(CloseScreenEvent message, CancellationToken cancellationToken)
         {
             await ActivateItemAsync(container.GetInstance<MainMenuViewModel>(), cancellationToken);
+        }
+
+        public async Task HandleAsync(UpdateStatusEvent message, CancellationToken cancellationToken)
+        {
+            Errors = message.Errors ?? Errors;
+            StatusText = message.Status ?? StatusText;
+            InfoText = message.Info ?? InfoText;
+            IsEnabled = message.IsWndEnabled ?? IsEnabled;
+            IsLoading = message.IsLoading ?? IsLoading;
         }
     }
 }

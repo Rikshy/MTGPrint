@@ -6,6 +6,7 @@ using System;
 using Caliburn.Micro;
 
 using MTGPrint.ViewModels;
+using MTGPrint.Helper;
 
 namespace MTGPrint
 {
@@ -22,7 +23,9 @@ namespace MTGPrint
             container
                 .Singleton<IWindowManager, WindowManager>()
                 .Singleton<IEventAggregator, EventAggregator>()
-                .Singleton<LocalDataStorage, LocalDataStorage>();
+                .Singleton<LocalDataStorage>()
+                .Singleton<BackgroundPrinter>()
+                .Singleton<BackgroundLoader>();
 
 
             GetType().Assembly.GetTypes()

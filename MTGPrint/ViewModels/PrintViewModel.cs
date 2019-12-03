@@ -1,22 +1,27 @@
-﻿using System.Runtime.CompilerServices;
-using System.ComponentModel;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows.Data;
 using System;
 
+using Caliburn.Micro;
+
+using MTGPrint.Helper;
 using MTGPrint.Models;
 
 namespace MTGPrint.ViewModels
 {
-    public class PrintViewModel : INotifyPropertyChanged
-    {        
+    public class PrintViewModel : Screen
+    {
+        public PrintViewModel(BackgroundPrinter printer)
+        {
+            PrintOptions = printer.LoadPrintSettings();
+        }
+
+        public Deck Deck { get; set; }
+        
         public PrintOptions PrintOptions { get; set; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
-        }
+        public void Print()
+            => TryCloseAsync(true);
     }
 
     public class EnumMatchToBooleanConverter : IValueConverter

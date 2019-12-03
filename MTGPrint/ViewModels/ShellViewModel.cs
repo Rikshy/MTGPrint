@@ -26,7 +26,6 @@ namespace MTGPrint.ViewModels
 
             events.SubscribeOnPublishedThread(this);
 
-            WindowLoadedCommand = new LightCommand(WindowLoaded);
             WindowClosedCommand = new LightCommand(WindowClosed);
 
 
@@ -47,6 +46,7 @@ namespace MTGPrint.ViewModels
                     Errors = args.Error.Message;
                     MessageBox.Show(Application.Current.MainWindow, args.Error.Message);
                 }
+
                 IsLoading = false;
             };
 
@@ -61,8 +61,23 @@ namespace MTGPrint.ViewModels
             ActivateItemAsync(container.GetInstance<MainMenuViewModel>(), new CancellationToken());
         }
 
+        protected override async Task OnInitializeAsync(CancellationToken cancellationToken)
+        {
+            if (localData.CheckForUpdates())
+            {
+                StatusText = "Updating localdata";
+                IsLoading = true;
+                localData.UpdateBulkData();
+                IsEnabled = false;
+                MessageBox.Show(Application.Current.MainWindow, "The client is updating local data. This might take a while.");
+            }
+            else
+                StatusText = "Localdata is up to date";
+
+            await base.OnInitializeAsync(cancellationToken);
+        }
+        
         #region Bindings
-        public ICommand WindowLoadedCommand { get; }
         public ICommand WindowClosedCommand { get; }
 
 
@@ -139,20 +154,6 @@ namespace MTGPrint.ViewModels
 
 
         #region CommandActions
-        private void WindowLoaded()
-        {
-            if (localData.CheckForUpdates())
-            {
-                StatusText = "Updating localdata";
-                IsLoading = true;
-                localData.UpdateBulkData();
-                IsEnabled = false;
-                MessageBox.Show( Application.Current.MainWindow, "The client is updating local data. This might take a while." );
-            }
-            else
-                StatusText = "Localdata is up to date";
-        }
-
         private void WindowClosed() { localData.SaveLocalData(); }
         #endregion
 

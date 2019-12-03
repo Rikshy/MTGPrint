@@ -118,8 +118,7 @@ namespace MTGPrint.ViewModels
                     };
 
                     localData.LocalCards.Add(card);
-                    SearchText = "";
-                    Cards = localData.LocalCards;
+                    SearchText = vm.Input;
                     SelectedItem = card;
                     localData.HasChanges = true;
                 }

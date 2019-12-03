@@ -114,7 +114,7 @@ namespace MTGPrint.ViewModels
                         OracleId = Guid.NewGuid(),
                         LatestPrint = DateTimeOffset.Now,
                         Name = vm.Input,
-                        Prints = new ObservableCollection<CardPrint>(new[]{ cp }),
+                        Prints = new List<CardPrint>(new[]{ cp }),
                     };
 
                     localData.LocalCards.Add(card);

@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
 using System.Diagnostics;
@@ -7,6 +6,8 @@ using System.Linq;
 using System;
 
 using Newtonsoft.Json;
+
+using Caliburn.Micro;
 
 using MTGPrint.Helper.UI;
 
@@ -80,7 +81,7 @@ namespace MTGPrint.Models
         }
 
         [JsonIgnore]
-        public ObservableCollection<CardPrint> Prints { get; set; } = new ObservableCollection<CardPrint>();
+        public BindableCollection<CardPrint> Prints { get; set; } = new BindableCollection<CardPrint>();
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

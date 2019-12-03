@@ -217,13 +217,13 @@ namespace MTGPrint.ViewModels
 
                 if (lcard == null)
                 {
-                    //LoadErrors = "Failed to load some cards (custom cards?)";
+                    events.PublishOnUIThreadAsync(new UpdateStatusEvent { Errors = "Failed to load some cards (custom cards?)" });
                     continue;
                 }
 
                 if (!tempCard.IsChild)
                 {
-                    tempCard.Prints = lcard.Prints;
+                    tempCard.Prints.AddRange( lcard.Prints );
                     if (tempCard.SelectedPrintId == null)
                         tempCard.SelectedPrintId = lcard.DefaultPrint ?? lcard.Prints.First().Id;
                 }

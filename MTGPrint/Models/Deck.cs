@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Reflection;
@@ -11,6 +10,8 @@ using System;
 using Microsoft.Win32;
 
 using Newtonsoft.Json;
+
+using Caliburn.Micro;
 
 using MTGPrint.Helper;
 
@@ -51,7 +52,7 @@ namespace MTGPrint.Models
         public int Version { get; set; }
 
         [JsonProperty("cards")]
-        public ObservableCollection<DeckCard> Cards { get; set; } = new ObservableCollection<DeckCard>();
+        public BindableCollection<DeckCard> Cards { get; set; } = new BindableCollection<DeckCard>();
 
         [JsonIgnore]
         public int CardCount => Cards.Where(c => !c.IsToken && !c.IsChild).Sum(c => c.Count);

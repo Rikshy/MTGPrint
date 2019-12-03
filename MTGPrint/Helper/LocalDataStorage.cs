@@ -118,9 +118,9 @@ namespace MTGPrint
                 {
                     OracleId = card.OracleId,
                     SelectedPrintId = card.DefaultPrint ?? first.Id,
-                    Prints = card.Prints,
                     Count = count
                 };
+                dc.Prints.AddRange(card.Prints);
 
                 if (isCommander)
                     deckCards.Insert(0, dc);

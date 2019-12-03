@@ -33,7 +33,7 @@
                         <MenuItem Header="Save art" Command="{Binding SaveArtCommand}" IsEnabled="{Binding SelectPrint.IsOfficial}" />
                     </ContextMenu>
                 </StackPanel.ContextMenu>
-                <Image Width="300" Height="418" Source="{Binding SelectPrint.ImageUrls.Large, NotifyOnSourceUpdated=True}" Margin="2" />
+                <Image Width="300" Height="418" Source="{Binding SelectPrint.ImageSource, NotifyOnSourceUpdated=True}" Margin="2" />
                 <Grid HorizontalAlignment="Stretch" IsEnabled="{Binding CanPrint}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>

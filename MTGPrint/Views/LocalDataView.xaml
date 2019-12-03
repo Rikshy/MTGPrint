@@ -3,8 +3,34 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:cal="http://www.caliburnproject.org"
         mc:Ignorable="d">
-    <Grid>
+    <UserControl.Resources>
+        <DataTemplate x:Key="Standard" DataType="CardPrint">
+            <StackPanel Margin="5">
+                <Image Width="200" Height="278" Source="{Binding ImageSource, NotifyOnSourceUpdated=True}" Margin="2" />
+                <Grid HorizontalAlignment="Stretch">
+                    <TextBlock Text="{Binding SetName}" Margin="0,1,5,0" FontSize="15"/>
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="Custom" DataType="CardPrint">
+            <StackPanel Margin="5">
+                <Image Width="200" Height="278" Source="{Binding ImageSource, NotifyOnSourceUpdated=True}" Margin="2" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="5*" />
+                        <ColumnDefinition Width="25" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding SetName}" Margin="0,1,5,0" FontSize="15"/>
+                    <Button Grid.Column="1" Content="X" Foreground="OrangeRed" FontWeight="ExtraBold" Margin="0,0,5,0" 
+                            cal:Message.Attach="RemoveCustomPrint($dataContext)" 
+                            cal:Action.TargetWithoutContext="{Binding DataContext, ElementName=LayoutRoot}"/>
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot">
         <Menu VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="Auto">
             <MenuItem x:Name="OpenMainMenu" ToolTip="Main Menu">
                 <MenuItem.Header>
@@ -31,7 +57,14 @@
                 </Grid.RowDefinitions>
                 <TextBox x:Name="SearchText" />
                 <ListBox Grid.Row="1" ItemsSource="{Binding Cards}" SelectedItem="{Binding SelectedItem}" />
-                <Button x:Name="AddCustomCard" Grid.Row="2" Content="add custom card" />
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="5*" />
+                        <ColumnDefinition Width="5*" />
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="AddCustomCard" Grid.Column="0" Content="add custom card" />
+                    <Button x:Name="DeleteCustomCard" Grid.Column="1" Content="remove custom card" />
+                </Grid>
             </Grid>
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
@@ -46,17 +79,25 @@
                     <ItemsControl ItemsSource="{Binding SelectedItem.Prints}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <WrapPanel />
+                                <StackPanel Orientation="Horizontal" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Margin="5">
-                                    <Image Width="200" Height="278" Source="{Binding ImageUrls.Small, NotifyOnSourceUpdated=True}" Margin="2" />
-                                    <Grid HorizontalAlignment="Stretch">
-                                        <TextBlock Text="{Binding SetName}" Margin="0,1,5,0" FontSize="15"/>
-                                    </Grid>
-                                </StackPanel>
+                                <ContentControl Content="{Binding}" cal:Bind.Model="{Binding}">
+                                    <ContentControl.Style>
+                                        <Style TargetType="ContentControl">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCustom}" Value="False">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource Standard}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsCustom}" Value="True">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource Custom}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ContentControl.Style>
+                                </ContentControl>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

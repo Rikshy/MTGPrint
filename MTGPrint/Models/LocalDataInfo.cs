@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Windows.Media.Imaging;
+using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Drawing;
 using System.IO;
@@ -52,7 +53,7 @@ namespace MTGPrint.Models
         public bool IsCustom { get; set; } = false;
 
         [JsonIgnore]
-        public bool IsOfficial { get => !IsCustom; }
+        public bool IsOfficial => !IsCustom;
 
         public override string ToString() => Name;
     }
@@ -74,6 +75,21 @@ namespace MTGPrint.Models
         [JsonProperty("image_uris")]
         public ImageUrls ImageUrls { get; set; }
 
+        [JsonIgnore]
+        public object ImageSource
+        {
+            get
+            {
+                if (IsCustom)
+                {
+                    if (File.Exists(ImageUrls.Large))
+                        return new BitmapImage(new Uri(ImageUrls.Large)).CloneCurrentValue();
+                    return "";
+                }
+                else return ImageUrls.Large;
+            }
+        }
+
         [JsonProperty("gameplay_info")]
         public GameplayInfo Gameplay { get; set; }
 
@@ -81,7 +97,7 @@ namespace MTGPrint.Models
         public bool IsCustom { get; set; } = false;
 
         [JsonIgnore]
-        public bool IsOfficial { get => !IsCustom; }
+        public bool IsOfficial => !IsCustom;
 
         public override string ToString()
         {

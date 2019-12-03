@@ -10,19 +10,23 @@ using System;
 
 using Microsoft.Win32;
 
-using MTGPrint.Windows;
+using MTGPrint.Views;
 using MTGPrint.Helper;
 using MTGPrint.Models;
+using Caliburn.Micro;
 
 namespace MTGPrint.ViewModels
 {
-    class LocalDbViewModel : INotifyPropertyChanged
+    class LocalDataViewModel : Screen
     {
-        public LocalDbViewModel()
+        private readonly LocalDataStorage localData;
+
+        public LocalDataViewModel(LocalDataStorage localData)
         {
-            var cards = LocalDataStorage.LocalCards;
+            this.localData = localData;
+            var cards = localData.LocalCards;
             searchCards = cards;
-            WindowClosedCommand = new LightCommand(() => LocalDataStorage.SaveLocalData());
+            WindowClosedCommand = new LightCommand(() => localData.SaveLocalData());
             SearchChangedCommand = new EventCommand<TextChangedEventArgs>((e) =>
             {
                 var txt = ((TextBox)e.Source).Text.Trim();
@@ -33,11 +37,6 @@ namespace MTGPrint.ViewModels
 
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
 
         private string searchText;
         private IEnumerable<LocalCard> searchCards;
@@ -49,7 +48,7 @@ namespace MTGPrint.ViewModels
             set
             {
                 searchCards = value;
-                OnPropertyChanged();
+                NotifyOfPropertyChange();
             }
         }
 
@@ -59,7 +58,7 @@ namespace MTGPrint.ViewModels
             set
             {
                 selectedItem = value;
-                OnPropertyChanged();
+                NotifyOfPropertyChange();
             }
         }
 
@@ -69,7 +68,7 @@ namespace MTGPrint.ViewModels
             set
             {
                 searchText = value;
-                OnPropertyChanged();
+                NotifyOfPropertyChange();
             }
         }
 
@@ -113,11 +112,11 @@ namespace MTGPrint.ViewModels
                         Prints = new ObservableCollection<CardPrint>(new[]{ cp }),
                     };
 
-                    LocalDataStorage.LocalCards.Add(card);
+                    localData.LocalCards.Add(card);
                     SearchText = "";
-                    Cards = LocalDataStorage.LocalCards;
+                    Cards = localData.LocalCards;
                     SelectedItem = card;
-                    LocalDataStorage.HasChanges = true;
+                    localData.HasChanges = true;
                 }
                 catch (Exception e)
                 {
@@ -135,7 +134,7 @@ namespace MTGPrint.ViewModels
                     return;
 
                 SelectedItem.Prints.Add(print);
-                LocalDataStorage.HasChanges = true;
+                localData.HasChanges = true;
             }
             catch (Exception e)
             {

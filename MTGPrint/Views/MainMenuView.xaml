@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="MTGPrint.Views.MainMenuView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ControlTemplate x:Key="TplFlatButton" TargetType="{x:Type Button}">
+            <Border Width="{TemplateBinding Width}"
+                    Height="{TemplateBinding Height}"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                  TextElement.Foreground="{TemplateBinding Foreground}"
+                                  TextElement.FontFamily="{TemplateBinding FontFamily}"
+                                  TextElement.FontSize="{TemplateBinding FontSize}"
+                                  TextElement.FontStretch="{TemplateBinding FontStretch}"
+                                  TextElement.FontWeight="{TemplateBinding FontWeight}"/>
+            </Border>
+        </ControlTemplate>
+        <Style x:Key="StlFlatButton" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="{x:Null}" />
+            <Setter Property="BorderBrush" Value="{x:Null}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Template" Value="{StaticResource TplFlatButton}" />
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="4*"/>
+        </Grid.ColumnDefinitions>
+        <Button ToolTip="Create Deck" Grid.Column="0" Command="{Binding AddCardsCommand}" Style="{StaticResource StlFlatButton}" >
+            <Image Source="../Resources/create.png" Margin="50" />
+        </Button>
+        <StackPanel Grid.Column="1" Orientation="Horizontal">
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+        </StackPanel>
+        <Button ToolTip="Open Deck" Grid.Column="2" Command="{Binding OpenDeckCommand}" Style="{StaticResource StlFlatButton}">
+            <Image Source="../Resources/open.png" Margin="50" />
+        </Button>
+        <StackPanel Grid.Column="3" Orientation="Horizontal">
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+        </StackPanel>
+        <Button ToolTip="Edit Localdata" Grid.Column="4" Command="{Binding EditLocalDataCommand}" Style="{StaticResource StlFlatButton}">
+            <Image Source="../Resources/localdata.png" Margin="50" />
+        </Button>
+    </Grid>
+</UserControl>

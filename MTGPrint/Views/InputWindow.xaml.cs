@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace MTGPrint.Windows
+namespace MTGPrint.Views
 {
     public partial class InputWindow : Window
     {

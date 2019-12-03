@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace MTGPrint
+namespace MTGPrint.Views
 {
     public partial class InfoView : Window
     {

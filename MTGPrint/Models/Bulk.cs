@@ -2,7 +2,7 @@
 
 using Newtonsoft.Json;
 
-using MTGPrint.Helper;
+using MTGPrint.Helper.Parsing;
 
 namespace MTGPrint.Models
 {

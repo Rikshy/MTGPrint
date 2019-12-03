@@ -2,7 +2,7 @@
 using System.Windows;
 using System;
 
-namespace MTGPrint.Helper
+namespace MTGPrint.Helper.UI
 {
     internal static class WindowExtensions
     {

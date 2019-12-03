@@ -6,16 +6,16 @@ namespace MTGPrint.Helper
 {
     public class BackgroundLoader
     {
-        private static readonly WebClient loader = new WebClient();
-        private static readonly BackgroundWorker worker = new BackgroundWorker();
-        public static event EventHandler DownloadStarted;
-        public static event RunWorkerCompletedEventHandler DownloadComplete
+        private readonly WebClient loader = new WebClient();
+        private readonly BackgroundWorker worker = new BackgroundWorker();
+        public event EventHandler DownloadStarted;
+        public event RunWorkerCompletedEventHandler DownloadComplete
         {
             add { worker.RunWorkerCompleted += value; }
             remove { worker.RunWorkerCompleted -= value; }
         }
 
-        static BackgroundLoader()
+        public BackgroundLoader()
         {
             worker.DoWork += delegate (object sender, DoWorkEventArgs e)
             {
@@ -24,9 +24,9 @@ namespace MTGPrint.Helper
             };
         }
 
-        public static void RunAsync(string source, string dest)
+        public void RunAsync(string source, string dest)
         {
-            DownloadStarted?.Invoke(null, EventArgs.Empty);
+            DownloadStarted?.Invoke(this, EventArgs.Empty);
             worker.RunWorkerAsync((source, dest));
         }
     }

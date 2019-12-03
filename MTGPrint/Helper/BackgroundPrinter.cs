@@ -29,20 +29,21 @@ namespace MTGPrint.Helper
         private const float PAGE_MARGIN_H = 5.5F * MM_TO_POINT;
 
 
-        private static readonly WebClient cardLoader = new WebClient();
-        private static readonly BackgroundWorker printWorker = new BackgroundWorker();
-        public static event RunWorkerCompletedEventHandler PrintFinished
+        private readonly WebClient cardLoader = new WebClient();
+        private readonly BackgroundWorker printWorker = new BackgroundWorker();
+        public event EventHandler PrintStarted;
+        public event RunWorkerCompletedEventHandler PrintFinished
         {
             add { printWorker.RunWorkerCompleted += value; }
             remove { printWorker.RunWorkerCompleted -= value; }
         }
 
-        static BackgroundPrinter()
+        public BackgroundPrinter()
         {
             printWorker.DoWork += DoPrintWork;
         }
 
-        public static void Print(Deck deck, PrintOptions po)
+        public void Print(Deck deck, PrintOptions po)
         {
             try
             {
@@ -53,10 +54,11 @@ namespace MTGPrint.Helper
                 // ignore
             }
 
+            PrintStarted?.Invoke(this, EventArgs.Empty);
             printWorker.RunWorkerAsync((deck, po));
         }
 
-        public static PrintOptions LoadPrintSettings()
+        public PrintOptions LoadPrintSettings()
         {
             if (!File.Exists(PRINTSETTINGS))
                 return new PrintOptions();
@@ -70,7 +72,7 @@ namespace MTGPrint.Helper
             }
         }
 
-        private static void DoPrintWork(object sender, DoWorkEventArgs args)
+        private void DoPrintWork(object sender, DoWorkEventArgs args)
         {
             var options = (ValueTuple<Deck, PrintOptions>)args.Argument;
             var deck = options.Item1;

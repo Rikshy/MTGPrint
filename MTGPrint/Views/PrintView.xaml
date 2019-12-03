@@ -1,4 +1,4 @@
-﻿<Window x:Class="MTGPrint.PrintView"
+﻿<Window x:Class="MTGPrint.Views.PrintView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,9 +6,6 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:MTGPrint.ViewModels"
         mc:Ignorable="d" Height="255" Width="120" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ShowInTaskbar="False">
-    <Window.DataContext>
-        <local:PrintViewModel />
-    </Window.DataContext>
     <Window.Resources>
         <local:EnumMatchToBooleanConverter x:Key="enumConverter" />
     </Window.Resources>
@@ -38,7 +35,7 @@
                     <ColumnDefinition Width="5*" />
                     <ColumnDefinition Width="5*" />
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Content="Create" Width="40" Margin="5" IsDefault="True" Click="Button_Click" />
+                <Button x:Name="Print" Grid.Column="0" Content="Print" Width="40" Margin="5" IsDefault="True" />
                 <Button Grid.Column="1" Content="Cancel" Width="40"  Margin="5" IsCancel="True" />
             </Grid>
         </StackPanel>

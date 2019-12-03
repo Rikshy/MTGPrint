@@ -1,7 +1,7 @@
 ﻿using System.Windows.Input;
 using System;
 
-namespace MTGPrint.Helper
+namespace MTGPrint.Helper.UI
 {
     public class DelegateCommand : ICommand
     {

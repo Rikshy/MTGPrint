@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Drawing;
 using System.IO;
@@ -47,7 +46,7 @@ namespace MTGPrint.Models
         public List<CardParts> Parts { get; set; } = new List<CardParts>();
 
         [JsonProperty("prints")]
-        public ObservableCollection<CardPrint> Prints { get; set; } = new ObservableCollection<CardPrint>();
+        public List<CardPrint> Prints { get; set; } = new List<CardPrint>();
 
         [JsonProperty("is_custom")]
         public bool IsCustom { get; set; } = false;

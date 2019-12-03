@@ -7,18 +7,24 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Windows\LocalDbView.xaml.cs">
+    <Compile Update="Views\DeckView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Windows\InputWindow.xaml.cs">
+    <Compile Update="Views\LocalDataView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\MainMenuView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Windows\LocalDbView.xaml">
+    <Page Update="Views\DeckView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Windows\InputWindow.xaml">
+    <Page Update="Views\LocalDataView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\MainMenuView.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

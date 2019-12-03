@@ -19,7 +19,7 @@ namespace MTGPrint
 
         private const int LOCALDATA_VERSION = 2;
 
-        static LocalDataStorage()
+        public LocalDataStorage()
         {
             updateWorker.DoWork += delegate (object sender, DoWorkEventArgs e)
             {
@@ -43,20 +43,20 @@ namespace MTGPrint
             };
         }
 
-        private static readonly ScryfallClient scry = new ScryfallClient();
+        private readonly ScryfallClient scry = new ScryfallClient();
 
-        private static LocalDataInfo localData;
+        private LocalDataInfo localData;
 
-        public static bool HasChanges { get; set; }
+        public bool HasChanges { get; set; }
 
-        public static List<LocalCard> LocalCards => localData.Cards;
+        public List<LocalCard> LocalCards => localData.Cards;
 
-        private static readonly BackgroundWorker updateWorker = new BackgroundWorker();
-        public static event EventHandler LocalDataUpdated;
+        private readonly BackgroundWorker updateWorker = new BackgroundWorker();
+        public event EventHandler LocalDataUpdated;
 
-        public static bool CheckForUpdates() { return UpdateCheck(out _); }
+        public bool CheckForUpdates() { return UpdateCheck(out _); }
 
-        public static void UpdateBulkData()
+        public void UpdateBulkData()
         {
             if (!UpdateCheck(out var bulkInfo))
                 return;
@@ -67,14 +67,14 @@ namespace MTGPrint
             updateWorker.RunWorkerAsync( bulkInfo );
         }
 
-        public static void SaveLocalData()
+        public void SaveLocalData()
         {
             if (HasChanges)
                 File.WriteAllText( LOCALDATA, JsonConvert.SerializeObject( localData, Formatting.Indented ) );
             HasChanges = false;
         }
 
-        public static List<DeckCard> ParseCardList(string cardList, out List<string> errors)
+        public List<DeckCard> ParseCardList(string cardList, out List<string> errors)
         {
             var splits = cardList.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -118,9 +118,9 @@ namespace MTGPrint
                 {
                     OracleId = card.OracleId,
                     SelectedPrintId = card.DefaultPrint ?? first.Id,
-                    Prints = card.Prints,
                     Count = count
                 };
+                dc.Prints.AddRange(card.Prints);
 
                 if (isCommander)
                     deckCards.Insert(0, dc);
@@ -145,7 +145,7 @@ namespace MTGPrint
             return deckCards;
         }
         
-        private static bool UpdateCheck(out Bulk bulkInfo)
+        private bool UpdateCheck(out Bulk bulkInfo)
         {
             bulkInfo = scry.GetBulkInfo().Data.First(b => b.Type == BulkType.DefaultCards);
 
@@ -155,7 +155,7 @@ namespace MTGPrint
             return localData == null || bulkInfo.UpdatedAt < localData.UpdatedAt || localData.Version != LOCALDATA_VERSION;
         }
 
-        private static void LoadLocalData()
+        private void LoadLocalData()
         {
             if ( !File.Exists( LOCALDATA ) )
                 return;
@@ -163,7 +163,7 @@ namespace MTGPrint
             localData = JsonConvert.DeserializeObject<LocalDataInfo>( File.ReadAllText( LOCALDATA ) );
         }
 
-        private static void ConvertToLocal(DateTimeOffset updatedAt, ScryCard[] cards)
+        private void ConvertToLocal(DateTimeOffset updatedAt, ScryCard[] cards)
         {
             if ( localData == null )
                 localData = new LocalDataInfo();

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 using MTGPrint.Models;
 
-namespace MTGPrint.Helper
+namespace MTGPrint.Helper.Parsing
 {
     public sealed class CardLayoutTypeConverter : JsonConverter
     {

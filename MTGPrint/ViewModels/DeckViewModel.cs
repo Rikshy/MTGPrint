@@ -109,18 +109,20 @@ namespace MTGPrint.ViewModels
 
         public void GenerateTokens()
         {
-            foreach (var card in Deck.Cards.Where(c => c.LocalData.Parts != null))
+            var tmp = Deck.Cards.Where(c => c.LocalData.Parts != null).ToList();
+            foreach (var cardWithToken in tmp)
             {
-                var parts = card.LocalData.Parts.Where( p => p.Component == CardComponent.Token || p.Component == CardComponent.ComboPiece );
+                var parts = cardWithToken.LocalData.Parts.Where( p => p.Component == CardComponent.Token || p.Component == CardComponent.ComboPiece );
                 foreach (var part in parts)
                 {
                     if (!Deck.Cards.Any(c => c.SelectedPrintId == part.Id))
                     {
+                        var card = localData.LocalCards.FirstOrDefault( c => c.Prints.Any( cp => cp.Id == part.Id ) );
                         Deck.Cards.Add(new DeckCard
                         {
                             OracleId = card.OracleId,
-                            LocalData = card.LocalData,
-                            SelectPrint = card.Prints.First(cp => cp.Id == part.Id),
+                            LocalData = card,
+                            SelectedPrintId = card.Prints.First(cp => cp.Id == part.Id).Id,
                             Prints = card.Prints,
                             IsToken = true,
                             Count = 5

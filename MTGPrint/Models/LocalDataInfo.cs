@@ -1,12 +1,13 @@
 ﻿using System.Windows.Media.Imaging;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
-using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System;
 
 using Newtonsoft.Json;
+
+using Caliburn.Micro;
 
 using MTGPrint.Helper;
 
@@ -48,7 +49,7 @@ namespace MTGPrint.Models
         public List<CardParts> Parts { get; set; } = new List<CardParts>();
 
         [JsonProperty("prints")]
-        public BindingList<CardPrint> Prints { get; set; } = new BindingList<CardPrint>();
+        public BindableCollection<CardPrint> Prints { get; set; } = new BindableCollection<CardPrint>();
 
         [JsonProperty("is_custom")]
         public bool IsCustom { get; set; } = false;

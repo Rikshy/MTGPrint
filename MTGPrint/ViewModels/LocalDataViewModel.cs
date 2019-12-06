@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Windows.Data;
 using System.Threading;
@@ -14,6 +13,7 @@ using Caliburn.Micro;
 
 using MTGPrint.EventModels;
 using MTGPrint.Models;
+using MTGPrint.Helper;
 
 namespace MTGPrint.ViewModels
 {
@@ -115,7 +115,7 @@ namespace MTGPrint.ViewModels
                         OracleId = Guid.NewGuid(),
                         LatestPrint = DateTimeOffset.Now,
                         Name = vm.Input,
-                        Prints = new List<CardPrint>(new[]{ cp }),
+                        Prints = new BindingList<CardPrint>(new[]{ cp }),
                     };
 
                     localData.LocalCards.Add(card);

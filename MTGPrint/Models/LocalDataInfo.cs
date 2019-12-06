@@ -1,6 +1,7 @@
 ﻿using System.Windows.Media.Imaging;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System;
@@ -47,7 +48,7 @@ namespace MTGPrint.Models
         public List<CardParts> Parts { get; set; } = new List<CardParts>();
 
         [JsonProperty("prints")]
-        public List<CardPrint> Prints { get; set; } = new List<CardPrint>();
+        public BindingList<CardPrint> Prints { get; set; } = new BindingList<CardPrint>();
 
         [JsonProperty("is_custom")]
         public bool IsCustom { get; set; } = false;

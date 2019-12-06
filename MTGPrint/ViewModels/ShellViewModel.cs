@@ -8,18 +8,19 @@ using System.IO;
 using Caliburn.Micro;
 
 using MTGPrint.EventModels;
+using MTGPrint.Helper.UI;
 using MTGPrint.Helper;
 
 namespace MTGPrint.ViewModels
 {
-    public class ShellViewModel : Conductor<object>.Collection.OneActive, IScreen, IHandle<OpenDeckEvent>, IHandle<EditLocalDataEvent>, IHandle<CreateDeckEvent>, IHandle<CloseScreenEvent>, IHandle<UpdateStatusEvent>
+    public class ShellViewModel : Conductor<object>, IScreen, IEventHandler
     {
         private readonly LocalDataStorage localData;
         private readonly SimpleContainer container;
 
-        public ShellViewModel(LocalDataStorage localData, IEventAggregator events, SimpleContainer container)
+        public ShellViewModel(IEventAggregator events, SimpleContainer container)
         {
-            this.localData = localData;
+            localData = container.GetInstance<LocalDataStorage>();
             this.container = container;
 
             events.SubscribeOnPublishedThread(this);

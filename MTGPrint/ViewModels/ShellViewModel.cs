@@ -3,7 +3,9 @@ using System.ComponentModel;
 using System.Threading;
 using System.Windows;
 using System.Linq;
+using System.Net;
 using System.IO;
+using System;
 
 using Caliburn.Micro;
 
@@ -58,6 +60,8 @@ namespace MTGPrint.ViewModels
 
         protected override async Task OnInitializeAsync(CancellationToken cancellationToken)
         {
+            ValidateInternetConnection();
+
             if (localData.CheckForUpdates())
             {
                 StatusText = "Updating localdata";
@@ -77,6 +81,20 @@ namespace MTGPrint.ViewModels
             localData.HasChanges = true;
             localData.SaveLocalData();
             return await base.CanCloseAsync(cancellationToken);
+        }
+        public void ValidateInternetConnection()
+        {
+            try
+            {
+                using (var client = new MyWebClient())
+                using (client.OpenRead("http://google.com/generate_204"))
+                    return;
+            }
+            catch
+            {
+                MessageBox.Show("This application needs a working internet connection!");
+                TryCloseAsync();
+            }
         }
 
         #region Bindings
@@ -153,6 +171,7 @@ namespace MTGPrint.ViewModels
 
         public async Task HandleAsync(OpenDeckEvent message, CancellationToken cancellationToken)
         {
+            ValidateInternetConnection();
             var vm = container.GetInstance<DeckViewModel>();
             vm.LoadDeck(message.DeckPath);
             await ActivateItemAsync(vm, cancellationToken);
@@ -160,6 +179,7 @@ namespace MTGPrint.ViewModels
 
         public async Task HandleAsync(EditLocalDataEvent message, CancellationToken cancellationToken)
         {
+            ValidateInternetConnection();
             await ActivateItemAsync(container.GetInstance<LocalDataViewModel>(), cancellationToken);
         }
 
@@ -185,6 +205,15 @@ namespace MTGPrint.ViewModels
             InfoText = message.Info ?? InfoText;
             IsEnabled = message.IsWndEnabled ?? IsEnabled;
             IsLoading = message.IsLoading ?? IsLoading;
+        }
+        private class MyWebClient : WebClient
+        {
+            protected override WebRequest GetWebRequest(Uri uri)
+            {
+                var w = base.GetWebRequest(uri);
+                w.Timeout = 20 * 1000;
+                return w;
+            }
         }
     }
 }

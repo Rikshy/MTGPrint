@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="InfoView" Height="270" Width="300" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" >
+        Title="About" Height="270" Width="400" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" >
     <Grid>
         <Grid.Resources>
             <Style x:Key="HyperlinkButton" TargetType="Button">
@@ -18,17 +18,25 @@
             </Style>
         </Grid.Resources>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="6*" />
-            <ColumnDefinition Width="4*" />
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <Image Source="../Resources/card_back.jpg" Width="157.5" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" />
-        <StackPanel Margin="5, 20" Grid.Column="1">
+        <Image Source="../Resources/card_back.jpg" Width="157.5" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7" />
+        <StackPanel Margin="0, 7" Grid.Column="1">
             <TextBlock>
                 <Run Text="MTGPrint"/>
                 <LineBreak />
                 <Run Text="by Rixi Wesenberg"/>
             </TextBlock>
-            <TextBlock Margin="0, 25, 0 ,0" Text="This project makes use of ITextSharp and Xceed WPF Toolkit free .NET libraries and the awesome scryfall api." TextWrapping="Wrap" />
+            <TextBlock Margin="0, 15, 0 ,0" TextWrapping="WrapWithOverflow">
+                <Run Text="MTGPrint makes use of iText and Xceed WPF Toolkit and CaliburnMicro free .net libraries." />
+                <LineBreak />
+                <LineBreak />
+                <Run Text="All card data from the excellent Scryfall." />
+                <LineBreak />
+                <LineBreak />
+                <Run Text="Magic: The Gathering is a Trademark of Wizards of the Coast, Inc. and Hasbro, Inc. MTGPrint is unaffiliated." />
+            </TextBlock>
 
             <Button x:Name="OpenProjectUrl" Margin="0, 5, 0 ,0" Style="{StaticResource HyperlinkButton}" Focusable="False">
                 <TextBlock>

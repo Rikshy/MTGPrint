@@ -7,9 +7,9 @@ using System;
 
 using Caliburn.Micro;
 
+using MTGPrint.EventModels;
 using MTGPrint.Helper;
 using MTGPrint.Models;
-using MTGPrint.EventModels;
 
 namespace MTGPrint.ViewModels
 {

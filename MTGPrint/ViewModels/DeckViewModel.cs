@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Windows.Input;
 using System.Diagnostics;
@@ -16,9 +17,8 @@ using Caliburn.Micro;
 
 using MTGPrint.EventModels;
 using MTGPrint.Helper.UI;
-using MTGPrint.Models;
 using MTGPrint.Helper;
-using System.Collections.Generic;
+using MTGPrint.Models;
 
 namespace MTGPrint.ViewModels
 {

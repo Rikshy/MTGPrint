@@ -103,9 +103,9 @@ namespace MTGPrint.ViewModels
         private string CardListFromUrl()
         {
             HttpWebRequest request = null;
-            if (ImportUrl.StartsWith("https://deckstats.net"))
+            if (ImportUrl.StartsWith("https://deckstats.net") || ImportUrl.StartsWith("https://www.deckstats.net"))
                 request = (HttpWebRequest) WebRequest.Create($"{ImportUrl}?export_dec=1");
-            if (ImportUrl.StartsWith("https://scryfall.com"))
+            if (ImportUrl.StartsWith("https://scryfall.com") || ImportUrl.StartsWith("https://www.scryfall.com"))
             {
                 var url = ImportUrl;
 
@@ -114,8 +114,28 @@ namespace MTGPrint.ViewModels
                     url = url.Substring(0, idx);
 
                 idx = ImportUrl.LastIndexOf('/');
-                url = url.Substring(idx + 1);
-                request = (HttpWebRequest)WebRequest.Create($"https://api.scryfall.com/decks/{url}/export/text");
+                var deckId = url.Substring(idx + 1);
+                request = (HttpWebRequest)WebRequest.Create($"https://api.scryfall.com/decks/{deckId}/export/text");
+            }
+            if (ImportUrl.StartsWith("https://mtggoldfish.com") || ImportUrl.StartsWith("https://www.mtggoldfish.com"))
+            {
+                var url = ImportUrl;
+
+                var idx = ImportUrl.LastIndexOf('#');
+                if (idx > 0)
+                    url = url.Substring(0, idx);
+
+                idx = ImportUrl.LastIndexOf('/');
+                var deckId = url.Substring(idx + 1);
+                request = (HttpWebRequest)WebRequest.Create($"https://mtggoldfish.com/deck/download/{deckId}");
+            }
+            if (ImportUrl.StartsWith("https://aetherhub.com") || ImportUrl.StartsWith("https://www.aetherhub.com"))
+            {
+                var url = ImportUrl;
+
+                var idx = ImportUrl.LastIndexOf('/');
+                var deckId = url.Substring(idx + 1);
+                request = (HttpWebRequest)WebRequest.Create($"https://aetherhub.com/Deck/MtgoDeckExport/{deckId}");
             }
 
             request.Method = WebRequestMethods.Http.Get;
@@ -128,6 +148,10 @@ namespace MTGPrint.ViewModels
             => OpenUrl("www.deckstats.net");
         public void OpenScryfall()
             => OpenUrl("www.scryfall.com");
+        public void OpenGoldfish()
+            => OpenUrl("www.mtggoldfish.com");
+        public void OpenAetherhub()
+            => OpenUrl("www.aetherhub.com");
 
         public void OpenUrl(string url)
             => Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });

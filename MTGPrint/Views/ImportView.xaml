@@ -78,6 +78,16 @@
                             <Hyperlink Focusable="False">www.scryfall.com</Hyperlink>
                         </TextBlock>
                     </Button>
+                    <Button x:Name="OpenGoldfish" Margin="0, 5, 0 ,0" Style="{StaticResource HyperlinkButton}" Focusable="False">
+                        <TextBlock>
+                            <Hyperlink Focusable="False">www.mtggoldfish.com</Hyperlink>
+                        </TextBlock>
+                    </Button>
+                    <Button x:Name="OpenAetherhub" Margin="0, 5, 0 ,0" Style="{StaticResource HyperlinkButton}" Focusable="False">
+                        <TextBlock>
+                            <Hyperlink Focusable="False">www.aetherhub.com</Hyperlink>
+                        </TextBlock>
+                    </Button>
                 </StackPanel>
             </TabItem>
         </TabControl>

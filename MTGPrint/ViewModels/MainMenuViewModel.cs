@@ -13,13 +13,22 @@ namespace MTGPrint.ViewModels
 {
     public class MainMenuViewModel : Screen
     {
+        private readonly IWindowManager windowManager;
         private readonly IEventAggregator events;
 
-        public MainMenuViewModel(IEventAggregator events) 
-            => this.events = events;
+        public MainMenuViewModel()
+        {
+            windowManager = IoC.Get<IWindowManager>();
+            events = IoC.Get<IEventAggregator>();
+        }
 
-        public void CreateDeck() 
-            => events.PublishOnUIThreadAsync(new CreateDeckEvent());
+        public void CreateDeck()
+        {
+            var vm = IoC.Get<ImportViewModel>();
+            var result = windowManager.ShowDialogAsync(vm).Result;
+            if (result == true)
+                events.PublishOnUIThreadAsync(new CreateDeckEvent { Cards = vm.ImportedCards });
+        }
 
         public void EditLocalData() 
             => events.PublishOnUIThreadAsync(new EditLocalDataEvent());

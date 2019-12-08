@@ -1,8 +1,8 @@
 ﻿namespace MTGPrint.Views
 {
-    public partial class AddCardsView
+    public partial class ImportView
     {
-        public AddCardsView()
+        public ImportView()
             => InitializeComponent();
     }
 }

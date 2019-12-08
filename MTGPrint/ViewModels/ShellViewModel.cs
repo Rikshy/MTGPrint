@@ -186,7 +186,7 @@ namespace MTGPrint.ViewModels
         public async Task HandleAsync(CreateDeckEvent message, CancellationToken cancellationToken)
         {
             var vm = container.GetInstance<DeckViewModel>();
-            vm.AddCards();
+            vm.LoadDeck(message.Cards);
             if (vm.Deck.Cards.Any())
                 await ActivateItemAsync(vm, cancellationToken);
         }

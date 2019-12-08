@@ -18,6 +18,7 @@ using MTGPrint.EventModels;
 using MTGPrint.Helper.UI;
 using MTGPrint.Models;
 using MTGPrint.Helper;
+using System.Collections.Generic;
 
 namespace MTGPrint.ViewModels
 {
@@ -95,16 +96,12 @@ namespace MTGPrint.ViewModels
 
         public void AddCards()
         {
-            events.PublishOnUIThreadAsync(new UpdateStatusEvent { Status = "Importing cards" });
-            var vm = container.GetInstance<AddCardsViewModel>();
+            var vm = container.GetInstance<ImportViewModel>();
+            vm.AllowUrlImport = false;
             var result = container.GetInstance<IWindowManager>().ShowDialogAsync(vm).Result;
-
-            if (result == true && !string.IsNullOrEmpty(vm.ImportCards) && vm.ImportCards.Trim().Length > 0)
-            {
-                var parsedCards = localData.ParseCardList(vm.ImportCards.Trim(), out var errors);
-                parsedCards.ForEach(dc => Deck.Cards.Add(dc));
-                events.PublishOnUIThreadAsync(new UpdateStatusEvent { Status = "Cards imported", Errors = string.Join(Environment.NewLine, errors) });
-            }
+            
+            if (result == true)
+                LoadDeck(vm.ImportedCards);
         }
 
         public void GenerateTokens()
@@ -194,8 +191,7 @@ namespace MTGPrint.ViewModels
         }
 
         public void ShowInfo()
-            => container.GetInstance<IWindowManager>().ShowDialogAsync(container.GetInstance<InfoViewModel>()).Wait();
-  
+            => container.GetInstance<IWindowManager>().ShowDialogAsync(container.GetInstance<InfoViewModel>()).Wait();  
         #endregion
 
         private void SaveDeck(string path)
@@ -238,6 +234,11 @@ namespace MTGPrint.ViewModels
 
             Deck.FileName = path;
             Deck.HasChanges = false;
+        }
+
+        public void LoadDeck(IEnumerable<DeckCard> cards)
+        {
+            cards.ForEach(dc => Deck.Cards.Add(dc));
         }
     }
 }

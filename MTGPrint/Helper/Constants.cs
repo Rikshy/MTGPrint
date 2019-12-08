@@ -7,4 +7,10 @@ namespace MTGPrint.Helper
     {
         public static readonly string EXE_PATH = Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location );
     }
+
+    public enum Method
+    {
+        Text = 0,
+        Url
+    }
 }

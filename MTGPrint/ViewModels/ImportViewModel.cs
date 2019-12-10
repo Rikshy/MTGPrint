@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
-using System.Net;
-using System.IO;
 using System;
 
 using Caliburn.Micro;

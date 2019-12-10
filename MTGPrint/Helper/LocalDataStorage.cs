@@ -117,6 +117,7 @@ namespace MTGPrint
                 var dc = new DeckCard
                 {
                     OracleId = card.OracleId,
+                    LocalData = card,
                     SelectedPrintId = card.DefaultPrint ?? first.Id,
                     Count = count
                 };

@@ -120,13 +120,13 @@
                         <Style.Triggers>
                             <MultiDataTrigger>
                                 <MultiDataTrigger.Conditions>
-                                    <Condition Binding="{Binding CanSave}" Value="True" />
+                                    <Condition Binding="{Binding Deck.CanSave}" Value="True" />
                                     <Condition Binding="{Binding Deck.HasChanges}" Value="True" />
                                 </MultiDataTrigger.Conditions>
                                 <Setter Property="Opacity" Value="1" />
                                 <Setter Property="IsEnabled" Value="True" />
                             </MultiDataTrigger>
-                            <DataTrigger Binding="{Binding CanSave}" Value="False">
+                            <DataTrigger Binding="{Binding Deck.CanSave}" Value="False">
                                 <Setter Property="Opacity" Value="0.5" />
                                 <Setter Property="IsEnabled" Value="False" />
                             </DataTrigger>

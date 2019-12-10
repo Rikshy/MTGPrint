@@ -20,6 +20,7 @@ namespace MTGPrint.Models
     public class Deck : INotifyPropertyChanged
     {
         private bool hasChanges;
+        private string fileName;
 
         public Deck()
         {
@@ -35,7 +36,15 @@ namespace MTGPrint.Models
         }
 
         [JsonIgnore]
-        public string FileName { get; set; }
+        public string FileName 
+        { 
+            get => fileName;
+            set
+            {
+                fileName = value;
+                OnPropertyChanged(nameof(CanSave));
+            }
+        }
 
         [JsonIgnore]
         public bool HasChanges
@@ -59,6 +68,9 @@ namespace MTGPrint.Models
 
         [JsonIgnore]
         public int TokenCount => Cards.Where(c => c.IsToken || c.IsChild).Sum(c => c.Count);
+
+        [JsonIgnore]
+        public bool CanSave => !string.IsNullOrEmpty(FileName);
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

@@ -13,16 +13,14 @@ namespace MTGPrint.ViewModels
 {
     public class ImportViewModel : Screen
     {
-        private readonly LocalDataStorage localData;
         private readonly IEventAggregator events;
 
         private string importText = string.Empty;
         private string importUrl = string.Empty;
         private Method importMethod = Method.Text;
 
-        public ImportViewModel(LocalDataStorage ld, IEventAggregator e)
+        public ImportViewModel(IEventAggregator e)
         {
-            localData = ld;
             events = e;
         }
 
@@ -76,19 +74,8 @@ namespace MTGPrint.ViewModels
         {
             try
             {
-                List<string> errors;
                 events.PublishOnUIThreadAsync(new UpdateStatusEvent { Status = "Importing cards" });
-                if (ImportMethod == Method.Text)
-                {
-                    ImportedCards = localData.ParseCardList(ImportText, out errors);
-                }
-                else if (ImportMethod == Method.Url)
-                {
-                    var deckList = DecklistGrabber.GrabDecklist(ImportUrl);
-                    ImportedCards = localData.ParseCardList(deckList, out errors);
-                }
-                else
-                    throw new ApplicationException("oO");
+                ImportedCards = DecklistGrabber.GrabDecklist(ImportText, ImportMethod, out var errors);
 
                 events.PublishOnUIThreadAsync(new UpdateStatusEvent { Status = "Cards imported", Errors = string.Join(Environment.NewLine, errors) });
                 TryCloseAsync(true);

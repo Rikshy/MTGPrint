@@ -16,10 +16,10 @@ namespace MTGPrint.ViewModels
         private readonly IWindowManager windowManager;
         private readonly IEventAggregator events;
 
-        public MainMenuViewModel()
+        public MainMenuViewModel(SimpleContainer container)
         {
-            windowManager = IoC.Get<IWindowManager>();
-            events = IoC.Get<IEventAggregator>();
+            windowManager = container.GetInstance<IWindowManager>();
+            events = container.GetInstance<IEventAggregator>();
         }
 
         public void CreateDeck()

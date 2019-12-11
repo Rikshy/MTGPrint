@@ -24,16 +24,17 @@ namespace MTGPrint.ViewModels
 {
     public class DeckViewModel : Screen
     {
+        private readonly IWindowManager winMan;
         private readonly IEventAggregator events;
-        private readonly SimpleContainer container;
-        private readonly LocalDataStorage localData;
         private readonly BackgroundPrinter printer;
+        private readonly LocalDataStorage localData;
+
         public DeckViewModel(SimpleContainer container)
         {
+            winMan = container.GetInstance<IWindowManager>();
             events = container.GetInstance<IEventAggregator>();
-            localData = container.GetInstance<LocalDataStorage>();
             printer = container.GetInstance<BackgroundPrinter>();
-            this.container = container;
+            localData = container.GetInstance<LocalDataStorage>();
 
             MarkPrintedCommand = new LightCommand(() => MarkDeckPrinted(false));
             MarkNotPrintedCommand = new LightCommand(() => MarkDeckPrinted(true));
@@ -96,9 +97,9 @@ namespace MTGPrint.ViewModels
 
         public void AddCards()
         {
-            var vm = container.GetInstance<ImportViewModel>();
+            var vm = IoC.Get<ImportViewModel>();
             vm.AllowUrlImport = false;
-            var result = container.GetInstance<IWindowManager>().ShowDialogAsync(vm).Result;
+            var result = winMan.ShowDialogAsync(vm).Result;
             
             if (result == true)
                 LoadDeck(vm.ImportedCards);
@@ -130,10 +131,7 @@ namespace MTGPrint.ViewModels
         }
 
         private void MarkDeckPrinted(bool canPrint)
-        {
-            foreach (var dc in Deck.Cards)
-                dc.CanPrint = canPrint;
-        }
+            => Deck.Cards.ForEach(dc => dc.CanPrint = canPrint);
 
         public void SaveDeckAs()
         {
@@ -170,9 +168,9 @@ namespace MTGPrint.ViewModels
 
         public void Print()
         {
-            var vm = container.GetInstance<PrintViewModel>();
+            var vm = IoC.Get<PrintViewModel>();
             vm.Deck = Deck;
-            var result = container.GetInstance<IWindowManager>().ShowDialogAsync(vm).Result;
+            var result = winMan.ShowDialogAsync(vm).Result;
             if (result == true)
             {
                 var sfd = new SaveFileDialog
@@ -191,7 +189,7 @@ namespace MTGPrint.ViewModels
         }
 
         public void ShowInfo()
-            => container.GetInstance<IWindowManager>().ShowDialogAsync(container.GetInstance<InfoViewModel>()).Wait();  
+            => winMan.ShowDialogAsync(IoC.Get<InfoViewModel>()).Wait();  
         #endregion
 
         private void SaveDeck(string path)
@@ -237,8 +235,6 @@ namespace MTGPrint.ViewModels
         }
 
         public void LoadDeck(IEnumerable<DeckCard> cards)
-        {
-            cards.ForEach(dc => Deck.Cards.Add(dc));
-        }
+            => cards.ForEach(dc => Deck.Cards.Add(dc));
     }
 }

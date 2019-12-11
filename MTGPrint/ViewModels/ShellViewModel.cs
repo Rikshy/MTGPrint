@@ -3,9 +3,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Windows;
 using System.Linq;
-using System.Net;
 using System.IO;
-using System;
 
 using Caliburn.Micro;
 
@@ -82,15 +80,10 @@ namespace MTGPrint.ViewModels
             localData.SaveLocalData();
             return await base.CanCloseAsync(cancellationToken);
         }
+
         public void ValidateInternetConnection()
         {
-            try
-            {
-                using (var client = new MyWebClient())
-                using (client.OpenRead("http://google.com/generate_204"))
-                    return;
-            }
-            catch
+            if (!ConnectionChecker.HasInternet())
             {
                 MessageBox.Show("This application needs a working internet connection!");
                 TryCloseAsync();
@@ -205,15 +198,6 @@ namespace MTGPrint.ViewModels
             InfoText = message.Info ?? InfoText;
             IsEnabled = message.IsWndEnabled ?? IsEnabled;
             IsLoading = message.IsLoading ?? IsLoading;
-        }
-        private class MyWebClient : WebClient
-        {
-            protected override WebRequest GetWebRequest(Uri uri)
-            {
-                var w = base.GetWebRequest(uri);
-                w.Timeout = 20 * 1000;
-                return w;
-            }
         }
     }
 }

@@ -9,8 +9,6 @@ using Newtonsoft.Json;
 
 using Caliburn.Micro;
 
-using MTGPrint.Helper;
-
 namespace MTGPrint.Models
 {
     public class LocalDataInfo
@@ -84,8 +82,9 @@ namespace MTGPrint.Models
             {
                 if (IsCustom)
                 {
-                    if (File.Exists(ImageUrls.Large))
-                        return new BitmapImage(new Uri(ImageUrls.Large)).CloneCurrentValue();
+                    var fp = Path.Combine(Environment.CurrentDirectory, ImageUrls.Large);
+                    if (File.Exists(fp))
+                        return new BitmapImage(new Uri(fp)).CloneCurrentValue();
                     return "";
                 }
                 else return ImageUrls.Large;
@@ -117,7 +116,7 @@ namespace MTGPrint.Models
                 throw new ArgumentException("Unsupported image resolution");
 
             using var img_crop = img.Clone(crop, img.PixelFormat);
-
+            
             var normPath = Path.Combine(baseDir, $"{printId}.png");
             var cropPath = Path.Combine(baseDir, $"{printId}-crop.png");
 
@@ -127,6 +126,9 @@ namespace MTGPrint.Models
             img.Save(normPath, ImageFormat.Png);
             img_crop.Save(cropPath, ImageFormat.Png);
 
+            var normRelPath = normPath.Substring(Environment.CurrentDirectory.Length);
+            var cropRelPath = cropPath.Substring(Environment.CurrentDirectory.Length);
+
             var cp = new CardPrint
             {
                 Id = printId,
@@ -135,11 +137,11 @@ namespace MTGPrint.Models
                 IsCustom = true,
                 ImageUrls = new ImageUrls
                 {
-                    Small = normPath,
-                    Large = normPath,
-                    Normal = normPath,
-                    Png = normPath,
-                    BorderCrop = cropPath
+                    Small = normRelPath,
+                    Large = normRelPath,
+                    Normal = normRelPath,
+                    Png = normRelPath,
+                    BorderCrop = cropRelPath
                 }
             };
             return cp;

@@ -126,8 +126,8 @@ namespace MTGPrint.Models
             img.Save(normPath, ImageFormat.Png);
             img_crop.Save(cropPath, ImageFormat.Png);
 
-            var normRelPath = normPath.Substring(Environment.CurrentDirectory.Length);
-            var cropRelPath = cropPath.Substring(Environment.CurrentDirectory.Length);
+            var normRelPath = normPath.Substring(Environment.CurrentDirectory.Length + 1);
+            var cropRelPath = cropPath.Substring(Environment.CurrentDirectory.Length + 1);
 
             var cp = new CardPrint
             {

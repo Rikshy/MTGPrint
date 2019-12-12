@@ -138,7 +138,7 @@ namespace MTGPrint.ViewModels
             var sfd = new SaveFileDialog
             {
                 Filter = "Deck file (*.jd)|*.jd",
-                InitialDirectory = Path.Combine( Constants.EXE_PATH, "decks")
+                InitialDirectory = Path.Combine( Environment.CurrentDirectory, "decks")
             };
 
             try
@@ -176,7 +176,7 @@ namespace MTGPrint.ViewModels
                 var sfd = new SaveFileDialog
                 {
                     Filter = "PDF file (*.pdf)|*.pdf",
-                    InitialDirectory = Path.Combine( Constants.EXE_PATH, "prints" )
+                    InitialDirectory = Path.Combine( Environment.CurrentDirectory, "prints" )
                 };
 
                 if (sfd.ShowDialog() == true)

@@ -39,7 +39,7 @@ namespace MTGPrint.ViewModels
             {
                 Multiselect = false,
                 Filter = "Deck file (*.jd)|*.jd",
-                InitialDirectory = Path.Combine( Constants.EXE_PATH, "decks" )
+                InitialDirectory = Path.Combine( Environment.CurrentDirectory, "decks" )
             };
             try
             {

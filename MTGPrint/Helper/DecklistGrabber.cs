@@ -275,5 +275,10 @@ namespace MTGPrint.Helper
                 || importUrl.StartsWith("tappedout.net")
                 || importUrl.StartsWith("www.tappedout.net");
         }
+        public enum Method
+        {
+            Text = 0,
+            Url
+        }
     }
 }

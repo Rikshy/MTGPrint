@@ -108,7 +108,7 @@ namespace MTGPrint.Models
 
         public static CardPrint CreateCustom(string localPath)
         {
-            var baseDir = Path.Combine(Constants.EXE_PATH, @"data\custom_prints");
+            var baseDir = Path.Combine(Environment.CurrentDirectory, @"data\custom_prints");
             var printId = Guid.NewGuid();
             var crop = new Rectangle(9, 9, 357, 505 );
             using var img_stream = new FileStream(localPath, FileMode.Open, FileAccess.Read);

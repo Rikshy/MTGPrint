@@ -17,7 +17,7 @@ namespace MTGPrint.ViewModels
 
         private string importText = string.Empty;
         private string importUrl = string.Empty;
-        private Method importMethod = Method.Text;
+        private DecklistGrabber.Method importMethod = DecklistGrabber.Method.Text;
 
         public ImportViewModel(IEventAggregator e)
         {
@@ -46,7 +46,7 @@ namespace MTGPrint.ViewModels
                 NotifyOfPropertyChange(nameof(CanImport));
             }
         }
-        public Method ImportMethod 
+        public DecklistGrabber.Method ImportMethod 
         { 
             get => importMethod;
             set
@@ -62,9 +62,9 @@ namespace MTGPrint.ViewModels
         {
             get
             {
-                if (ImportMethod == Method.Text && !string.IsNullOrEmpty(ImportText.Trim()))
+                if (ImportMethod == DecklistGrabber.Method.Text && !string.IsNullOrEmpty(ImportText.Trim()))
                     return true;
-                else if (ImportMethod == Method.Url && !string.IsNullOrEmpty(ImportUrl.Trim()))
+                else if (ImportMethod == DecklistGrabber.Method.Url && !string.IsNullOrEmpty(ImportUrl.Trim()))
                     return true;
                 return false;
             }

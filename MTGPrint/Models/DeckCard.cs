@@ -1,7 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using System.ComponentModel;
 using System.Windows.Input;
-using System.Diagnostics;
 using System.Linq;
 using System;
 
@@ -10,6 +9,7 @@ using Newtonsoft.Json;
 using Caliburn.Micro;
 
 using MTGPrint.Helper.UI;
+using MTGPrint.Helper;
 
 namespace MTGPrint.Models
 {
@@ -17,7 +17,7 @@ namespace MTGPrint.Models
     {
         public DeckCard()
         {
-            OpenScryfallCommand = new LightCommand(() => Process.Start(new ProcessStartInfo(LocalData.ScryUrl) { UseShellExecute = true }));
+            OpenScryfallCommand = new LightCommand(() => LocalData.ScryUrl.Open());
             CanPrintCommand = new LightCommand(() => CanPrint = !CanPrint);
             RemoveCardCommand = new LightCommand(() => DeleteRequest?.Invoke(this));
             DuplicardCommand = new LightCommand(() => DuplicateRequest?.Invoke(this));
@@ -85,9 +85,7 @@ namespace MTGPrint.Models
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         [JsonIgnore]
         public ICommand OpenScryfallCommand { get; }

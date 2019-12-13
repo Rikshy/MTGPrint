@@ -19,17 +19,17 @@ namespace MTGPrint.ViewModels
 {
     class LocalDataViewModel : Screen
     {
-        private readonly SimpleContainer container;
         private readonly LocalDataStorage localData;
         private readonly IEventAggregator events;
+        private readonly IWindowManager winMan;
 
         public LocalDataViewModel(SimpleContainer container)
         {
             localData = container.GetInstance<LocalDataStorage>();
             events = container.GetInstance<IEventAggregator>();
+            winMan = container.GetInstance<IWindowManager>();
 
             searchCards = CollectionViewSource.GetDefaultView(localData.LocalCards);
-            this.container = container;
         }
 
         private string searchText;
@@ -70,10 +70,7 @@ namespace MTGPrint.ViewModels
             set
             {
                 searchText = value;
-                if (searchText.Length == 0)
-                    Cards.Filter = null;
-                else
-                    Cards.Filter = (o) => ((LocalCard)o).Name.Contains(searchText, StringComparison.OrdinalIgnoreCase);
+                Cards.Filter = searchText.Length == 0 ? (Predicate<object>)null : ((o) => ((LocalCard)o).Name.Contains(searchText, StringComparison.OrdinalIgnoreCase));
                 events.PublishOnUIThreadAsync(new UpdateStatusEvent { Info = $"search found {localData.LocalCards.Count(c => c.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))} cards" });
                 NotifyOfPropertyChange();
             }
@@ -82,13 +79,13 @@ namespace MTGPrint.ViewModels
         public void OpenMainMenu()
            => events.PublishOnUIThreadAsync(new CloseScreenEvent());
         public void ShowInfo()
-            => container.GetInstance<IWindowManager>().ShowDialogAsync(container.GetInstance<InfoViewModel>()).Wait();
+            => winMan.ShowDialogAsync(IoC.Get<InfoViewModel>()).Wait();
 
         public void AddCustomCard()
         {
-            var vm = container.GetInstance<InputViewModel>();
+            var vm = IoC.Get<InputViewModel>();
             vm.Text = "Enter the card name:";
-            var result = container.GetInstance<IWindowManager>().ShowDialogAsync(vm).Result;
+            var result = winMan.ShowDialogAsync(vm).Result;
             if (result == true)
             {
                 if (string.IsNullOrEmpty(vm.Input.Trim()))

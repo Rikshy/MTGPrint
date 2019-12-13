@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Windows;
 using System;
 
@@ -20,9 +19,7 @@ namespace MTGPrint.ViewModels
         private DecklistGrabber.Method importMethod = DecklistGrabber.Method.Text;
 
         public ImportViewModel(IEventAggregator e)
-        {
-            events = e;
-        }
+            => events = e;
 
         public bool AllowUrlImport { get; set; } = true;
 
@@ -87,19 +84,16 @@ namespace MTGPrint.ViewModels
         }
 
         public void OpenDeckstats()
-            => OpenUrl("www.deckstats.net");
+            => new Uri("http://www.deckstats.net").Open();
         public void OpenScryfall()
-            => OpenUrl("www.scryfall.com");
+            => new Uri("http://www.scryfall.com").Open();
         public void OpenGoldfish()
-            => OpenUrl("www.mtggoldfish.com");
+            => new Uri("http://www.mtggoldfish.com").Open();
         public void OpenAetherhub()
-            => OpenUrl("www.aetherhub.com");
+            => new Uri("http://www.aetherhub.com").Open();
         public void OpenTappedout()
-            => OpenUrl("www.tappedout.net");
+            => new Uri("http://www.tappedout.net").Open();
         public void OpenArchidekt()
-            => OpenUrl("www.archidekt.com");
-
-        public void OpenUrl(string url)
-            => Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+            => new Uri("http://www.archidekt.com").Open();
     }
 }

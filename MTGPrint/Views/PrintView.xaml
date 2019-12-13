@@ -4,17 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        xmlns:local="clr-namespace:MTGPrint.ViewModels"
+        xmlns:c="clr-namespace:MTGPrint.Helper.UI"
         mc:Ignorable="d" Height="255" Width="120" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ShowInTaskbar="False">
-    <Window.Resources>
-        <local:EnumMatchToBooleanConverter x:Key="enumConverter" />
-    </Window.Resources>
     <Grid>
         <StackPanel>
             <GroupBox Header="Border Settings">
                 <StackPanel>
-                    <RadioButton Content="With" Margin="5" IsChecked="{Binding PrintOptions.CardBorder, Mode=TwoWay, Converter={StaticResource enumConverter}, ConverterParameter=With}" />
-                    <RadioButton Content="Without" Margin="5" IsChecked="{Binding PrintOptions.CardBorder, Mode=TwoWay, Converter={StaticResource enumConverter}, ConverterParameter=Without}" />
+                    <RadioButton Content="With" Margin="5" IsChecked="{Binding PrintOptions.CardBorder, Mode=TwoWay, Converter={c:EnumMatchToBooleanConverter}, ConverterParameter=With}" />
+                    <RadioButton Content="Without" Margin="5" IsChecked="{Binding PrintOptions.CardBorder, Mode=TwoWay, Converter={c:EnumMatchToBooleanConverter}, ConverterParameter=Without}" />
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Card margin">

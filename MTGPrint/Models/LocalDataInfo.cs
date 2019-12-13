@@ -41,7 +41,7 @@ namespace MTGPrint.Models
         public Guid? DefaultPrint { get; set; }
 
         [JsonProperty("scryfall_uri")]
-        public string ScryUrl { get; set; }
+        public Uri ScryUrl { get; set; }
 
         [JsonProperty("all_parts")]
         public List<CardParts> Parts { get; set; } = new List<CardParts>();
@@ -55,7 +55,8 @@ namespace MTGPrint.Models
         [JsonIgnore]
         public bool IsOfficial => !IsCustom;
 
-        public override string ToString() => Name;
+        public override string ToString() 
+            => Name;
     }
 
     public class CardPrint
@@ -101,17 +102,17 @@ namespace MTGPrint.Models
         public bool IsOfficial => !IsCustom;
 
         public override string ToString()
-        {
-            return SetName;
-        }
+            => SetName;
 
         public static CardPrint CreateCustom(string localPath)
         {
             var baseDir = Path.Combine(Environment.CurrentDirectory, @"data\custom_prints");
             var printId = Guid.NewGuid();
             var crop = new Rectangle(9, 9, 357, 505 );
+
             using var img_stream = new FileStream(localPath, FileMode.Open, FileAccess.Read);
             using var img = new Bitmap(img_stream);
+
             if (img.Width != 375 && img.Height != 523)
                 throw new ArgumentException("Unsupported image resolution");
 
@@ -144,6 +145,7 @@ namespace MTGPrint.Models
                     BorderCrop = cropRelPath
                 }
             };
+
             return cp;
         }
     }

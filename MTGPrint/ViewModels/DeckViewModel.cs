@@ -169,7 +169,6 @@ namespace MTGPrint.ViewModels
         public void Print()
         {
             var vm = IoC.Get<PrintViewModel>();
-            vm.Deck = Deck;
             var result = winMan.ShowDialogAsync(vm).Result;
             if (result == true)
             {
@@ -183,7 +182,8 @@ namespace MTGPrint.ViewModels
                 {
                     events.PublishOnUIThreadAsync(new UpdateStatusEvent { Status = "Creating PDF", IsLoading = true, IsWndEnabled = false });
                     vm.PrintOptions.FileName = sfd.FileName;
-                    printer.Print(Deck, vm.PrintOptions);
+                    vm.PrintOptions.Deck = Deck;
+                    printer.Print(vm.PrintOptions);
                 }
             }
         }

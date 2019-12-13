@@ -36,7 +36,7 @@ namespace MTGPrint.Models
         public string ApiUrl { get; set; }
 
         [JsonProperty( "scryfall_uri" )]
-        public string ScryUrl { get; set; }
+        public Uri ScryUrl { get; set; }
 
 
         [JsonProperty( "image_uris" )]

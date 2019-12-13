@@ -39,12 +39,13 @@ namespace MTGPrint.Helper
         }
 
         public BackgroundPrinter()
-        {
-            printWorker.DoWork += DoPrintWork;
-        }
+            => printWorker.DoWork += DoPrintWork;
 
-        public void Print(Deck deck, PrintOptions po)
+        public void Print(PrintOptions po)
         {
+            if (po.Deck == null)
+                throw new ArgumentNullException("PrintOptions.Deck");
+
             try
             {
                 File.WriteAllText(PRINTSETTINGS, JsonConvert.SerializeObject(po));
@@ -55,7 +56,7 @@ namespace MTGPrint.Helper
             }
 
             PrintStarted?.Invoke(this, EventArgs.Empty);
-            printWorker.RunWorkerAsync((deck, po));
+            printWorker.RunWorkerAsync(po);
         }
 
         public PrintOptions LoadPrintSettings()
@@ -74,9 +75,8 @@ namespace MTGPrint.Helper
 
         private void DoPrintWork(object sender, DoWorkEventArgs args)
         {
-            var options = (ValueTuple<Deck, PrintOptions>)args.Argument;
-            var deck = options.Item1;
-            var po = options.Item2;
+            var po = (PrintOptions)args.Argument;
+            var deck = po.Deck;
 
             var cs = (float)po.CardScaling / 100F;
             var cw = ( po.CardBorder == CardBorder.With ? CARD_WIDTH : CARD_WIDTH_WOB ) * cs;

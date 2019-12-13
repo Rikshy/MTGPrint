@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System;
 
 using Newtonsoft.Json;
 
@@ -49,6 +50,6 @@ namespace MTGPrint.Models
         public bool HasMore { get; set; }
 
         [JsonProperty("data")]
-        public Bulk[] Data { get; set; }
+        public IEnumerable<Bulk> Data { get; set; }
     }
 }

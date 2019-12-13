@@ -7,25 +7,24 @@ using Microsoft.Win32;
 using Caliburn.Micro;
 
 using MTGPrint.EventModels;
-using MTGPrint.Helper;
 
 namespace MTGPrint.ViewModels
 {
     public class MainMenuViewModel : Screen
     {
-        private readonly IWindowManager windowManager;
         private readonly IEventAggregator events;
+        private readonly IWindowManager winMan;
 
         public MainMenuViewModel(SimpleContainer container)
         {
-            windowManager = container.GetInstance<IWindowManager>();
             events = container.GetInstance<IEventAggregator>();
+            winMan = container.GetInstance<IWindowManager>();
         }
 
         public void CreateDeck()
         {
             var vm = IoC.Get<ImportViewModel>();
-            var result = windowManager.ShowDialogAsync(vm).Result;
+            var result = winMan.ShowDialogAsync(vm).Result;
             if (result == true)
                 events.PublishOnUIThreadAsync(new CreateDeckEvent { Cards = vm.ImportedCards });
         }

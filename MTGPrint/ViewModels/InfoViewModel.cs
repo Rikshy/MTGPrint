@@ -1,10 +1,14 @@
-﻿using System.Diagnostics;
+﻿using System;
+
+using MTGPrint.Helper;
 
 namespace MTGPrint.ViewModels
 {
     public class InfoViewModel
     {
+        private readonly Uri uri = new Uri("https://github.com/Rikshy/MTGPrint");
+
         public void OpenProjectUrl()
-            => Process.Start(new ProcessStartInfo("https://github.com/Rikshy/MTGPrint") { UseShellExecute = true });
+            => uri.Open();
     }
 }

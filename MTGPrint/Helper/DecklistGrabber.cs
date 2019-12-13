@@ -15,7 +15,6 @@ namespace MTGPrint.Helper
 {
     public class DecklistGrabber
     {
-
         private abstract class BaseGrabber
         {
             private static LocalDataStorage lds;

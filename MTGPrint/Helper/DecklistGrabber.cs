@@ -136,7 +136,7 @@ namespace MTGPrint.Helper
         private class DeckstatsGrabber : BaseWebGrabber
         {
             protected override string RefineUrl(string importUrl)
-                => $"{importUrl}?export_dec=1";
+                => importUrl.Contains("?") ? $"{importUrl}&export_dec=1" : $"{importUrl}?export_dec=1";
         }
         private class ScryfallGrabber : BaseWebGrabber
         {

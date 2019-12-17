@@ -264,6 +264,9 @@ namespace MTGPrint.Helper
             else
                 grabber = new TextGrabber();
 
+            if (grabber == null)
+                throw new ApplicationException("No decklistgrabber found for your input.");
+
             return grabber.Grab(importUrl, out errors);
         }
 

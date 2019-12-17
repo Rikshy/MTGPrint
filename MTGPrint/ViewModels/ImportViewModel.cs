@@ -16,7 +16,7 @@ namespace MTGPrint.ViewModels
 
         private string importText = string.Empty;
         private string importUrl = string.Empty;
-        private DecklistGrabber.Method importMethod = DecklistGrabber.Method.Text;
+        private GrabMethod importMethod = GrabMethod.Text;
 
         public ImportViewModel(IEventAggregator e)
             => events = e;
@@ -43,7 +43,7 @@ namespace MTGPrint.ViewModels
                 NotifyOfPropertyChange(nameof(CanImport));
             }
         }
-        public DecklistGrabber.Method ImportMethod 
+        public GrabMethod ImportMethod 
         { 
             get => importMethod;
             set
@@ -59,9 +59,9 @@ namespace MTGPrint.ViewModels
         {
             get
             {
-                if (ImportMethod == DecklistGrabber.Method.Text && !string.IsNullOrEmpty(ImportText.Trim()))
+                if (ImportMethod == GrabMethod.Text && !string.IsNullOrEmpty(ImportText.Trim()))
                     return true;
-                else if (ImportMethod == DecklistGrabber.Method.Url && !string.IsNullOrEmpty(ImportUrl.Trim()))
+                else if (ImportMethod == GrabMethod.Url && !string.IsNullOrEmpty(ImportUrl.Trim()))
                     return true;
                 return false;
             }
@@ -72,7 +72,8 @@ namespace MTGPrint.ViewModels
             try
             {
                 events.PublishOnUIThreadAsync(new UpdateStatusEvent { Status = "Importing cards" });
-                ImportedCards = DecklistGrabber.GrabDecklist(ImportMethod == DecklistGrabber.Method.Text ? ImportText : ImportUrl, ImportMethod, out var errors);
+                var import = ImportMethod == GrabMethod.Text ? ImportText : ImportUrl;
+                ImportedCards = DecklistGrabber.GrabDecklist(import, ImportMethod, out var errors);
 
                 events.PublishOnUIThreadAsync(new UpdateStatusEvent { Status = "Cards imported", Errors = string.Join(Environment.NewLine, errors) });
                 TryCloseAsync(true);

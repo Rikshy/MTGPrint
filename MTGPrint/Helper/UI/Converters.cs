@@ -20,7 +20,7 @@ namespace MTGPrint.Helper.UI
             => (int)value;
 
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            => (DecklistGrabber.Method)value;
+            => (GrabMethod)value;
     }
 
     public class EnumMatchToBooleanConverter : BaseValueConverter

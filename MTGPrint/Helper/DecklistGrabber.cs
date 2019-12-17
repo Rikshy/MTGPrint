@@ -243,10 +243,10 @@ namespace MTGPrint.Helper
         }
         #endregion
 
-        public static IEnumerable<DeckCard> GrabDecklist(string importUrl, Method method, out IEnumerable<string> errors)
+        public static IEnumerable<DeckCard> GrabDecklist(string importUrl, GrabMethod method, out IEnumerable<string> errors)
         {
             BaseGrabber grabber = null;
-            if (method == Method.Url)
+            if (method == GrabMethod.Url)
             {
                 if (importUrl.StartsWith("https://deckstats.net") || importUrl.StartsWith("https://www.deckstats.net"))
                     grabber = new DeckstatsGrabber();
@@ -277,10 +277,10 @@ namespace MTGPrint.Helper
                 || importUrl.StartsWith("tappedout.net")
                 || importUrl.StartsWith("www.tappedout.net");
         }
-        public enum Method
-        {
-            Text = 0,
-            Url
-        }
+    }
+    public enum GrabMethod
+    {
+        Text = 0,
+        Url
     }
 }

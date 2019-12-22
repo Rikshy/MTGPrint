@@ -6,7 +6,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:c="clr-namespace:MTGPrint.Helper.UI"
         mc:Ignorable="d" WindowStyle="ToolWindow"
-        Title="AddCards" Height="450" Width="400" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+        Title="Import" Height="450" Width="400" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
     <Window.Resources>
         <Style x:Key="Style-TabControl-Main" TargetType="{x:Type TabControl}">
             <Setter Property="SnapsToDevicePixels" Value="True" />

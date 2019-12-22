@@ -19,9 +19,11 @@ namespace MTGPrint
 
         public LocalDataStorage()
         {
+            updateWorker.WorkerReportsProgress = true;
             updateWorker.DoWork += delegate (object sender, DoWorkEventArgs e)
             {
                 var bulkInfo = e.Argument as Bulk;
+                updateWorker.ReportProgress(0, $"Downloading bulkdata ({((int)(bulkInfo.CompressedSize / 1024) / 1024F).ToString("F3")}MB)");
 
                 var request = (HttpWebRequest)WebRequest.Create(bulkInfo.PermalinkUri);
                 request.Method = WebRequestMethods.Http.Get;
@@ -31,12 +33,30 @@ namespace MTGPrint
                 using var stream = new StreamReader(response.GetResponseStream());
                 var responseText = stream.ReadToEnd();
 
-                ConvertToLocal( bulkInfo.UpdatedAt, cards );
+                var cards = JsonConvert.DeserializeObject<ScryCard[]>( responseText );
+
+                if (localData == null)
+                    localData = new LocalDataInfo();
+
+                localData.UpdatedAt = bulkInfo.UpdatedAt;
+                localData.CardCount = cards.LongLength;
+
+                int i = 0;
+                foreach (var card in cards)
+                {
+                    if (i++ % 100 == 0 || i == cards.LongLength)
+                        updateWorker.ReportProgress(0, $"Updating local cache: {i}/{cards.LongLength}");
+                    ConvertToLocal(card);
+                }
 
                 localData.Version = LOCALDATA_VERSION;
 
                 HasChanges = true;
                 SaveLocalData();
+            };
+            updateWorker.ProgressChanged += delegate (object sender, ProgressChangedEventArgs e)
+            {
+                LocalDataUpdating?.Invoke(sender, e.UserState.ToString());
             };
             updateWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs args)
             {
@@ -54,6 +74,7 @@ namespace MTGPrint
 
         private readonly BackgroundWorker updateWorker = new BackgroundWorker();
         public event EventHandler LocalDataUpdated;
+        public event EventHandler<string> LocalDataUpdating;
 
         public bool CheckForUpdates() { return UpdateCheck(out _); }
 
@@ -71,7 +92,7 @@ namespace MTGPrint
         public void SaveLocalData()
         {
             if (HasChanges)
-                File.WriteAllText( LOCALDATA, JsonConvert.SerializeObject( localData, Formatting.Indented ) );
+                File.WriteAllText(LOCALDATA, JsonConvert.SerializeObject(localData, Formatting.Indented));
             HasChanges = false;
         }
 
@@ -93,63 +114,54 @@ namespace MTGPrint
             localData = JsonConvert.DeserializeObject<LocalDataInfo>(File.ReadAllText(LOCALDATA));
         }
 
-        private void ConvertToLocal(DateTimeOffset updatedAt, ScryCard[] cards)
+        private void ConvertToLocal(ScryCard card)
         {
-            if ( localData == null )
-                localData = new LocalDataInfo();
-
-            localData.UpdatedAt = updatedAt;
-            localData.CardCount = cards.LongLength;
-
-            foreach (var card in cards)
+            var lcard = card.Layout != CardLayout.Token
+                ? localData.Cards.FirstOrDefault( c => c.OracleId == card.OracleId )
+                : localData.Cards.FirstOrDefault( c => c.Name == card.Name );
+            if (lcard == null)
             {
-                var lcard = card.Layout != CardLayout.Token 
-                    ? localData.Cards.FirstOrDefault( c => c.OracleId == card.OracleId )
-                    : localData.Cards.FirstOrDefault( c => c.Name == card.Name );
-                if ( lcard == null )
+                lcard = new LocalCard
                 {
-                    lcard = new LocalCard
-                    {
-                        OracleId = card.OracleId,
-                        Name = card.Name,
-                        ScryUrl = card.ScryUrl,
-                        LatestPrint = card.ReleasedAt,
-                        Parts = card.Parts
-                    };
-                    localData.Cards.Add( lcard );
-                }
-                else
-                {
-                    if ( card.ReleasedAt > lcard.LatestPrint )
-                        lcard.LatestPrint = card.ReleasedAt;
-
-                    if ( card.Parts != null )
-                    {
-                        if ( lcard.Parts == null )
-                            lcard.Parts = new List<CardParts>();
-
-                        lcard.Parts.AddRange( card.Parts.Where( part => lcard.Parts.All( p => part.Id != p.Id ) ) );
-                    }
-                }
-
-                var iu = card.ImageUrls;
-                ImageUrls child = null;
-                if ( card.Layout == CardLayout.Transform )
-                {
-                    iu = card.CardFaces.First().ImageUrls;
-                    child = card.CardFaces.Last().ImageUrls;
-                }
-
-                if (lcard.Prints.All( p => p.Id != card.Id ))
-                    lcard.Prints.Add( new CardPrint
-                    {
-                        Id = card.Id,
-                        Set = card.Set,
-                        SetName = card.SetName,
-                        ImageUrls = iu,
-                        ChildUrls = child
-                    } );
+                    OracleId = card.OracleId,
+                    Name = card.Name,
+                    ScryUrl = card.ScryUrl,
+                    LatestPrint = card.ReleasedAt,
+                    Parts = card.Parts
+                };
+                localData.Cards.Add(lcard);
             }
+            else
+            {
+                if (card.ReleasedAt > lcard.LatestPrint)
+                    lcard.LatestPrint = card.ReleasedAt;
+
+                if (card.Parts != null)
+                {
+                    if (lcard.Parts == null)
+                        lcard.Parts = new List<CardParts>();
+
+                    lcard.Parts.AddRange(card.Parts.Where(part => lcard.Parts.All(p => part.Id != p.Id)));
+                }
+            }
+
+            var iu = card.ImageUrls;
+            ImageUrls child = null;
+            if (card.Layout == CardLayout.Transform)
+            {
+                iu = card.CardFaces.First().ImageUrls;
+                child = card.CardFaces.Last().ImageUrls;
+            }
+
+            if (lcard.Prints.All(p => p.Id != card.Id))
+                lcard.Prints.Add(new CardPrint
+                {
+                    Id = card.Id,
+                    Set = card.Set,
+                    SetName = card.SetName,
+                    ImageUrls = iu,
+                    ChildUrls = child
+                });
         }
     }
 }

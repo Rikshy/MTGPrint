@@ -14,7 +14,6 @@ namespace MTGPrint
     public class LocalDataStorage
     {
         private const string LOCALDATA = @"data\localdata.json";
-        private static readonly WebClient cardLoader = new WebClient();
 
         private const int LOCALDATA_VERSION = 2;
 
@@ -22,11 +21,15 @@ namespace MTGPrint
         {
             updateWorker.DoWork += delegate (object sender, DoWorkEventArgs e)
             {
-                var bulkFile = $@"data\default-temp.json";
                 var bulkInfo = e.Argument as Bulk;
-                cardLoader.DownloadFile( bulkInfo.PermalinkUri, bulkFile );
 
-                var cards = JsonConvert.DeserializeObject<ScryCard[]>( File.ReadAllText( bulkFile ) );
+                var request = (HttpWebRequest)WebRequest.Create(bulkInfo.PermalinkUri);
+                request.Method = WebRequestMethods.Http.Get;
+                request.ContentType = bulkInfo.ContentType;
+                request.AutomaticDecompression = DecompressionMethods.GZip;
+                var response = (HttpWebResponse)request.GetResponse();
+                using var stream = new StreamReader(response.GetResponseStream());
+                var responseText = stream.ReadToEnd();
 
                 ConvertToLocal( bulkInfo.UpdatedAt, cards );
 
@@ -34,11 +37,10 @@ namespace MTGPrint
 
                 HasChanges = true;
                 SaveLocalData();
-                File.Delete( bulkFile );
             };
             updateWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs args)
             {
-                LocalDataUpdated?.Invoke( null, args );
+                LocalDataUpdated?.Invoke(null, args);
             };
         }
 
@@ -63,7 +65,7 @@ namespace MTGPrint
             if (!Directory.Exists(@"data"))
                 Directory.CreateDirectory("data");
 
-            updateWorker.RunWorkerAsync( bulkInfo );
+            updateWorker.RunWorkerAsync(bulkInfo);
         }
 
         public void SaveLocalData()
@@ -72,7 +74,7 @@ namespace MTGPrint
                 File.WriteAllText( LOCALDATA, JsonConvert.SerializeObject( localData, Formatting.Indented ) );
             HasChanges = false;
         }
-        
+
         private bool UpdateCheck(out Bulk bulkInfo)
         {
             bulkInfo = scry.GetBulkInfo().Data.First(b => b.Type == BulkType.DefaultCards);
@@ -85,10 +87,10 @@ namespace MTGPrint
 
         private void LoadLocalData()
         {
-            if ( !File.Exists( LOCALDATA ) )
+            if (!File.Exists(LOCALDATA))
                 return;
 
-            localData = JsonConvert.DeserializeObject<LocalDataInfo>( File.ReadAllText( LOCALDATA ) );
+            localData = JsonConvert.DeserializeObject<LocalDataInfo>(File.ReadAllText(LOCALDATA));
         }
 
         private void ConvertToLocal(DateTimeOffset updatedAt, ScryCard[] cards)

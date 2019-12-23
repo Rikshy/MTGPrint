@@ -32,7 +32,7 @@ namespace MTGPrint.Models
         public long CompressedSize { get; set; }
 
         [JsonProperty("permalink_uri")]
-        public Uri PermalinkUri { get; set; }
+        public string PermalinkUri { get; set; }
 
         [JsonProperty("content_type")]
         public string ContentType { get; set; }

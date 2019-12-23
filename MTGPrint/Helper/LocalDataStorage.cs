@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO.Compression;
 using System.Linq;
-using System.Net;
+using System.Text;
 using System.IO;
 using System;
 
 using Newtonsoft.Json;
 
+using MTGPrint.Helper;
 using MTGPrint.Models;
-using System.Text;
-using System.IO.Compression;
 
 namespace MTGPrint
 {
@@ -28,19 +28,14 @@ namespace MTGPrint
                 var bulkInfo = e.Argument as Bulk;
                 updateWorker.ReportProgress(0, $"Downloading bulkdata ({((int)(bulkInfo.CompressedSize / 1024) / 1024F).ToString("F3")}MB)");
 
-                var request = (HttpWebRequest)WebRequest.Create(bulkInfo.PermalinkUri);
-                request.Method = WebRequestMethods.Http.Get;
-                request.ContentType = bulkInfo.ContentType;
-                request.AutomaticDecompression = DecompressionMethods.GZip;
-                var response = (HttpWebResponse)request.GetResponse();
-                using var stream = new StreamReader(response.GetResponseStream());
-                var responseText = stream.ReadToEnd();
+                var response = WebHelper.Get(bulkInfo.PermalinkUri, bulkInfo.ContentType, true);
 
-                var cards = JsonConvert.DeserializeObject<ScryCard[]>( responseText );
+                var cards = JsonConvert.DeserializeObject<ScryCard[]>( response );
 
                 if (localData == null)
                     localData = new LocalDataInfo();
 
+                localData.Version = LOCALDATA_VERSION;
                 localData.UpdatedAt = bulkInfo.UpdatedAt;
                 localData.CardCount = cards.LongLength;
 
@@ -51,8 +46,6 @@ namespace MTGPrint
                         updateWorker.ReportProgress(0, $"Updating local cache: {i}/{cards.LongLength}");
                     ConvertToLocal(card);
                 }
-
-                localData.Version = LOCALDATA_VERSION;
 
                 HasChanges = true;
                 SaveLocalData();
@@ -106,7 +99,9 @@ namespace MTGPrint
 
         private bool UpdateCheck(out Bulk bulkInfo)
         {
-            bulkInfo = scry.GetBulkInfo().Data.First(b => b.Type == BulkType.DefaultCards);
+            var response = WebHelper.Get("https://api.scryfall.com/bulk-data");
+
+            bulkInfo = JsonConvert.DeserializeObject<BulkBase>(response).Data.First(b => b.Type == BulkType.DefaultCards);
 
             if (localData == null)
                 LoadLocalData();
@@ -118,8 +113,7 @@ namespace MTGPrint
         {
             if (File.Exists(OLDDATA))
             {
-                var str = File.ReadAllText(OLDDATA);
-                localData = JsonConvert.DeserializeObject<LocalDataInfo>(str);
+                localData = JsonConvert.DeserializeObject<LocalDataInfo>(File.ReadAllText(OLDDATA));
                 SaveLocalData(true);
                 File.Delete(OLDDATA);
             }

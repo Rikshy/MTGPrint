@@ -1,8 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.IO;
 using System;
 
 using Newtonsoft.Json;
@@ -120,11 +118,7 @@ namespace MTGPrint.Helper
             {
                 var url = RefineUrl(importUrl);
                 
-                var request = (HttpWebRequest)WebRequest.Create(url);
-                request.Method = WebRequestMethods.Http.Get;
-                var response = (HttpWebResponse)request.GetResponse();
-                using var stream = new StreamReader(response.GetResponseStream());
-                var responseText = stream.ReadToEnd();
+                var responseText = WebHelper.Get(url);
 
                 return RefineResponse(responseText);
             }

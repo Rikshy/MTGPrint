@@ -8,12 +8,15 @@ using System;
 using Newtonsoft.Json;
 
 using MTGPrint.Models;
+using System.Text;
+using System.IO.Compression;
 
 namespace MTGPrint
 {
     public class LocalDataStorage
     {
-        private const string LOCALDATA = @"data\localdata.json";
+        private const string LOCALDATA = @"data\localdata.gz";
+        private const string OLDDATA = @"data\localdata.json";
 
         private const int LOCALDATA_VERSION = 2;
 
@@ -89,10 +92,15 @@ namespace MTGPrint
             updateWorker.RunWorkerAsync(bulkInfo);
         }
 
-        public void SaveLocalData()
+        public void SaveLocalData(bool force = false)
         {
-            if (HasChanges)
-                File.WriteAllText(LOCALDATA, JsonConvert.SerializeObject(localData, Formatting.Indented));
+            if (HasChanges || force)
+            {
+                using var file = new FileStream(LOCALDATA, FileMode.Create, FileAccess.ReadWrite);
+                using var gzip = new GZipStream(file, CompressionMode.Compress);
+                using var writer = new StreamWriter(gzip, Encoding.UTF8);
+                writer.Write(JsonConvert.SerializeObject(localData));
+            }
             HasChanges = false;
         }
 
@@ -108,10 +116,20 @@ namespace MTGPrint
 
         private void LoadLocalData()
         {
-            if (!File.Exists(LOCALDATA))
-                return;
-
-            localData = JsonConvert.DeserializeObject<LocalDataInfo>(File.ReadAllText(LOCALDATA));
+            if (File.Exists(OLDDATA))
+            {
+                var str = File.ReadAllText(OLDDATA);
+                localData = JsonConvert.DeserializeObject<LocalDataInfo>(str);
+                SaveLocalData(true);
+                File.Delete(OLDDATA);
+            }
+            else if (File.Exists(LOCALDATA))
+            {
+                using var file = new FileStream(LOCALDATA, FileMode.Open, FileAccess.Read);
+                using var gzip = new GZipStream(file, CompressionMode.Decompress);
+                using var reader = new StreamReader(gzip, Encoding.UTF8);
+                localData = JsonConvert.DeserializeObject<LocalDataInfo>(reader.ReadToEnd());
+            }
         }
 
         private void ConvertToLocal(ScryCard card)

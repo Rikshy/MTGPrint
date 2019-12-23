@@ -80,8 +80,7 @@ namespace MTGPrint.ViewModels
 
         public override async Task<bool> CanCloseAsync(CancellationToken cancellationToken)
         {
-            localData.HasChanges = true;
-            localData.SaveLocalData();
+            localData.SaveLocalData(true);
             return await base.CanCloseAsync(cancellationToken);
         }
 

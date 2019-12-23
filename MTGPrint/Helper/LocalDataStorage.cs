@@ -60,8 +60,6 @@ namespace MTGPrint
             };
         }
 
-        private readonly ScryfallClient scry = new ScryfallClient();
-
         private LocalDataInfo localData;
 
         public bool HasChanges { get; set; }

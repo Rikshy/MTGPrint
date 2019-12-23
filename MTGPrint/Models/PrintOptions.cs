@@ -15,11 +15,5 @@ namespace MTGPrint.Models
 
         [JsonProperty( "open_pdf" )]
         public bool OpenPDF { get; set; } = true;
-
-
-        [JsonIgnore]
-        public string FileName { get; set; }
-        [JsonIgnore]
-        public Deck Deck { get; set; }
     }
 }

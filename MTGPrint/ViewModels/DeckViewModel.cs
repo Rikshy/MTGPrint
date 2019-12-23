@@ -57,11 +57,12 @@ namespace MTGPrint.ViewModels
 
                     foreach (var dc in Deck.Cards)
                         dc.CanPrint = false;
-                    if (args.Result is PrintOptions po && po.OpenPDF)
-                        Process.Start(new ProcessStartInfo(po.FileName) { UseShellExecute = true });
+                    if (args.Result is string)
+                        Process.Start(new ProcessStartInfo(args.Result.ToString()) { UseShellExecute = true });
                     else
                         MessageBox.Show(Application.Current.MainWindow, "Cards printed!");
                 }
+
                 events.PublishOnUIThreadAsync(new UpdateStatusEvent { IsWndEnabled = true, IsLoading = false, Errors = errors, Status = status });
             };
 
@@ -169,6 +170,7 @@ namespace MTGPrint.ViewModels
         public void Print()
         {
             var vm = IoC.Get<PrintViewModel>();
+            vm.PrintOptions = Deck.PrintOptions;
             var result = winMan.ShowDialogAsync(vm).Result;
             if (result == true)
             {
@@ -181,9 +183,7 @@ namespace MTGPrint.ViewModels
                 if (sfd.ShowDialog() == true)
                 {
                     events.PublishOnUIThreadAsync(new UpdateStatusEvent { Status = "Creating PDF", IsLoading = true, IsWndEnabled = false });
-                    vm.PrintOptions.FileName = sfd.FileName;
-                    vm.PrintOptions.Deck = Deck;
-                    printer.Print(vm.PrintOptions);
+                    printer.Print(sfd.FileName, Deck);
                 }
             }
         }

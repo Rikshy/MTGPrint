@@ -63,6 +63,9 @@ namespace MTGPrint.Models
         [JsonProperty("cards")]
         public BindableCollection<DeckCard> Cards { get; set; } = new BindableCollection<DeckCard>();
 
+        [JsonProperty("print_options")]
+        public PrintOptions PrintOptions { get; set; } = new PrintOptions();
+
         [JsonIgnore]
         public int CardCount => Cards.Where(c => !c.IsToken && !c.IsChild).Sum(c => c.Count);
 

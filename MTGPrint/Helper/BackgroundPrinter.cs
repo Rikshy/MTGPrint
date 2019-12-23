@@ -16,8 +16,6 @@ namespace MTGPrint.Helper
 {
     public class BackgroundPrinter
     {
-        private const string PRINTSETTINGS = @"data\printsettings.json";
-
         // 1 inch = 72 point
         private const float MM_TO_POINT = 2.834645669291339F;
 
@@ -41,49 +39,30 @@ namespace MTGPrint.Helper
         public BackgroundPrinter()
             => printWorker.DoWork += DoPrintWork;
 
-        public void Print(PrintOptions po)
+        public void Print(string filename, Deck deck)
         {
-            if (po.Deck == null)
-                throw new ArgumentNullException("PrintOptions.Deck");
-
-            try
-            {
-                File.WriteAllText(PRINTSETTINGS, JsonConvert.SerializeObject(po));
-            }
-            catch
-            {
-                // ignore
-            }
-
             PrintStarted?.Invoke(this, EventArgs.Empty);
-            printWorker.RunWorkerAsync(po);
+            printWorker.RunWorkerAsync(new PrintParams { FileName = filename, Deck = deck });
         }
 
-        public PrintOptions LoadPrintSettings()
+        private class PrintParams
         {
-            if (!File.Exists(PRINTSETTINGS))
-                return new PrintOptions();
-            try
-            {
-                return JsonConvert.DeserializeObject<PrintOptions>(File.ReadAllText(PRINTSETTINGS));
-            }
-            catch
-            {
-                return new PrintOptions();
-            }
+            public Deck Deck { get; set; }
+            public string FileName { get; set; }
         }
 
         private void DoPrintWork(object sender, DoWorkEventArgs args)
         {
-            var po = (PrintOptions)args.Argument;
-            var deck = po.Deck;
+            var pp = (PrintParams)args.Argument;
+            var deck = pp.Deck;
+            var po = deck.PrintOptions;
 
             var cs = (float)po.CardScaling / 100F;
             var cw = ( po.CardBorder == CardBorder.With ? CARD_WIDTH : CARD_WIDTH_WOB ) * cs;
             var ch = ( po.CardBorder == CardBorder.With ? CARD_HEIGHT : CARD_HEIGHT_WOB ) * cs;
             var cm = po.CardMargin * MM_TO_POINT;
 
-            using var stream = new FileStream( po.FileName, FileMode.Create );
+            using var stream = new FileStream( pp.FileName, FileMode.Create );
             using var writer = new PdfWriter( stream );
             var doc = new Document( new PdfDocument( writer ) );
 
@@ -129,7 +108,7 @@ namespace MTGPrint.Helper
             }
             doc.Close();
 
-            args.Result = po;
+            args.Result = po.OpenPDF ? pp.FileName : null;
         }
     }
 }

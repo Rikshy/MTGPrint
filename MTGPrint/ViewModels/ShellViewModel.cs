@@ -70,7 +70,6 @@ namespace MTGPrint.ViewModels
                 IsLoading = true;
                 localData.UpdateBulkData();
                 IsEnabled = false;
-                MessageBox.Show(Application.Current.MainWindow, "The client is updating local data. This might take a while.");
             }
             else
                 StatusText = "Localdata is up to date";

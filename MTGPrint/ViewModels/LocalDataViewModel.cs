@@ -148,7 +148,7 @@ namespace MTGPrint.ViewModels
                 if (print == null)
                     return;
 
-                SelectedItem.Prints.Add(print);
+                SelectedItem.Prints.Insert(0, print);
                 localData.HasChanges = true;
             }
             catch (Exception e)

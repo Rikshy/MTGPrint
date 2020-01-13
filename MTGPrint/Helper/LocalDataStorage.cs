@@ -40,7 +40,7 @@ namespace MTGPrint
                 localData.CardCount = cards.LongLength;
 
                 int i = 0;
-                foreach (var card in cards)
+                foreach (var card in cards.OrderBy(sc => sc.ReleasedAt))
                 {
                     if (i++ % 100 == 0 || i == cards.LongLength)
                         updateWorker.ReportProgress(0, $"Updating local cache: {i}/{cards.LongLength}");
@@ -164,7 +164,7 @@ namespace MTGPrint
             }
 
             if (lcard.Prints.All(p => p.Id != card.Id))
-                lcard.Prints.Add(new CardPrint
+                lcard.Prints.Insert(0, new CardPrint
                 {
                     Id = card.Id,
                     Set = card.Set,

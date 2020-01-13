@@ -104,7 +104,7 @@ namespace MTGPrint
             if (localData == null)
                 LoadLocalData();
 
-            return localData == null || bulkInfo.UpdatedAt < localData.UpdatedAt || localData.Version != LOCALDATA_VERSION;
+            return localData == null || localData.UpdatedAt < bulkInfo.UpdatedAt || localData.Version != LOCALDATA_VERSION;
         }
 
         private void LoadLocalData()

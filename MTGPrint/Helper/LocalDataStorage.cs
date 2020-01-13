@@ -50,14 +50,11 @@ namespace MTGPrint
                 HasChanges = true;
                 SaveLocalData();
             };
-            updateWorker.ProgressChanged += delegate (object sender, ProgressChangedEventArgs e)
-            {
-                LocalDataUpdating?.Invoke(sender, e.UserState.ToString());
-            };
-            updateWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs args)
-            {
-                LocalDataUpdated?.Invoke(null, args);
-            };
+
+            updateWorker.ProgressChanged += (object sender, ProgressChangedEventArgs e)
+                => LocalDataUpdating?.Invoke(sender, e.UserState.ToString());
+            updateWorker.RunWorkerCompleted += (object sender, RunWorkerCompletedEventArgs args)
+                => LocalDataUpdated?.Invoke(null, args);
         }
 
         private LocalDataInfo localData;

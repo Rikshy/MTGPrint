@@ -25,10 +25,8 @@ namespace MTGPrint.ViewModels
 
             events.SubscribeOnPublishedThread(this);
 
-            localData.LocalDataUpdating += delegate (object s, string text)
-            {
-                OnUIThread(() => InfoText = text);
-            };
+            localData.LocalDataUpdating += (object s, string text)
+                => OnUIThread(() => InfoText = text);
             localData.LocalDataUpdated += delegate
                                       {
                                           StatusText = "Localdata updated";

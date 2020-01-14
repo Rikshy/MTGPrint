@@ -30,6 +30,7 @@ namespace MTGPrint.ViewModels
             winMan = container.GetInstance<IWindowManager>();
 
             searchCards = CollectionViewSource.GetDefaultView(localData.LocalCards);
+            SearchText = string.Empty;
         }
 
         private string searchText;

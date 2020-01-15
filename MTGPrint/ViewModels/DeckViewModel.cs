@@ -15,6 +15,8 @@ using Newtonsoft.Json;
 
 using Caliburn.Micro;
 
+using GongSolutions.Wpf.DragDrop;
+
 using MTGPrint.EventModels;
 using MTGPrint.Helper.UI;
 using MTGPrint.Helper;
@@ -22,7 +24,7 @@ using MTGPrint.Models;
 
 namespace MTGPrint.ViewModels
 {
-    public class DeckViewModel : Screen
+    public class DeckViewModel : Screen, IDropTarget
     {
         private readonly IWindowManager winMan;
         private readonly IEventAggregator events;
@@ -236,5 +238,22 @@ namespace MTGPrint.ViewModels
 
         public void LoadDeck(IEnumerable<DeckCard> cards)
             => cards.ForEach(dc => Deck.Cards.Add(dc));
+
+        public void DragOver(IDropInfo dropInfo)
+        {
+            if (dropInfo.Data is DeckCard && dropInfo.TargetItem is DeckCard)
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.Move;
+            }
+
+        }
+        public void Drop(IDropInfo dropInfo)
+        {
+            var source = dropInfo.Data as DeckCard;
+            var target = dropInfo.TargetItem as DeckCard;
+
+            Deck.Cards.Move(Deck.Cards.IndexOf(source), Deck.Cards.IndexOf(target));
+        }
     }
 }

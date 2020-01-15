@@ -46,7 +46,7 @@
         </Grid.RowDefinitions>
         <TabControl Grid.Row="0" Style="{StaticResource Style-TabControl-Main}" SelectedIndex="{Binding ImportMethod, Converter={c:SelectedTabConverter}}">
             <TabItem Header="Text">
-                <xctk:WatermarkTextBox Text="{Binding ImportText, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <xctk:WatermarkTextBox Text="{Binding ImportText, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto" KeepWatermarkOnGotFocus="True">
                     <xctk:WatermarkTextBox.Watermark>
                         <TextBlock>
                             <Run Text="Enter your decklist here in the following format:" />

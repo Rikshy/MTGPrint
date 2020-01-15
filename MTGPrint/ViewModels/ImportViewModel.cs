@@ -14,14 +14,26 @@ namespace MTGPrint.ViewModels
     {
         private readonly IEventAggregator events;
 
+        private bool allowUrlImport = true;
         private string importText = string.Empty;
         private string importUrl = string.Empty;
-        private GrabMethod importMethod = GrabMethod.Text;
+        private GrabMethod importMethod = GrabMethod.Url;
 
         public ImportViewModel(IEventAggregator e)
             => events = e;
 
-        public bool AllowUrlImport { get; set; } = true;
+        public bool AllowUrlImport
+        {
+            get => allowUrlImport;
+            set
+            {
+                allowUrlImport = value;
+                NotifyOfPropertyChange();
+
+                if (!allowUrlImport)
+                    ImportMethod = GrabMethod.Text;
+            }
+        }
 
         public string ImportText
         {

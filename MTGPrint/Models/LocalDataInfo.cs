@@ -85,7 +85,14 @@ namespace MTGPrint.Models
                 {
                     var fp = Path.Combine(Environment.CurrentDirectory, ImageUrls.Large);
                     if (File.Exists(fp))
-                        return new BitmapImage(new Uri(fp)).CloneCurrentValue();
+                    {
+                        var image = new BitmapImage();
+                        image.BeginInit();
+                        image.CacheOption = BitmapCacheOption.OnLoad;
+                        image.UriSource = new Uri(fp);
+                        image.EndInit();
+                        return image;
+                    }
                     return "";
                 }
                 else return ImageUrls.Large;

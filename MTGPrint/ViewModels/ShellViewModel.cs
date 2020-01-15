@@ -186,6 +186,7 @@ namespace MTGPrint.ViewModels
 
         public async Task HandleAsync(CloseScreenEvent message, CancellationToken cancellationToken)
         {
+            Errors = string.Empty;
             InfoText = string.Empty;
             StatusText = "Choose your Nemesis";
             await ActivateItemAsync(container.GetInstance<MainMenuViewModel>(), cancellationToken);

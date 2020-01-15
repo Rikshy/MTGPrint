@@ -167,6 +167,7 @@ namespace MTGPrint.ViewModels
             ValidateInternetConnection();
             var vm = container.GetInstance<DeckViewModel>();
             vm.LoadDeck(message.DeckPath);
+            StatusText = "Deck loaded";
             await ActivateItemAsync(vm, cancellationToken);
         }
 
@@ -181,7 +182,10 @@ namespace MTGPrint.ViewModels
             var vm = container.GetInstance<DeckViewModel>();
             vm.LoadDeck(message.Cards);
             if (vm.Deck.Cards.Any())
+            {
+                StatusText = "Deck loaded";
                 await ActivateItemAsync(vm, cancellationToken);
+            }
         }
 
         public async Task HandleAsync(CloseScreenEvent message, CancellationToken cancellationToken)

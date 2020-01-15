@@ -52,8 +52,8 @@ namespace MTGPrint.Helper.UI
         #endregion
 
         #region SearchScrollViewerParentProperty
-        public static readonly DependencyProperty SearchScrollViewerParentProperty
-            = DependencyProperty.RegisterAttached("SearchScrollViewerParent",
+        public static readonly DependencyProperty SearchScrollViewerOnParentProperty
+            = DependencyProperty.RegisterAttached("SearchScrollViewerOnParent",
                                                   typeof(bool),
                                                   typeof(ScrollOnDragDrop),
                                                   new UIPropertyMetadata(false));
@@ -62,13 +62,13 @@ namespace MTGPrint.Helper.UI
         /// Gets whether the control can be used as drop target.
         /// </summary>
         public static bool GetSearchScrollViewerParent(DependencyObject element)
-            => (bool)element.GetValue(SearchScrollViewerParentProperty);
+            => (bool)element.GetValue(SearchScrollViewerOnParentProperty);
 
         /// <summary>
         /// Sets whether the control can be used as drop target.
         /// </summary>
         public static void SetSearchScrollViewerParent(DependencyObject element, bool value)
-            => element.SetValue(SearchScrollViewerParentProperty, value);
+            => element.SetValue(SearchScrollViewerOnParentProperty, value);
         #endregion
 
         #region ToleranceProperty
@@ -76,7 +76,7 @@ namespace MTGPrint.Helper.UI
             = DependencyProperty.RegisterAttached("Tolerance",
                                                   typeof(double),
                                                   typeof(ScrollOnDragDrop),
-                                                  new UIPropertyMetadata(60));
+                                                  new UIPropertyMetadata(60D));
 
         /// <summary>
         /// Gets whether the control can be used as drop target.
@@ -96,7 +96,7 @@ namespace MTGPrint.Helper.UI
             = DependencyProperty.RegisterAttached("ScrollSpeed",
                                                   typeof(double),
                                                   typeof(ScrollOnDragDrop),
-                                                  new UIPropertyMetadata(20));
+                                                  new UIPropertyMetadata(20D));
 
         /// <summary>
         /// Gets whether the control can be used as drop target.

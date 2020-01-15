@@ -29,7 +29,7 @@
                 <Run Text="by Rixi Wesenberg"/>
             </TextBlock>
             <TextBlock Margin="0, 15, 0 ,0" TextWrapping="WrapWithOverflow">
-                <Run Text="MTGPrint makes use of iText and Xceed WPF Toolkit and CaliburnMicro free .net libraries." />
+                <Run Text="MTGPrint makes use of iText, Xceed WPF Toolkit, GongSolutions DragDrop and CaliburnMicro free .net libraries." />
                 <LineBreak />
                 <LineBreak />
                 <Run Text="All card data from the excellent Scryfall." />

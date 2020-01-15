@@ -110,7 +110,7 @@ namespace MTGPrint.ViewModels
 
         public void GenerateTokens()
         {
-            var tmp = Deck.Cards.Where(c => c.LocalData.Parts != null && !c.IsToken);
+            var tmp = Deck.Cards.Where(c => c.LocalData.Parts != null && !c.IsToken).ToList();
             foreach (var cardWithToken in tmp)
             {
                 var parts = cardWithToken.LocalData.Parts.Where( p => p.Component == CardComponent.Token || p.Component == CardComponent.ComboPiece );

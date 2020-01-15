@@ -110,16 +110,21 @@ namespace MTGPrint.ViewModels
 
         public void GenerateTokens()
         {
-            var tmp = Deck.Cards.Where(c => c.LocalData.Parts != null).ToList();
+            var tmp = Deck.Cards.Where(c => c.LocalData.Parts != null && !c.IsToken);
             foreach (var cardWithToken in tmp)
             {
                 var parts = cardWithToken.LocalData.Parts.Where( p => p.Component == CardComponent.Token || p.Component == CardComponent.ComboPiece );
+                var tokensToAdd = new List<DeckCard>();
+
                 foreach (var part in parts)
                 {
                     if (!Deck.Cards.Any(c => c.SelectedPrintId == part.Id))
                     {
                         var card = localData.LocalCards.FirstOrDefault( c => c.Prints.Any( cp => cp.Id == part.Id ) );
-                        Deck.Cards.Add(new DeckCard
+                        if (cardWithToken.OracleId == card.OracleId || tokensToAdd.Any(dc => dc.OracleId == card.OracleId))
+                            continue;
+
+                        tokensToAdd.Add(new DeckCard
                         {
                             OracleId = card.OracleId,
                             LocalData = card,
@@ -130,6 +135,8 @@ namespace MTGPrint.ViewModels
                         });
                     }
                 }
+
+                Deck.Cards.AddRange(tokensToAdd);
             }
         }
 

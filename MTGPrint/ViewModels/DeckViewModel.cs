@@ -136,7 +136,8 @@ namespace MTGPrint.ViewModels
                     }
                 }
 
-                Deck.Cards.AddRange(tokensToAdd);
+                //Need to add them single to register events
+                tokensToAdd.ForEach(t => Deck.Cards.Add(t));
             }
         }
 

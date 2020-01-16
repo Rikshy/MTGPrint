@@ -10,27 +10,27 @@ namespace MTGPrint.Helper.UI
     /// </summary>
     public static class ScrollOnDragDrop
     {
-        #region EnableProperty
-        public static readonly DependencyProperty EnableProperty =
-            DependencyProperty.RegisterAttached("Enable",
-                typeof(bool),
+        #region ScrollViewerSearchLocation
+        public static readonly DependencyProperty ScrollViewerSearchLocationProperty =
+            DependencyProperty.RegisterAttached("ScrollViewerSearchLocation",
+                typeof(ScrollViewerSearchLocation),
                 typeof(ScrollOnDragDrop),
-                new PropertyMetadata(false, HandleEnableChanged)); 
+                new PropertyMetadata(ScrollViewerSearchLocation.Disable, HandleEnableChanged)); 
 
-        public static bool GetEnable(DependencyObject element)
+        public static ScrollViewerSearchLocation GetScrollViewerSearchLocation(DependencyObject element)
         {
             if (element == null)
                 throw new ArgumentNullException("element");
 
-            return (bool)element.GetValue(EnableProperty);
+            return (ScrollViewerSearchLocation)element.GetValue(ScrollViewerSearchLocationProperty);
         }
 
-        public static void SetEnable(DependencyObject element, bool value)
+        public static void SetScrollViewerSearchLocation(DependencyObject element, ScrollViewerSearchLocation value)
         {
             if (element == null)
                 throw new ArgumentNullException("element");
 
-            element.SetValue(EnableProperty, value);
+            element.SetValue(ScrollViewerSearchLocationProperty, value);
         }
 
         private static void HandleEnableChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -38,37 +38,11 @@ namespace MTGPrint.Helper.UI
             if (!(d is FrameworkElement container))
                 return;
 
-            Unsubscribe(container);
+            container.PreviewDragOver += OnContainerPreviewDragOver;
 
-            if (true.Equals(e.NewValue))
-                Subscribe(container);
+            if (((ScrollViewerSearchLocation)e.NewValue) != ScrollViewerSearchLocation.Disable)
+                container.PreviewDragOver -= OnContainerPreviewDragOver;
         }
-
-        private static void Subscribe(FrameworkElement container)
-            => container.PreviewDragOver += OnContainerPreviewDragOver;
-
-        private static void Unsubscribe(FrameworkElement container)
-            => container.PreviewDragOver -= OnContainerPreviewDragOver;
-        #endregion
-
-        #region SearchScrollViewerParentProperty
-        public static readonly DependencyProperty SearchScrollViewerOnParentProperty
-            = DependencyProperty.RegisterAttached("SearchScrollViewerOnParent",
-                                                  typeof(bool),
-                                                  typeof(ScrollOnDragDrop),
-                                                  new UIPropertyMetadata(false));
-
-        /// <summary>
-        /// Gets whether the control can be used as drop target.
-        /// </summary>
-        public static bool GetSearchScrollViewerParent(DependencyObject element)
-            => (bool)element.GetValue(SearchScrollViewerOnParentProperty);
-
-        /// <summary>
-        /// Sets whether the control can be used as drop target.
-        /// </summary>
-        public static void SetSearchScrollViewerParent(DependencyObject element, bool value)
-            => element.SetValue(SearchScrollViewerOnParentProperty, value);
         #endregion
 
         #region ToleranceProperty
@@ -116,7 +90,7 @@ namespace MTGPrint.Helper.UI
             if (!(sender is FrameworkElement container))
                 return;
 
-            var scrollViewer = GetSearchScrollViewerParent(container)
+            var scrollViewer = GetScrollViewerSearchLocation(container) == ScrollViewerSearchLocation.Parent
                 ? GetFirstVisualParent<ScrollViewer>(container)
                 : GetFirstVisualChild<ScrollViewer>(container);
 
@@ -168,5 +142,12 @@ namespace MTGPrint.Helper.UI
 
             return null;
         }
+    }
+
+    public enum ScrollViewerSearchLocation
+    {
+        Disable,
+        Child,
+        Parent
     }
 }

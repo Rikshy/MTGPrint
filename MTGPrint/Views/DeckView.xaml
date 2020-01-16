@@ -157,7 +157,7 @@
             </MenuItem>
         </Menu>
         <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5,25,5,0">
-            <ItemsControl ItemsSource="{Binding Deck.Cards}" dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}" as:ScrollOnDragDrop.Enable="True" as:ScrollOnDragDrop.SearchScrollViewerParent="True">
+            <ItemsControl ItemsSource="{Binding Deck.Cards}" dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}" as:ScrollOnDragDrop.ScrollViewerSearchLocation="Parent">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />

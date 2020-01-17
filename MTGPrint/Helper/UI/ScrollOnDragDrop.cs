@@ -38,10 +38,10 @@ namespace MTGPrint.Helper.UI
             if (!(d is FrameworkElement container))
                 return;
 
-            container.PreviewDragOver += OnContainerPreviewDragOver;
+            container.PreviewDragOver -= OnContainerPreviewDragOver;
 
             if (((ScrollViewerSearchLocation)e.NewValue) != ScrollViewerSearchLocation.Disable)
-                container.PreviewDragOver -= OnContainerPreviewDragOver;
+                container.PreviewDragOver += OnContainerPreviewDragOver;
         }
         #endregion
 

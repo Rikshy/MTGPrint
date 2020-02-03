@@ -14,7 +14,7 @@ namespace MTGPrint.Models
     public class LocalDataInfo
     {
         [JsonProperty("updated_at")]
-        public DateTimeOffset UpdatedAt { get; set; }
+        public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.MinValue;
 
         [JsonProperty("card_count")]
         public long CardCount { get; set; }

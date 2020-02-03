@@ -20,35 +20,42 @@ namespace MTGPrint
 
         private const int LOCALDATA_VERSION = 2;
 
+        private class UpdateArgs
+        {
+            public Bulk BulkInfo { get; set; }
+            public bool Force { get; set; }
+        }
+
         public LocalDataStorage()
         {
             updateWorker.WorkerReportsProgress = true;
             updateWorker.DoWork += delegate (object sender, DoWorkEventArgs e)
             {
-                var bulkInfo = e.Argument as Bulk;
-                updateWorker.ReportProgress(0, $"Downloading bulkdata ({((int)(bulkInfo.CompressedSize / 1024) / 1024F).ToString("F3")}MB)");
+                var args = e.Argument as UpdateArgs;
+                updateWorker.ReportProgress(0, $"Downloading bulkdata ({((int)(args.BulkInfo.CompressedSize / 1024) / 1024F).ToString("F3")}MB)");
 
-                var response = WebHelper.Get(bulkInfo.PermalinkUri, bulkInfo.ContentType, true);
+                var response = WebHelper.Get(args.BulkInfo.PermalinkUri, args.BulkInfo.ContentType, true);
 
                 var cards = JsonConvert.DeserializeObject<ScryCard[]>( response );
 
                 if (localData == null)
                     localData = new LocalDataInfo();
 
-                localData.Version = LOCALDATA_VERSION;
-                localData.UpdatedAt = bulkInfo.UpdatedAt;
-                localData.CardCount = cards.LongLength;
-
                 int i = 0;
                 foreach (var card in cards.OrderBy(sc => sc.ReleasedAt))
                 {
                     if (i++ % 100 == 0 || i == cards.LongLength)
                         updateWorker.ReportProgress(0, $"Updating local cache: {i}/{cards.LongLength}");
+                    if (!args.Force && card.ReleasedAt < localData.UpdatedAt)
+                        continue;
                     ConvertToLocal(card);
                 }
 
-                HasChanges = true;
-                SaveLocalData();
+                localData.Version = LOCALDATA_VERSION;
+                localData.UpdatedAt = args.BulkInfo.UpdatedAt;
+                localData.CardCount = cards.LongLength;
+
+                SaveLocalData(true);
             };
 
             updateWorker.ProgressChanged += (object sender, ProgressChangedEventArgs e)
@@ -69,15 +76,15 @@ namespace MTGPrint
 
         public bool CheckForUpdates() { return UpdateCheck(out _); }
 
-        public void UpdateBulkData()
+        public void UpdateBulkData(bool force = false)
         {
-            if (!UpdateCheck(out var bulkInfo))
+            if (!UpdateCheck(out var bulkInfo) & !force)
                 return;
 
             if (!Directory.Exists(@"data"))
                 Directory.CreateDirectory("data");
 
-            updateWorker.RunWorkerAsync(bulkInfo);
+            updateWorker.RunWorkerAsync(new UpdateArgs { BulkInfo = bulkInfo, Force = force });
         }
 
         public void SaveLocalData(bool force = false)
@@ -126,6 +133,7 @@ namespace MTGPrint
             var lcard = card.Layout != CardLayout.Token
                 ? localData.Cards.FirstOrDefault( c => c.OracleId == card.OracleId )
                 : localData.Cards.FirstOrDefault( c => c.Name == card.Name );
+
             if (lcard == null)
             {
                 lcard = new LocalCard

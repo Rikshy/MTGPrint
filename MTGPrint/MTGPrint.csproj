@@ -22,6 +22,7 @@
     <None Remove="Resources\open.png" />
     <None Remove="Resources\print.png" />
     <None Remove="Resources\question.png" />
+    <None Remove="Resources\refresh.png" />
     <None Remove="Resources\reminder.png" />
     <None Remove="Resources\save.png" />
     <None Remove="Resources\warning.png" />
@@ -78,6 +79,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\question.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\refresh.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\reminder.png">

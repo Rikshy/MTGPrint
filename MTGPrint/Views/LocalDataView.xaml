@@ -38,6 +38,12 @@
                 </MenuItem.Header>
             </MenuItem>
             <Separator />
+            <MenuItem x:Name="ForceRefresh" ToolTip="Force Data Refresh">
+                <MenuItem.Header>
+                    <Image Height="15" Width="15" Source="../Resources/refresh.png" Stretch="Fill" />
+                </MenuItem.Header>
+            </MenuItem>
+            <Separator />
             <MenuItem x:Name="ShowInfo" ToolTip="Info">
                 <MenuItem.Header>
                     <Image Height="15" Width="15" Source="../Resources/info.png" Stretch="Fill" />

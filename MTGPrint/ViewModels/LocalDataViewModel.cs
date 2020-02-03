@@ -79,6 +79,11 @@ namespace MTGPrint.ViewModels
 
         public void OpenMainMenu()
            => events.PublishOnUIThreadAsync(new CloseScreenEvent());
+        public void ForceRefresh()
+        {
+            events.PublishOnUIThreadAsync(new UpdateStatusEvent { Status = "Updating localdata", IsLoading = true, IsWndEnabled = false });
+            localData.UpdateBulkData(true);
+        }
         public void ShowInfo()
             => winMan.ShowDialogAsync(IoC.Get<InfoViewModel>()).Wait();
 

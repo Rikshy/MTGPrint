@@ -30,6 +30,8 @@ namespace MTGPrint.Helper.Parsing
                     return BulkType.ArtWorks;
                 case "default_cards":
                     return BulkType.DefaultCards;
+                case "unique_artwork":
+                    return BulkType.UniqueArtwork;
                 default:
                     throw new JsonSerializationException( $"{value} not found in enum {nameof( BulkType )}" );
             }

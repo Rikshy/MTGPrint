@@ -42,6 +42,7 @@
         Rulings,
         AllCards,
         ArtWorks,
-        DefaultCards
+        DefaultCards,
+        UniqueArtwork
     }
 }

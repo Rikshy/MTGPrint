@@ -9,16 +9,13 @@ namespace MTGPrint.Helper.Parsing
     public sealed class CardLayoutTypeConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
-        {
-            return objectType == typeof( string );
-        }
+            => objectType == typeof(string);
 
-        public override object ReadJson(JsonReader reader, Type objectType,
-                    object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var value = (string)reader.Value;
 
-            switch ( value )
+            switch (value)
             {
                 case "normal":
                     return CardLayout.Normal;
@@ -56,8 +53,10 @@ namespace MTGPrint.Helper.Parsing
                     return CardLayout.ArtSeries;
                 case "double_sided":
                     return CardLayout.DoubleSided;
+                case "modal_dfc":
+                    return CardLayout.ModalDualface;
                 default:
-                    throw new JsonSerializationException( $"{value} not found in enum {nameof( CardLayout )}" );
+                    throw new JsonSerializationException($"{value} not found in enum {nameof(CardLayout)}");
             }
         }
 
@@ -66,64 +65,67 @@ namespace MTGPrint.Helper.Parsing
         {
             var val = (CardLayout)value;
 
-            switch ( val )
+            switch (val)
             {
                 case CardLayout.Normal:
-                    writer.WriteValue( "normal" );
+                    writer.WriteValue("normal");
                     break;
                 case CardLayout.Split:
-                    writer.WriteValue( "split" );
+                    writer.WriteValue("split");
                     break;
                 case CardLayout.Flip:
-                    writer.WriteValue( "flip" );
+                    writer.WriteValue("flip");
                     break;
                 case CardLayout.Transform:
-                    writer.WriteValue( "transform" );
+                    writer.WriteValue("transform");
                     break;
                 case CardLayout.Meld:
-                    writer.WriteValue( "meld" );
+                    writer.WriteValue("meld");
                     break;
                 case CardLayout.Leveler:
-                    writer.WriteValue( "leveler" );
+                    writer.WriteValue("leveler");
                     break;
                 case CardLayout.Saga:
-                    writer.WriteValue( "saga" );
+                    writer.WriteValue("saga");
                     break;
                 case CardLayout.Adventure:
-                    writer.WriteValue( "adventure" );
+                    writer.WriteValue("adventure");
                     break;
                 case CardLayout.Planar:
-                    writer.WriteValue( "planar" );
+                    writer.WriteValue("planar");
                     break;
                 case CardLayout.Scheme:
-                    writer.WriteValue( "scheme" );
+                    writer.WriteValue("scheme");
                     break;
                 case CardLayout.Vanguard:
-                    writer.WriteValue( "vanguard" );
+                    writer.WriteValue("vanguard");
                     break;
                 case CardLayout.Token:
-                    writer.WriteValue( "token" );
+                    writer.WriteValue("token");
                     break;
                 case CardLayout.DoubleFacedToken:
-                    writer.WriteValue( "double_faced_token" );
+                    writer.WriteValue("double_faced_token");
                     break;
                 case CardLayout.Emblem:
-                    writer.WriteValue( "emblem" );
+                    writer.WriteValue("emblem");
                     break;
                 case CardLayout.Augment:
-                    writer.WriteValue( "augment" );
+                    writer.WriteValue("augment");
                     break;
                 case CardLayout.Host:
-                    writer.WriteValue( "host" );
+                    writer.WriteValue("host");
                     break;
                 case CardLayout.ArtSeries:
-                    writer.WriteValue( "art_series" );
+                    writer.WriteValue("art_series");
                     break;
                 case CardLayout.DoubleSided:
-                    writer.WriteValue( "double_sided" );
+                    writer.WriteValue("double_sided");
+                    break;
+                case CardLayout.ModalDualface:
+                    writer.WriteValue("modal_dfc");
                     break;
                 default:
-                    throw new JsonSerializationException( $"{val} not found in enum {nameof( CardLayout )}" );
+                    throw new JsonSerializationException($"{val} not found in enum {nameof(CardLayout)}");
             }
         }
     }

@@ -13,6 +13,17 @@ namespace MTGPrint.Helper
 {
     public class DecklistGrabber
     {
+        private static readonly List<BaseGrabber> grabbers = new List<BaseGrabber>
+        {
+            new TextGrabber(),
+            new DeckstatsGrabber(),
+            new ScryfallGrabber(),
+            new GoldfishGrabber(),
+            new AetherGrabber(),
+            new TappedoutGrabber(),
+            new ArchidektGrabber()
+        };
+
         private abstract class BaseGrabber
         {
             private static LocalDataStorage lds;
@@ -25,6 +36,10 @@ namespace MTGPrint.Helper
                     return lds;
                 }
             }
+
+            public abstract GrabMethod GrabMethod { get; }
+
+            public abstract bool IsMatching(string input);
 
             public IEnumerable<DeckCard> Grab(string input, out IEnumerable<string> errors)
                 => Parse(GrabDeckList(input), out errors);
@@ -107,12 +122,18 @@ namespace MTGPrint.Helper
         #region Grabber
         private class TextGrabber : BaseGrabber
         {
+            public override GrabMethod GrabMethod => GrabMethod.Text;
+
+            public override bool IsMatching(string input) => true;
+
             protected override string GrabDeckList(string input) 
                 => input;
         }
 
         private abstract class BaseWebGrabber : BaseGrabber
         {
+            public override GrabMethod GrabMethod => GrabMethod.Url;
+
             protected abstract string RefineUrl(string importUrl);
             protected override string GrabDeckList(string importUrl)
             {
@@ -131,6 +152,9 @@ namespace MTGPrint.Helper
         {
             protected override string RefineUrl(string importUrl)
                 => importUrl.Contains("?") ? $"{importUrl}&export_dec=1" : $"{importUrl}?export_dec=1";
+
+            public override bool IsMatching(string url) 
+                => url.StartsWith( "https://deckstats.net" ) || url.StartsWith( "https://www.deckstats.net" );
         }
         private class ScryfallGrabber : BaseWebGrabber
         {
@@ -146,6 +170,9 @@ namespace MTGPrint.Helper
                 var deckId = url.Substring(idx + 1);
                 return $"https://api.scryfall.com/decks/{deckId}/export/text";
             }
+
+            public override bool IsMatching(string url)
+                => url.StartsWith("https://scryfall.com") || url.StartsWith("https://www.scryfall.com");
         }
         private class GoldfishGrabber : BaseWebGrabber
         {
@@ -161,6 +188,9 @@ namespace MTGPrint.Helper
                 var deckId = url.Substring(idx + 1);
                 return $"https://mtggoldfish.com/deck/download/{deckId}";
             }
+
+            public override bool IsMatching(string url)
+                => url.StartsWith("https://mtggoldfish.com") || url.StartsWith("https://www.mtggoldfish.com");
         }
         private class AetherGrabber : BaseWebGrabber
         {
@@ -172,6 +202,9 @@ namespace MTGPrint.Helper
                 var deckId = url.Substring(idx + 1);
                 return $"https://aetherhub.com/Deck/MtgoDeckExport/{deckId}";
             }
+
+            public override bool IsMatching(string url)
+                => url.StartsWith("https://aetherhub.com") || url.StartsWith("https://www.aetherhub.com");
         }
         private class TappedoutGrabber : BaseWebGrabber
         {
@@ -184,6 +217,14 @@ namespace MTGPrint.Helper
                     url = url.Substring(0, idx);
 
                 return $"{url}?fmt=txt";
+            }
+
+            public override bool IsMatching(string url)
+            {
+                return url.StartsWith("http://tappedout.net")
+                    || url.StartsWith("http://www.tappedout.net")
+                    || url.StartsWith("tappedout.net")
+                    || url.StartsWith("www.tappedout.net");
             }
         }
         private class ArchidektGrabber : BaseWebGrabber
@@ -207,6 +248,9 @@ namespace MTGPrint.Helper
                 var list = data.Cards.Select(c => $"{c.Quantity} {c.Card.OracleCard.Name}");
                 return string.Join(Environment.NewLine, list);
             }
+
+            public override bool IsMatching(string url)
+                => url.StartsWith("https://archidekt.com") || url.StartsWith("https://www.archidekt.com");
 
             public class Archidata
             {
@@ -237,41 +281,17 @@ namespace MTGPrint.Helper
         }
         #endregion
 
-        public static IEnumerable<DeckCard> GrabDecklist(string importUrl, GrabMethod method, out IEnumerable<string> errors)
+        public static IEnumerable<DeckCard> Grab(string source, GrabMethod method, out IEnumerable<string> errors)
         {
-            BaseGrabber grabber = null;
-            if (method == GrabMethod.Url)
-            {
-                if (importUrl.StartsWith("https://deckstats.net") || importUrl.StartsWith("https://www.deckstats.net"))
-                    grabber = new DeckstatsGrabber();
-                if (importUrl.StartsWith("https://scryfall.com") || importUrl.StartsWith("https://www.scryfall.com"))
-                    grabber = new ScryfallGrabber();
-                if (importUrl.StartsWith("https://mtggoldfish.com") || importUrl.StartsWith("https://www.mtggoldfish.com"))
-                    grabber = new GoldfishGrabber();
-                if (importUrl.StartsWith("https://aetherhub.com") || importUrl.StartsWith("https://www.aetherhub.com"))
-                    grabber = new AetherGrabber();
-                if (IsTappedOut(importUrl))
-                    grabber = new TappedoutGrabber();
-                if (importUrl.StartsWith("https://archidekt.com") || importUrl.StartsWith("https://www.archidekt.com"))
-                    grabber = new ArchidektGrabber();
-            }
-            else
-                grabber = new TextGrabber();
+            var grabber = grabbers.FirstOrDefault(g => g.GrabMethod == method && g.IsMatching(source));
 
             if (grabber == null)
                 throw new ApplicationException("No decklistgrabber found for your input.");
 
-            return grabber.Grab(importUrl, out errors);
-        }
-
-        private static bool IsTappedOut(string importUrl)
-        {
-            return importUrl.StartsWith("http://tappedout.net")
-                || importUrl.StartsWith("http://www.tappedout.net")
-                || importUrl.StartsWith("tappedout.net")
-                || importUrl.StartsWith("www.tappedout.net");
+            return grabber.Grab(source, out errors);
         }
     }
+
     public enum GrabMethod
     {
         Text = 0,

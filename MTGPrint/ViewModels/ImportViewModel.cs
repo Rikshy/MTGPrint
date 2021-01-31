@@ -85,7 +85,7 @@ namespace MTGPrint.ViewModels
             {
                 events.PublishOnUIThreadAsync(new UpdateStatusEvent { Status = "Importing cards" });
                 var import = ImportMethod == GrabMethod.Text ? ImportText : ImportUrl;
-                ImportedCards = DecklistGrabber.GrabDecklist(import, ImportMethod, out var errors);
+                ImportedCards = DecklistGrabber.Grab(import, ImportMethod, out var errors);
 
                 events.PublishOnUIThreadAsync(new UpdateStatusEvent { Status = "Cards imported", Errors = string.Join(Environment.NewLine, errors) });
                 TryCloseAsync(true);

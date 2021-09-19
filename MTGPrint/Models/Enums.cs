@@ -28,7 +28,8 @@
         Host,
         ArtSeries,
         DoubleSided,
-        ModalDualface
+        ModalDualface,
+        Class
     }
 
     public enum CardBorder

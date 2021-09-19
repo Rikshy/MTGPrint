@@ -55,13 +55,14 @@ namespace MTGPrint.Helper.Parsing
                     return CardLayout.DoubleSided;
                 case "modal_dfc":
                     return CardLayout.ModalDualface;
+                case "class":
+                    return CardLayout.Class;
                 default:
                     throw new JsonSerializationException($"{value} not found in enum {nameof(CardLayout)}");
             }
         }
 
-        public override void WriteJson(JsonWriter writer, object value,
-                    JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var val = (CardLayout)value;
 
@@ -123,6 +124,9 @@ namespace MTGPrint.Helper.Parsing
                     break;
                 case CardLayout.ModalDualface:
                     writer.WriteValue("modal_dfc");
+                    break;
+                case CardLayout.Class:
+                    writer.WriteValue("class");
                     break;
                 default:
                     throw new JsonSerializationException($"{val} not found in enum {nameof(CardLayout)}");

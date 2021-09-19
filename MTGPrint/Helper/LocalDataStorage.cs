@@ -32,7 +32,7 @@ namespace MTGPrint
             updateWorker.DoWork += delegate (object sender, DoWorkEventArgs e)
             {
                 var args = e.Argument as UpdateArgs;
-                updateWorker.ReportProgress(0, $"Downloading bulkdata ({((int)(args.BulkInfo.CompressedSize / 1024) / 1024F).ToString("F3")}MB)");
+                updateWorker.ReportProgress(0, $"Downloading bulkdata ({(int)(args.BulkInfo.CompressedSize / 1024) / 1024F:F3}MB)");
 
                 var response = WebHelper.Get(args.BulkInfo.PermalinkUri, args.BulkInfo.ContentType, true);
 
@@ -70,7 +70,7 @@ namespace MTGPrint
 
         public List<LocalCard> LocalCards => localData.Cards;
 
-        private readonly BackgroundWorker updateWorker = new BackgroundWorker();
+        private readonly BackgroundWorker updateWorker = new();
         public event EventHandler LocalDataUpdated;
         public event EventHandler<string> LocalDataUpdating;
 

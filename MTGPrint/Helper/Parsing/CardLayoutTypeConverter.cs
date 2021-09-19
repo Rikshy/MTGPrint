@@ -15,56 +15,40 @@ namespace MTGPrint.Helper.Parsing
         {
             var value = (string)reader.Value;
 
-            switch (value)
+            return value switch
             {
-                case "normal":
-                    return CardLayout.Normal;
-                case "split":
-                    return CardLayout.Split;
-                case "flip":
-                    return CardLayout.Flip;
-                case "transform":
-                    return CardLayout.Transform;
-                case "meld":
-                    return CardLayout.Meld;
-                case "leveler":
-                    return CardLayout.Leveler;
-                case "saga":
-                    return CardLayout.Saga;
-                case "adventure":
-                    return CardLayout.Adventure;
-                case "planar":
-                    return CardLayout.Planar;
-                case "scheme":
-                    return CardLayout.Scheme;
-                case "vanguard":
-                    return CardLayout.Vanguard;
-                case "token":
-                    return CardLayout.Token;
-                case "double_faced_token":
-                    return CardLayout.DoubleFacedToken;
-                case "emblem":
-                    return CardLayout.Emblem;
-                case "augment":
-                    return CardLayout.Augment;
-                case "host":
-                    return CardLayout.Host;
-                case "art_series":
-                    return CardLayout.ArtSeries;
-                case "double_sided":
-                    return CardLayout.DoubleSided;
-                case "modal_dfc":
-                    return CardLayout.ModalDualface;
-                case "class":
-                    return CardLayout.Class;
-                default:
-                    throw new JsonSerializationException($"{value} not found in enum {nameof(CardLayout)}");
-            }
+                "normal" => CardLayout.Normal,
+                "split" => CardLayout.Split,
+                "flip" => CardLayout.Flip,
+                "transform" => CardLayout.Transform,
+                "meld" => CardLayout.Meld,
+                "leveler" => CardLayout.Leveler,
+                "saga" => CardLayout.Saga,
+                "adventure" => CardLayout.Adventure,
+                "planar" => CardLayout.Planar,
+                "scheme" => CardLayout.Scheme,
+                "vanguard" => CardLayout.Vanguard,
+                "token" => CardLayout.Token,
+                "double_faced_token" => CardLayout.DoubleFacedToken,
+                "emblem" => CardLayout.Emblem,
+                "augment" => CardLayout.Augment,
+                "host" => CardLayout.Host,
+                "art_series" => CardLayout.ArtSeries,
+                "double_sided" => CardLayout.DoubleSided,
+                "modal_dfc" => CardLayout.ModalDualface,
+                "class" => CardLayout.Class,
+                _ => throw new JsonSerializationException($"{value} not found in enum {nameof(CardLayout)}"),
+            };
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var val = (CardLayout)value;
+
+            val switch
+            {
+                CardLayout.Normal => writer.WriteValue("normal");
+            };
 
             switch (val)
             {

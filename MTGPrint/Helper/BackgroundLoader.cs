@@ -6,8 +6,8 @@ namespace MTGPrint.Helper
 {
     public class BackgroundLoader
     {
-        private readonly WebClient loader = new WebClient();
-        private readonly BackgroundWorker worker = new BackgroundWorker();
+        private readonly WebClient loader = new();
+        private readonly BackgroundWorker worker = new();
         public event EventHandler DownloadStarted;
         public event RunWorkerCompletedEventHandler DownloadComplete
         {

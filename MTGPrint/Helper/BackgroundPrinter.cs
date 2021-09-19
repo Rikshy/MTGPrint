@@ -8,8 +8,6 @@ using iText.Kernel.Pdf;
 using iText.IO.Image;
 using iText.Layout;
 
-using Newtonsoft.Json;
-
 using MTGPrint.Models;
 
 namespace MTGPrint.Helper
@@ -27,8 +25,8 @@ namespace MTGPrint.Helper
         private const float PAGE_MARGIN_H = 5.5F * MM_TO_POINT;
 
 
-        private readonly WebClient cardLoader = new WebClient();
-        private readonly BackgroundWorker printWorker = new BackgroundWorker();
+        private readonly WebClient cardLoader = new();
+        private readonly BackgroundWorker printWorker = new();
         public event EventHandler PrintStarted;
         public event RunWorkerCompletedEventHandler PrintFinished
         {

@@ -78,20 +78,23 @@ namespace MTGPrint.ViewModels
 
         public override async Task<bool> CanCloseAsync(CancellationToken cancellationToken)
         {
-            bool result = true;
-            OnUIThread(() =>
+            return await Task.Run(() =>
             {
-                if (Deck.HasChanges &&
-                        MessageBox.Show(Application.Current.MainWindow,
-                                        "Your deck has unsaved changes! Continue anyway?",
-                                        "Unsaved Changes",
-                                        MessageBoxButton.YesNo)
-                        == MessageBoxResult.No)
+                bool result = true;
+                OnUIThread(() =>
                 {
-                    result = false;
-                }
+                    if (Deck.HasChanges &&
+                            MessageBox.Show(Application.Current.MainWindow,
+                                            "Your deck has unsaved changes! Continue anyway?",
+                                            "Unsaved Changes",
+                                            MessageBoxButton.YesNo)
+                            == MessageBoxResult.No)
+                    {
+                        result = false;
+                    }
+                });
+                return result;
             });
-            return result;
         }
 
         #region Menu

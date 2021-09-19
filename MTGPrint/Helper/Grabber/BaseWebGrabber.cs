@@ -14,7 +14,7 @@
             return RefineResponse(responseText);
         }
 
-        protected virtual string RefineResponse(string reponse)
-            => reponse;
+        protected virtual string RefineResponse(string response)
+            => response;
     }
 }

@@ -10,7 +10,7 @@ namespace MTGPrint.Helper
 {
     public class DecklistGrabber
     {
-        private static readonly List<BaseGrabber> grabbers = new List<BaseGrabber>
+        private static readonly List<BaseGrabber> grabbers = new()
         {
             new TextGrabber(),
             new DeckstatsGrabber(),

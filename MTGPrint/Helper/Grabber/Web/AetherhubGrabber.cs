@@ -1,4 +1,7 @@
-﻿namespace MTGPrint.Helper.Grabber.Web
+﻿using System;
+using System.Text.RegularExpressions;
+
+namespace MTGPrint.Helper.Grabber.Web
 {
     class AetherhubGrabber : BaseWebGrabber
     {
@@ -7,8 +10,12 @@
             var url = importUrl;
 
             var idx = url.LastIndexOf('/');
-            var deckId = url.Substring(idx + 1);
-            return $"https://aetherhub.com/Deck/MtgoDeckExport/{deckId}";
+            var deckName = url.Substring(idx + 1);
+            var idMatch = Regex.Match(deckName, "([0-9]+)");
+            if (idMatch.Success && idMatch.Groups[1].Success)
+                return $"https://aetherhub.com/Deck/MtgoDeckExport/{idMatch.Groups[1].Value}";
+
+            throw new ApplicationException("deckid not found");
         }
 
         public override bool IsMatching(string url)

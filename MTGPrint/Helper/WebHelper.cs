@@ -5,6 +5,11 @@ namespace MTGPrint.Helper
 {
     public class WebHelper
     {
+        static WebHelper()
+        {
+            ServicePointManager.ServerCertificateValidationCallback += (o, c, ch, er) => true;
+        }
+
         public static string Get(string url, string contentType = "application/json", bool useGzip = false)
         {
             var request = (HttpWebRequest)WebRequest.Create(url);

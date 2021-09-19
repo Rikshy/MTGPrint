@@ -1,4 +1,6 @@
-﻿namespace MTGPrint.Helper.Grabber.Web
+﻿using System.Text.RegularExpressions;
+
+namespace MTGPrint.Helper.Grabber.Web
 {
     class DeckstatsGrabber : BaseWebGrabber
     {
@@ -7,5 +9,8 @@
 
         public override bool IsMatching(string url)
             => url.StartsWith("https://deckstats.net") || url.StartsWith("https://www.deckstats.net");
+
+        protected override string RefineResponse(string reponse)
+            => Regex.Replace(reponse, @"\[.*\] ", string.Empty, RegexOptions.None);
     }
 }

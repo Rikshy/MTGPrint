@@ -1,18 +1,20 @@
-﻿namespace MTGPrint.Helper.Grabber.Web
+﻿using System;
+using System.Text.RegularExpressions;
+
+namespace MTGPrint.Helper.Grabber.Web
 {
     class GoldfishGrabber : BaseWebGrabber
     {
         protected override string RefineUrl(string importUrl)
         {
-            var url = importUrl;
+            var pageContant = (new System.Net.WebClient()).DownloadString(importUrl);
 
-            var idx = url.LastIndexOf('#');
-            if (idx > 0)
-                url = url.Substring(0, idx);
+            var idMatch = Regex.Match(pageContant, "\"\\/deck\\/download\\/(.*)\"");
 
-            idx = url.LastIndexOf('/');
-            var deckId = url.Substring(idx + 1);
-            return $"https://mtggoldfish.com/deck/download/{deckId}";
+            if (idMatch.Success && idMatch.Groups[1].Success)
+                return $"https://mtggoldfish.com/deck/download/{idMatch.Groups[1].Value}";
+
+            throw new ApplicationException("deckid not found");
         }
 
         public override bool IsMatching(string url)

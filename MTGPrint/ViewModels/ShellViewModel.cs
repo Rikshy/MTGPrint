@@ -198,11 +198,14 @@ namespace MTGPrint.ViewModels
 
         public async Task HandleAsync(UpdateStatusEvent message, CancellationToken cancellationToken)
         {
-            Errors = message.Errors ?? Errors;
-            StatusText = message.Status ?? StatusText;
-            InfoText = message.Info ?? InfoText;
-            IsEnabled = message.IsWndEnabled ?? IsEnabled;
-            IsLoading = message.IsLoading ?? IsLoading;
+            await new Task(() =>
+            {
+                Errors = message.Errors ?? Errors;
+                StatusText = message.Status ?? StatusText;
+                InfoText = message.Info ?? InfoText;
+                IsEnabled = message.IsWndEnabled ?? IsEnabled;
+                IsLoading = message.IsLoading ?? IsLoading;
+            });
         }
     }
 }

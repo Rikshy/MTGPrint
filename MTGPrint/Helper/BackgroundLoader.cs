@@ -1,12 +1,12 @@
-﻿using System.ComponentModel;
-using System.Net;
-using System;
+﻿using System;
+using System.ComponentModel;
+using System.Net.Http;
 
 namespace MTGPrint.Helper
 {
     public class BackgroundLoader
     {
-        private readonly WebClient loader = new();
+        private readonly HttpClient loader = new();
         private readonly BackgroundWorker worker = new();
         public event EventHandler DownloadStarted;
         public event RunWorkerCompletedEventHandler DownloadComplete
@@ -20,7 +20,7 @@ namespace MTGPrint.Helper
             worker.DoWork += delegate (object sender, DoWorkEventArgs e)
             {
                 var pair = (ValueTuple<string, string>)e.Argument;
-                loader.DownloadFile(pair.Item1, pair.Item2);
+                loader.DownloadFileAsync(new Uri(pair.Item1), pair.Item2).Start();
             };
         }
 

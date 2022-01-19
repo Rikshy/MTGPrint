@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 
 namespace MTGPrint.Helper.Grabber.Web
@@ -7,7 +8,7 @@ namespace MTGPrint.Helper.Grabber.Web
     {
         protected override string RefineUrl(string importUrl)
         {
-            var pageContant = (new System.Net.WebClient()).DownloadString(importUrl);
+            var pageContant = new HttpClient().GetStringAsync(importUrl).Result;
 
             var idMatch = Regex.Match(pageContant, "\"\\/deck\\/download\\/(.*)\"");
 

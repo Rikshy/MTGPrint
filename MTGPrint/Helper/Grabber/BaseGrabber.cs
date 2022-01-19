@@ -10,7 +10,7 @@ namespace MTGPrint.Helper.Grabber
     public abstract class BaseGrabber
     {
         private static LocalDataStorage lds;
-        protected LocalDataStorage LocalData
+        protected static LocalDataStorage LocalData
         {
             get
             {

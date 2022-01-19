@@ -10,7 +10,7 @@ namespace MTGPrint.Helper.Grabber.Web
             var url = importUrl;
 
             var idx = url.LastIndexOf('/');
-            var deckName = url.Substring(idx + 1);
+            var deckName = url[(idx + 1)..];
             var idMatch = Regex.Match(deckName, "([0-9]+)");
             if (idMatch.Success && idMatch.Groups[1].Success)
                 return $"https://aetherhub.com/Deck/MtgoDeckExport/{idMatch.Groups[1].Value}";

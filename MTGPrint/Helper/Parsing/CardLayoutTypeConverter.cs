@@ -45,11 +45,6 @@ namespace MTGPrint.Helper.Parsing
         {
             var val = (CardLayout)value;
 
-            val switch
-            {
-                CardLayout.Normal => writer.WriteValue("normal");
-            };
-
             switch (val)
             {
                 case CardLayout.Normal:

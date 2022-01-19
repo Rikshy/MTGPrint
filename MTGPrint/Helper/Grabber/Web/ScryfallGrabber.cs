@@ -16,7 +16,7 @@ namespace MTGPrint.Helper.Grabber.Web
                 url = url.Substring(0, idx);
 
             idx = url.LastIndexOf('/');
-            var deckId = url.Substring(idx + 1);
+            var deckId = url[(idx + 1)..];
             return $"https://api.scryfall.com/decks/{deckId}/export/json";
         }
 

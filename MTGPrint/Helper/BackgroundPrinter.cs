@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using System.Net;
+using System.Net.Http;
 using System.IO;
 using System;
 
@@ -25,7 +25,7 @@ namespace MTGPrint.Helper
         private const float PAGE_MARGIN_H = 5.5F * MM_TO_POINT;
 
 
-        private readonly WebClient cardLoader = new();
+        private readonly HttpClient cardLoader = new();
         private readonly BackgroundWorker printWorker = new();
         public event EventHandler PrintStarted;
         public event RunWorkerCompletedEventHandler PrintFinished
@@ -88,8 +88,8 @@ namespace MTGPrint.Helper
                 }
 
                 //get image  
-                var b = cardLoader.DownloadData( cardUrl );
-                var img = new Image( ImageDataFactory.Create( b ) );
+                var b = cardLoader.GetByteArrayAsync(cardUrl).Result;
+                var img = new Image(ImageDataFactory.Create(b));
                 img.ScaleToFit(cw, ch);
 
                 for (int j = 0; j < currentCard.Count; j++)

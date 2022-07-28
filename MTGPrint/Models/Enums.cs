@@ -29,7 +29,8 @@
         ArtSeries,
         DoubleSided,
         ModalDualface,
-        Class
+        Class,
+        Reversible
     }
 
     public enum CardBorder

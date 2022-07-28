@@ -37,6 +37,7 @@ namespace MTGPrint.Helper.Parsing
                 "double_sided" => CardLayout.DoubleSided,
                 "modal_dfc" => CardLayout.ModalDualface,
                 "class" => CardLayout.Class,
+                "reversible_card" => CardLayout.Reversible,
                 _ => throw new JsonSerializationException($"{value} not found in enum {nameof(CardLayout)}"),
             };
         }
@@ -106,6 +107,9 @@ namespace MTGPrint.Helper.Parsing
                     break;
                 case CardLayout.Class:
                     writer.WriteValue("class");
+                    break;
+                case CardLayout.Reversible:
+                    writer.WriteValue("reversible_card");
                     break;
                 default:
                     throw new JsonSerializationException($"{val} not found in enum {nameof(CardLayout)}");

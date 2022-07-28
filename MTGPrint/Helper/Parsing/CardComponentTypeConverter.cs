@@ -10,7 +10,7 @@ namespace MTGPrint.Helper.Parsing
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof( string );
+            return objectType == typeof(string);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType,
@@ -18,19 +18,14 @@ namespace MTGPrint.Helper.Parsing
         {
             var value = (string)reader.Value;
 
-            switch ( value )
+            return value switch
             {
-                case "token":
-                    return CardComponent.Token;
-                case "meld_part":
-                    return CardComponent.MeldPart;
-                case "meld_result":
-                    return CardComponent.MeldResult;
-                case "combo_piece":
-                    return CardComponent.ComboPiece;
-                default:
-                    throw new JsonSerializationException( $"{value} not found in enum {nameof( CardComponent )}" );
-            }
+                "token" => CardComponent.Token,
+                "meld_part" => CardComponent.MeldPart,
+                "meld_result" => CardComponent.MeldResult,
+                "combo_piece" => (object)CardComponent.ComboPiece,
+                _ => throw new JsonSerializationException($"{value} not found in enum {nameof(CardComponent)}"),
+            };
         }
 
         public override void WriteJson(JsonWriter writer, object value,
@@ -38,22 +33,22 @@ namespace MTGPrint.Helper.Parsing
         {
             var val = (CardComponent)value;
 
-            switch ( val )
+            switch (val)
             {
                 case CardComponent.Token:
-                    writer.WriteValue( "token" );
+                    writer.WriteValue("token");
                     break;
                 case CardComponent.MeldPart:
-                    writer.WriteValue( "meld_part" );
+                    writer.WriteValue("meld_part");
                     break;
                 case CardComponent.MeldResult:
-                    writer.WriteValue( "meld_result" );
+                    writer.WriteValue("meld_result");
                     break;
                 case CardComponent.ComboPiece:
-                    writer.WriteValue( "combo_piece" );
+                    writer.WriteValue("combo_piece");
                     break;
                 default:
-                    throw new JsonSerializationException( $"{val} not found in enum {nameof( CardComponent )}" );
+                    throw new JsonSerializationException($"{val} not found in enum {nameof(CardComponent)}");
             }
         }
     }

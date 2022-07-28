@@ -36,7 +36,7 @@ namespace MTGPrint
 
                 var response = WebHelper.Get(args.BulkInfo.PermalinkUri, args.BulkInfo.ContentType, true);
 
-                var cards = JsonConvert.DeserializeObject<ScryCard[]>( response );
+                var cards = JsonConvert.DeserializeObject<ScryCard[]>(response);
 
                 if (localData == null)
                     localData = new LocalDataInfo();
@@ -131,8 +131,8 @@ namespace MTGPrint
         private void ConvertToLocal(ScryCard card)
         {
             var lcard = card.Layout != CardLayout.Token
-                ? localData.Cards.FirstOrDefault( c => c.OracleId == card.OracleId )
-                : localData.Cards.FirstOrDefault( c => c.Name == card.Name );
+                ? localData.Cards.FirstOrDefault(c => c.OracleId == card.OracleId)
+                : localData.Cards.FirstOrDefault(c => c.Name == card.Name);
 
             if (lcard == null)
             {

@@ -10,7 +10,7 @@ namespace MTGPrint.Helper.Parsing
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof( string );
+            return objectType == typeof(string);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType,
@@ -18,23 +18,16 @@ namespace MTGPrint.Helper.Parsing
         {
             var value = (string)reader.Value;
 
-            switch ( value )
+            return value switch
             {
-                case "oracle_cards":
-                    return BulkType.OracleCards;
-                case "rulings":
-                    return BulkType.Rulings;
-                case "all_cards":
-                    return BulkType.AllCards;
-                case "artworks":
-                    return BulkType.ArtWorks;
-                case "default_cards":
-                    return BulkType.DefaultCards;
-                case "unique_artwork":
-                    return BulkType.UniqueArtwork;
-                default:
-                    throw new JsonSerializationException( $"{value} not found in enum {nameof( BulkType )}" );
-            }
+                "oracle_cards" => BulkType.OracleCards,
+                "rulings" => BulkType.Rulings,
+                "all_cards" => BulkType.AllCards,
+                "artworks" => BulkType.ArtWorks,
+                "default_cards" => BulkType.DefaultCards,
+                "unique_artwork" => (object)BulkType.UniqueArtwork,
+                _ => throw new JsonSerializationException($"{value} not found in enum {nameof(BulkType)}"),
+            };
         }
 
         public override void WriteJson(JsonWriter writer, object value,
@@ -42,25 +35,25 @@ namespace MTGPrint.Helper.Parsing
         {
             var val = (BulkType)value;
 
-            switch ( val )
+            switch (val)
             {
                 case BulkType.OracleCards:
-                    writer.WriteValue( "oracle_cards" );
+                    writer.WriteValue("oracle_cards");
                     break;
                 case BulkType.Rulings:
-                    writer.WriteValue( "rulings" );
+                    writer.WriteValue("rulings");
                     break;
                 case BulkType.AllCards:
-                    writer.WriteValue( "all_cards" );
+                    writer.WriteValue("all_cards");
                     break;
                 case BulkType.ArtWorks:
-                    writer.WriteValue( "artworks" );
+                    writer.WriteValue("artworks");
                     break;
                 case BulkType.DefaultCards:
-                    writer.WriteValue( "default_cards" );
+                    writer.WriteValue("default_cards");
                     break;
                 default:
-                    throw new JsonSerializationException( $"{val} not found in enum {nameof( BulkType )}" );
+                    throw new JsonSerializationException($"{val} not found in enum {nameof(BulkType)}");
             }
         }
     }

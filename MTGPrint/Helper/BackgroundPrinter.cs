@@ -56,13 +56,13 @@ namespace MTGPrint.Helper
             var po = deck.PrintOptions;
 
             var cs = (float)po.CardScaling / 100F;
-            var cw = ( po.CardBorder == CardBorder.With ? CARD_WIDTH : CARD_WIDTH_WOB ) * cs;
-            var ch = ( po.CardBorder == CardBorder.With ? CARD_HEIGHT : CARD_HEIGHT_WOB ) * cs;
+            var cw = (po.CardBorder == CardBorder.With ? CARD_WIDTH : CARD_WIDTH_WOB) * cs;
+            var ch = (po.CardBorder == CardBorder.With ? CARD_HEIGHT : CARD_HEIGHT_WOB) * cs;
             var cm = po.CardMargin * MM_TO_POINT;
 
-            using var stream = new FileStream( pp.FileName, FileMode.Create );
-            using var writer = new PdfWriter( stream );
-            var doc = new Document( new PdfDocument( writer ) );
+            using var stream = new FileStream(pp.FileName, FileMode.Create);
+            using var writer = new PdfWriter(stream);
+            var doc = new Document(new PdfDocument(writer));
 
             int cardCount = 0;
             for (int i = 0; i < deck.Cards.Count; i++)
@@ -94,8 +94,8 @@ namespace MTGPrint.Helper
 
                 for (int j = 0; j < currentCard.Count; j++)
                 {
-                    var x = ( cardCount % 3 ) * ( cw + cm ) + PAGE_MARGIN_H;
-                    var y = ( ( cardCount / 3 ) % 3 ) * ( ch + cm ) + PAGE_MARGIN_V;
+                    var x = (cardCount % 3) * (cw + cm) + PAGE_MARGIN_H;
+                    var y = ((cardCount / 3) % 3) * (ch + cm) + PAGE_MARGIN_V;
 
                     img.SetFixedPosition((cardCount / 9) + 1, (float)x, (float)y);
 

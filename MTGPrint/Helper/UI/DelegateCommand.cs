@@ -46,7 +46,7 @@ namespace MTGPrint.Helper.UI
 
         public void Execute(object parameter) { execute(); }
     }
-    public class EventCommand<T> : ICommand where T:EventArgs
+    public class EventCommand<T> : ICommand where T : EventArgs
     {
         private readonly Predicate<object> canExecute;
         private readonly Action<T> execute;

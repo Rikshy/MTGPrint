@@ -15,12 +15,12 @@ namespace MTGPrint.Helper.UI
             DependencyProperty.RegisterAttached("ScrollViewerSearchLocation",
                 typeof(ScrollViewerSearchLocation),
                 typeof(ScrollOnDragDrop),
-                new PropertyMetadata(ScrollViewerSearchLocation.Disable, HandleEnableChanged)); 
+                new PropertyMetadata(ScrollViewerSearchLocation.Disable, HandleEnableChanged));
 
         public static ScrollViewerSearchLocation GetScrollViewerSearchLocation(DependencyObject element)
         {
             if (element == null)
-                throw new ArgumentNullException("element");
+                throw new ArgumentNullException(nameof(element));
 
             return (ScrollViewerSearchLocation)element.GetValue(ScrollViewerSearchLocationProperty);
         }
@@ -28,14 +28,14 @@ namespace MTGPrint.Helper.UI
         public static void SetScrollViewerSearchLocation(DependencyObject element, ScrollViewerSearchLocation value)
         {
             if (element == null)
-                throw new ArgumentNullException("element");
+                throw new ArgumentNullException(nameof(element));
 
             element.SetValue(ScrollViewerSearchLocationProperty, value);
         }
 
         private static void HandleEnableChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (!(d is FrameworkElement container))
+            if (d is not FrameworkElement container)
                 return;
 
             container.PreviewDragOver -= OnContainerPreviewDragOver;
@@ -87,7 +87,7 @@ namespace MTGPrint.Helper.UI
 
         private static void OnContainerPreviewDragOver(object sender, DragEventArgs e)
         {
-            if (!(sender is FrameworkElement container))
+            if (sender is not FrameworkElement container)
                 return;
 
             var scrollViewer = GetScrollViewerSearchLocation(container) == ScrollViewerSearchLocation.Parent
@@ -99,7 +99,7 @@ namespace MTGPrint.Helper.UI
 
             double tolerance = GetTolerance(container);
             double verticalPos = e.GetPosition(scrollViewer).Y;
-            double speed = GetScrollSpeed(container);            
+            double speed = GetScrollSpeed(container);
 
             if (verticalPos < tolerance) // Top of visible list? 
                 scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - speed); //Scroll up.
@@ -114,8 +114,8 @@ namespace MTGPrint.Helper.UI
                 for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
                 {
                     var child = VisualTreeHelper.GetChild(depObj, i);
-                    if (child != null && child is T)
-                        return (T)child;
+                    if (child != null && child is T t)
+                        return t;
 
                     T childItem = GetFirstVisualChild<T>(child);
 
@@ -132,8 +132,8 @@ namespace MTGPrint.Helper.UI
             if (depObj != null)
             {
                 var pain = VisualTreeHelper.GetParent(depObj);
-                if (pain != null && pain is T)
-                    return (T)pain;
+                if (pain != null && pain is T t)
+                    return t;
 
                 T pItem = GetFirstVisualParent<T>(pain);
                 if (pItem != null)

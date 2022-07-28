@@ -4,22 +4,30 @@ using System;
 
 using MTGPrint.Models;
 using MTGPrint.Helper.Grabber;
-using MTGPrint.Helper.Grabber.Web;
+using System.Reflection;
 
 namespace MTGPrint.Helper
 {
     public class DecklistGrabber
     {
-        private static readonly List<BaseGrabber> grabbers = new()
+        private static readonly List<BaseGrabber> grabbers = new();
+
+        static DecklistGrabber()
         {
-            new TextGrabber(),
-            new DeckstatsGrabber(),
-            new ScryfallGrabber(),
-            new GoldfishGrabber(),
-            new AetherhubGrabber(),
-            new TappedoutGrabber(),
-            new ArchidektGrabber()
-        };
+            LoadGrabber(typeof(BaseGrabber));
+        }
+
+        private static void LoadGrabber(Type baseType)
+        {
+            var grabs = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.BaseType == baseType);
+            foreach (var grab in grabs)
+            {
+                if (grab.IsAbstract)
+                    LoadGrabber(grab);
+                else
+                    grabbers.Add((BaseGrabber)Activator.CreateInstance(grab));
+            }
+        }
 
         public static IEnumerable<DeckCard> Grab(string source, GrabMethod method, out IEnumerable<string> errors)
         {

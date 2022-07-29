@@ -55,8 +55,8 @@ namespace MTGPrint.ViewModels
                 NotifyOfPropertyChange(nameof(CanImport));
             }
         }
-        public GrabMethod ImportMethod 
-        { 
+        public GrabMethod ImportMethod
+        {
             get => importMethod;
             set
             {
@@ -90,7 +90,7 @@ namespace MTGPrint.ViewModels
                 events.PublishOnUIThreadAsync(new UpdateStatusEvent { Status = "Cards imported", Errors = string.Join(Environment.NewLine, errors) });
                 TryCloseAsync(true);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }

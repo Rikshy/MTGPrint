@@ -53,8 +53,8 @@ namespace MTGPrint.ViewModels
             }
         }
 
-        public LocalCard SelectedItem 
-        { 
+        public LocalCard SelectedItem
+        {
             get => selectedItem;
             set
             {
@@ -118,7 +118,7 @@ namespace MTGPrint.ViewModels
                         OracleId = Guid.NewGuid(),
                         LatestPrint = DateTimeOffset.Now,
                         Name = vm.Input,
-                        Prints = new BindableCollection<CardPrint>(new[]{ cp }),
+                        Prints = new BindableCollection<CardPrint>(new[] { cp }),
                     };
 
                     localData.LocalCards.Add(card);
@@ -180,7 +180,7 @@ namespace MTGPrint.ViewModels
                 localData.HasChanges = true;
                 SelectedItem.Prints.Remove(o);
                 DeleteLocalFiles(o);
-            }            
+            }
         }
 
         public bool CanAddCustomPrint

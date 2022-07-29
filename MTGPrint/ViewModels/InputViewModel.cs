@@ -7,8 +7,8 @@ namespace MTGPrint.ViewModels
         private string input = string.Empty;
 
         public string Text { get; set; }
-        public string Input 
-        { 
+        public string Input
+        {
             get => input;
             set
             {

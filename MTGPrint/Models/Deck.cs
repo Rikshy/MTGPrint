@@ -36,8 +36,8 @@ namespace MTGPrint.Models
         }
 
         [JsonIgnore]
-        public string FileName 
-        { 
+        public string FileName
+        {
             get => fileName;
             set
             {
@@ -123,7 +123,7 @@ namespace MTGPrint.Models
 
         private void OnCardRequestCardDelete(DeckCard card)
         {
-            var index = Cards.IndexOf( card );
+            var index = Cards.IndexOf(card);
             if (Cards.Count < index && Cards[index + 1].IsChild)
                 Cards.RemoveAt(index + 1);
 
@@ -141,7 +141,7 @@ namespace MTGPrint.Models
 
             Cards.Add(newCard);
 
-            var index = Cards.IndexOf( card );
+            var index = Cards.IndexOf(card);
             if (Cards.Count > index && Cards[index + 1].IsChild)
             {
                 var child = Cards[index + 1];
@@ -160,7 +160,7 @@ namespace MTGPrint.Models
             {
                 FileName = card.IsChild ? card.OracleId.ToString() : card.SelectPrint.Id.ToString(),
                 Filter = "JPEG file (*.jpg)|*.jpg",
-                InitialDirectory = Path.Combine( Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location ), "art_crops" )
+                InitialDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "art_crops")
             };
             try
             {
@@ -169,7 +169,7 @@ namespace MTGPrint.Models
                     string dlPath;
                     if (card.IsChild)
                     {
-                        var index = Cards.IndexOf( card );
+                        var index = Cards.IndexOf(card);
                         dlPath = Cards[index - 1].SelectPrint.ChildUrls.ArtCrop;
                     }
                     else

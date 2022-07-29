@@ -106,7 +106,7 @@ namespace MTGPrint.ViewModels
             var vm = IoC.Get<ImportViewModel>();
             vm.AllowUrlImport = false;
             var result = winMan.ShowDialogAsync(vm).Result;
-            
+
             if (result == true)
                 LoadDeck(vm.ImportedCards);
         }
@@ -116,14 +116,14 @@ namespace MTGPrint.ViewModels
             var tmp = Deck.Cards.Where(c => c.LocalData.Parts != null && !c.IsToken).ToList();
             foreach (var cardWithToken in tmp)
             {
-                var parts = cardWithToken.LocalData.Parts.Where( p => p.Component == CardComponent.Token || p.Component == CardComponent.ComboPiece );
+                var parts = cardWithToken.LocalData.Parts.Where(p => p.Component == CardComponent.Token || p.Component == CardComponent.ComboPiece);
                 var tokensToAdd = new List<DeckCard>();
 
                 foreach (var part in parts)
                 {
                     if (!Deck.Cards.Any(c => c.SelectedPrintId == part.Id))
                     {
-                        var card = localData.LocalCards.FirstOrDefault( c => c.Prints.Any( cp => cp.Id == part.Id ) );
+                        var card = localData.LocalCards.FirstOrDefault(c => c.Prints.Any(cp => cp.Id == part.Id));
                         if (cardWithToken.OracleId == card.OracleId || tokensToAdd.Any(dc => dc.OracleId == card.OracleId))
                             continue;
 
@@ -152,7 +152,7 @@ namespace MTGPrint.ViewModels
             var sfd = new SaveFileDialog
             {
                 Filter = "Deck file (*.jd)|*.jd",
-                InitialDirectory = Path.Combine( Environment.CurrentDirectory, "decks")
+                InitialDirectory = Path.Combine(Environment.CurrentDirectory, "decks")
             };
 
             try
@@ -190,7 +190,7 @@ namespace MTGPrint.ViewModels
                 var sfd = new SaveFileDialog
                 {
                     Filter = "PDF file (*.pdf)|*.pdf",
-                    InitialDirectory = Path.Combine( Environment.CurrentDirectory, "prints" )
+                    InitialDirectory = Path.Combine(Environment.CurrentDirectory, "prints")
                 };
 
                 if (sfd.ShowDialog() == true)
@@ -202,7 +202,7 @@ namespace MTGPrint.ViewModels
         }
 
         public void ShowInfo()
-            => winMan.ShowDialogAsync(IoC.Get<InfoViewModel>()).Wait();  
+            => winMan.ShowDialogAsync(IoC.Get<InfoViewModel>()).Wait();
         #endregion
 
         private void SaveDeck(string path)
@@ -222,7 +222,7 @@ namespace MTGPrint.ViewModels
             Deck.Cards.Clear();
             foreach (var tempCard in tempDeck.Cards)
             {
-                var lcard = localData.LocalCards.FirstOrDefault( lc => lc.OracleId == tempCard.OracleId );
+                var lcard = localData.LocalCards.FirstOrDefault(lc => lc.OracleId == tempCard.OracleId);
 
                 if (lcard == null)
                 {
@@ -232,7 +232,7 @@ namespace MTGPrint.ViewModels
 
                 if (!tempCard.IsChild)
                 {
-                    tempCard.Prints.AddRange( lcard.Prints );
+                    tempCard.Prints.AddRange(lcard.Prints);
                     if (tempCard.SelectedPrintId == null)
                         tempCard.SelectedPrintId = lcard.DefaultPrint ?? lcard.Prints.First().Id;
                 }

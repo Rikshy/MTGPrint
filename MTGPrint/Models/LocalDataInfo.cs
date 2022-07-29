@@ -55,7 +55,7 @@ namespace MTGPrint.Models
         [JsonIgnore]
         public bool IsOfficial => !IsCustom;
 
-        public override string ToString() 
+        public override string ToString()
             => Name;
     }
 
@@ -115,7 +115,7 @@ namespace MTGPrint.Models
         {
             var baseDir = Path.Combine(Environment.CurrentDirectory, @"data\custom_prints");
             var printId = Guid.NewGuid();
-            var crop = new Rectangle(9, 9, 357, 505 );
+            var crop = new Rectangle(9, 9, 357, 505);
 
             using var img_stream = new FileStream(localPath, FileMode.Open, FileAccess.Read);
             using var img = new Bitmap(img_stream);
@@ -124,7 +124,7 @@ namespace MTGPrint.Models
                 throw new ArgumentException("Unsupported image resolution");
 
             using var img_crop = img.Clone(crop, img.PixelFormat);
-            
+
             var normPath = Path.Combine(baseDir, $"{printId}.png");
             var cropPath = Path.Combine(baseDir, $"{printId}-crop.png");
 

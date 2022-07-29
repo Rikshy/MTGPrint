@@ -48,12 +48,12 @@ namespace MTGPrint.ViewModels
                 IsLoading = false;
             };
 
-            if ( !Directory.Exists( "decks" ) )
-                Directory.CreateDirectory( "decks" );
-            if ( !Directory.Exists( "prints" ) )
-                Directory.CreateDirectory( "prints" );
-            if ( !Directory.Exists( "art_crops" ) )
-                Directory.CreateDirectory( "art_crops" );
+            if (!Directory.Exists("decks"))
+                Directory.CreateDirectory("decks");
+            if (!Directory.Exists("prints"))
+                Directory.CreateDirectory("prints");
+            if (!Directory.Exists("art_crops"))
+                Directory.CreateDirectory("art_crops");
 
             ActivateItemAsync(container.GetInstance<MainMenuViewModel>(), new CancellationToken());
         }

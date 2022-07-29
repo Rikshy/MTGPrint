@@ -3,6 +3,6 @@
     public partial class InfoView
     {
         public InfoView()
-            =>  InitializeComponent();
+            => InitializeComponent();
     }
 }

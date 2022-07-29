@@ -29,7 +29,7 @@ namespace MTGPrint.ViewModels
                 events.PublishOnUIThreadAsync(new CreateDeckEvent { Cards = vm.ImportedCards });
         }
 
-        public void EditLocalData() 
+        public void EditLocalData()
             => events.PublishOnUIThreadAsync(new EditLocalDataEvent());
 
         public void OpenDeck()
@@ -38,7 +38,7 @@ namespace MTGPrint.ViewModels
             {
                 Multiselect = false,
                 Filter = "Deck file (*.jd)|*.jd",
-                InitialDirectory = Path.Combine( Environment.CurrentDirectory, "decks" )
+                InitialDirectory = Path.Combine(Environment.CurrentDirectory, "decks")
             };
             try
             {

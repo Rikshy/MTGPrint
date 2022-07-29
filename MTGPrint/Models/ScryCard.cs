@@ -1,65 +1,67 @@
-﻿using System;
-using System.Collections.Generic;
-using MTGPrint.Helper;
+﻿using System.Collections.Generic;
+using System;
+
 using Newtonsoft.Json;
+
+using MTGPrint.Helper.Parsing;
 
 namespace MTGPrint.Models
 {
     public class ScryCard
     {
-        [JsonProperty( "id" )]
+        [JsonProperty("id")]
         public Guid Id { get; set; }
 
-        [JsonProperty( "oracle_id" )]
+        [JsonProperty("oracle_id")]
         public Guid OracleId { get; set; }
 
-        [JsonProperty( "name" )]
+        [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty( "released_at" )]
+        [JsonProperty("released_at")]
         public DateTimeOffset ReleasedAt { get; set; }
 
-        [JsonProperty( "set" )]
+        [JsonProperty("set")]
         public string Set { get; set; }
 
-        [JsonProperty( "set_name" )]
+        [JsonProperty("set_name")]
         public string SetName { get; set; }
 
-        [JsonProperty( "layout" )]
-        [JsonConverter( typeof( CardLayoutTypeConverter ) )]
+        [JsonProperty("layout")]
+        [JsonConverter(typeof(CardLayoutTypeConverter))]
         public CardLayout Layout { get; set; }
 
 
-        [JsonProperty( "uri" )]
+        [JsonProperty("uri")]
         public string ApiUrl { get; set; }
 
-        [JsonProperty( "scryfall_uri" )]
-        public string ScryUrl { get; set; }
+        [JsonProperty("scryfall_uri")]
+        public Uri ScryUrl { get; set; }
 
 
-        [JsonProperty( "image_uris" )]
+        [JsonProperty("image_uris")]
         public ImageUrls ImageUrls { get; set; }
 
-        [JsonProperty( "mana_cost" )]
+        [JsonProperty("mana_cost")]
         public string ManaCost { get; set; }
 
-        [JsonProperty( "cmc" )]
+        [JsonProperty("cmc")]
         public float CMC { get; set; }
 
-        [JsonProperty( "color_identity" )]
+        [JsonProperty("color_identity")]
         public string[] ColorIdentity { get; set; }
 
-        [JsonProperty( "type_line" )]
+        [JsonProperty("type_line")]
         public string TypeLine { get; set; }
 
 
-        [JsonProperty( "lang" )]
+        [JsonProperty("lang")]
         public string Lang { get; set; }
 
-        [JsonProperty( "card_faces" )]
+        [JsonProperty("card_faces")]
         public CardFace[] CardFaces { get; set; }
 
-        [JsonProperty( "all_parts" )]
+        [JsonProperty("all_parts")]
         public List<CardParts> Parts { get; set; }
     }
 
@@ -86,24 +88,24 @@ namespace MTGPrint.Models
 
     public class CardParts
     {
-        [JsonProperty( "id" )]
+        [JsonProperty("id")]
         public Guid Id { get; set; }
 
-        [JsonProperty( "name" )]
+        [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty( "component" )]
-        [JsonConverter( typeof( CardComponentTypeConverter ) )]
+        [JsonProperty("component")]
+        [JsonConverter(typeof(CardComponentTypeConverter))]
         public CardComponent Component { get; set; }
     }
 
     public class CardFace
     {
-        [JsonProperty( "name" )]
+        [JsonProperty("name")]
         public string Name { get; set; }
 
 
-        [JsonProperty( "image_uris" )]
+        [JsonProperty("image_uris")]
         public ImageUrls ImageUrls { get; set; }
     }
 }

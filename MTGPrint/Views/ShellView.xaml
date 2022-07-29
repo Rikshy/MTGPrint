@@ -1,0 +1,46 @@
+﻿<Window x:Class="MTGPrint.Views.ShellView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="MTGPrint" Height="450" Width="800" IsEnabled="{Binding IsEnabled}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <ContentControl x:Name="ActiveItem"/>
+        <StatusBar Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="Auto">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem Grid.Column="0">
+                <Image Source="{Binding ErrorSymbol}" ToolTip="{Binding Errors}" />
+            </StatusBarItem>
+            <Separator Grid.Column="1"/>
+            <StatusBarItem Grid.Column="2" Content="{Binding StatusText}" />
+            <StatusBarItem Grid.Column="3" >
+                <ProgressBar IsIndeterminate="{Binding IsLoading}" Width="100" Height="16" />
+            </StatusBarItem>
+            <Separator Grid.Column="4"/>
+            <StatusBarItem DockPanel.Dock="Right" Grid.Column="5">
+                <TextBlock Text="{Binding InfoText}" />
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>

@@ -1,6 +1,9 @@
-﻿using System;
-using MTGPrint.Helper;
+﻿using System.Collections.Generic;
+using System;
+
 using Newtonsoft.Json;
+
+using MTGPrint.Helper.Parsing;
 
 namespace MTGPrint.Models
 {
@@ -28,15 +31,14 @@ namespace MTGPrint.Models
         [JsonProperty("compressed_size")]
         public long CompressedSize { get; set; }
 
-        [JsonProperty("permalink_uri")]
-        public Uri PermalinkUri { get; set; }
+        [JsonProperty("download_uri")]
+        public string PermalinkUri { get; set; }
 
         [JsonProperty("content_type")]
         public string ContentType { get; set; }
 
         [JsonProperty("content_encoding")]
         public string ContentEncoding { get; set; }
-
     }
 
     public class BulkBase
@@ -48,6 +50,6 @@ namespace MTGPrint.Models
         public bool HasMore { get; set; }
 
         [JsonProperty("data")]
-        public Bulk[] Data { get; set; }
+        public IEnumerable<Bulk> Data { get; set; }
     }
 }

@@ -1,0 +1,114 @@
+﻿<UserControl x:Class="MTGPrint.Views.LocalDataView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:cal="http://www.caliburnproject.org"
+        mc:Ignorable="d">
+    <UserControl.Resources>
+        <DataTemplate x:Key="Standard" DataType="CardPrint">
+            <StackPanel Margin="3">
+                <Image Width="170" Source="{Binding ImageSource, NotifyOnSourceUpdated=True}" Margin="2" />
+                <Grid HorizontalAlignment="Stretch" Width="170">
+                    <TextBlock Text="{Binding SetName}" Margin="0,1,5,0" FontSize="15" TextWrapping="WrapWithOverflow"/>
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="Custom" DataType="CardPrint">
+            <StackPanel Margin="3">
+                <Image Width="170" Source="{Binding ImageSource, NotifyOnSourceUpdated=True}" Margin="2" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="5*" />
+                        <ColumnDefinition Width="25" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding SetName}" Margin="0,1,5,0" FontSize="15"/>
+                    <Button Grid.Column="1" Content="X" Foreground="OrangeRed" FontWeight="ExtraBold" Margin="0,0,5,0" 
+                            cal:Message.Attach="RemoveCustomPrint($dataContext)" 
+                            cal:Action.TargetWithoutContext="{Binding DataContext, ElementName=LayoutRoot}"/>
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot">
+        <Menu VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="Auto">
+            <MenuItem x:Name="OpenMainMenu" ToolTip="Main Menu">
+                <MenuItem.Header>
+                    <Image Height="15" Width="15" Source="../Resources/reminder.png" Stretch="Fill" />
+                </MenuItem.Header>
+            </MenuItem>
+            <Separator />
+            <MenuItem x:Name="ForceRefresh" ToolTip="Force Data Refresh">
+                <MenuItem.Header>
+                    <Image Height="15" Width="15" Source="../Resources/refresh.png" Stretch="Fill" />
+                </MenuItem.Header>
+            </MenuItem>
+            <Separator />
+            <MenuItem x:Name="ShowInfo" ToolTip="Info">
+                <MenuItem.Header>
+                    <Image Height="15" Width="15" Source="../Resources/info.png" Stretch="Fill" />
+                </MenuItem.Header>
+            </MenuItem>
+        </Menu>
+        <Grid Margin="0,19,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5*" />
+                <ColumnDefinition Width="5*" />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="25"/>
+                </Grid.RowDefinitions>
+                <TextBox x:Name="SearchText" />
+                <ListBox Grid.Row="1" ItemsSource="{Binding Cards}" SelectedItem="{Binding SelectedItem}" />
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="5*" />
+                        <ColumnDefinition Width="5*" />
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="AddCustomCard" Grid.Column="0" Content="add custom card" />
+                    <Button x:Name="DeleteCustomCard" Grid.Column="1" Content="remove custom card" />
+                </Grid>
+            </Grid>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="5*" />
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <TextBlock Text="{Binding SelectedItem.Name}" Margin="10,10,10,0" FontSize="20" />
+                    <Button x:Name="AddCustomPrint" Content="+" Padding="0" Margin="0,10,10,0" FontSize="20" HorizontalAlignment="Right" Width="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=ActualHeight}" />
+                </Grid>
+                <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding SelectedItem.Prints}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ContentControl Content="{Binding}" cal:Bind.Model="{Binding}">
+                                    <ContentControl.Style>
+                                        <Style TargetType="ContentControl">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCustom}" Value="False">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource Standard}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsCustom}" Value="True">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource Custom}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ContentControl.Style>
+                                </ContentControl>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

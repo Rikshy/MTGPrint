@@ -110,5 +110,7 @@ namespace MTGPrint.ViewModels
             => new Uri("http://www.archidekt.com").Open();
         public void OpenMoxfield()
             => new Uri("http://www.moxfield.com").Open();
+        public void OpenMTGDecks()
+            => new Uri("http://www.mtgdecks.net").Open();
     }
 }

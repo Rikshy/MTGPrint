@@ -5,4 +5,4 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Performance", "CA1822:Member als statisch markieren", Justification = "<Ausstehend>", Scope = "namespaceanddescendants", Target = "~N:MTGPrint.ViewModels")]
+[assembly: SuppressMessage("Performance", "CA1822:Member als statisch markieren", Justification = "Those methods are needed for caliburn", Scope = "namespaceanddescendants", Target = "~N:MTGPrint.ViewModels")]

@@ -130,7 +130,10 @@ namespace MTGPrint
 
         private void ConvertToLocal(ScryCard card)
         {
-            var lcard = card.Layout != CardLayout.Token
+            if (card.Layout == CardLayout.ArtSeries)
+                return;
+
+            var lcard = card.Layout != CardLayout.Token && card.Layout != CardLayout.DoubleFacedToken
                 ? localData.Cards.FirstOrDefault(c => c.OracleId == card.OracleId)
                 : localData.Cards.FirstOrDefault(c => c.Name == card.Name);
 
@@ -162,7 +165,8 @@ namespace MTGPrint
 
             var iu = card.ImageUrls;
             ImageUrls child = null;
-            if (card.Layout == CardLayout.Transform)
+            //Cards with Llayout Split, Flip and Adventure have cardfaces without actual images
+            if (card.CardFaces != null && card.CardFaces.Count(c => c.ImageUrls != null) == 2)
             {
                 iu = card.CardFaces.First().ImageUrls;
                 child = card.CardFaces.Last().ImageUrls;

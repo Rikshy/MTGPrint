@@ -200,7 +200,7 @@ namespace MTGPrint.ViewModels
 
         public async Task HandleAsync(UpdateStatusEvent message, CancellationToken cancellationToken)
         {
-            await new Task(() =>
+            await Task.Run(() =>
             {
                 Errors = message.Errors ?? Errors;
                 StatusText = message.Status ?? StatusText;

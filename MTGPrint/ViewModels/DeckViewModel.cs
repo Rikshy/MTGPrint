@@ -69,7 +69,7 @@ namespace MTGPrint.ViewModels
             };
 
             Deck.PropertyChanged += (object o, PropertyChangedEventArgs _)
-                => events.PublishOnUIThreadAsync(new UpdateStatusEvent { Info = $"card count: {Deck.CardCount} | token count: {Deck.TokenCount}" });
+                => events.PublishOnUIThreadAsync(new UpdateStatusEvent { Info = $"{Deck.CardCount} Cards // {Deck.UniqueCardCount} Unique // {Deck.TokenCount} Tokens" });
         }
         public Deck Deck { get; } = new Deck(false);
 

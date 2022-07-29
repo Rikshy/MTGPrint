@@ -6,7 +6,7 @@ namespace MTGPrint.ViewModels
 {
     public class InfoViewModel
     {
-        private readonly Uri uri = new Uri("https://github.com/Rikshy/MTGPrint");
+        private readonly Uri uri = new("https://github.com/Rikshy/MTGPrint");
 
         public void OpenProjectUrl()
             => uri.Open();

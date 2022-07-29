@@ -12,7 +12,7 @@ namespace MTGPrint
 {
     public class Bootstrapper : BootstrapperBase
     {
-        private readonly SimpleContainer container = new SimpleContainer();
+        private readonly SimpleContainer container = new();
 
         public Bootstrapper() => Initialize();
 

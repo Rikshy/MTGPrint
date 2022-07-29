@@ -205,7 +205,7 @@ namespace MTGPrint.ViewModels
                 InfoText = message.Info ?? InfoText;
                 IsEnabled = message.IsWndEnabled ?? IsEnabled;
                 IsLoading = message.IsLoading ?? IsLoading;
-            });
+            }, cancellationToken);
         }
     }
 }

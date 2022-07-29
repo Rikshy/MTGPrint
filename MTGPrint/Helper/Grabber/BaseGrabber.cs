@@ -43,7 +43,7 @@ namespace MTGPrint.Helper.Grabber
                 var match = Regex.Match(line, "([0-9]+) (.*)");
                 if (!match.Success || !int.TryParse(match.Groups[1].Value, out var count) || count <= 0)
                 {
-                    errs.Add(line);
+                    errs.Add($"invalid format in line '{line}' -> '[CardAmount] [CardName]' without []");
                     continue;
                 }
 

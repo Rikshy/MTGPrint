@@ -35,7 +35,7 @@ namespace MTGPrint
                 .ForEach(vm => container.RegisterPerRequest(vm, vm.ToString(), vm));
         }
 
-        protected override void OnStartup(object sender, StartupEventArgs e) => DisplayRootViewFor<ShellViewModel>();
+        protected override void OnStartup(object sender, StartupEventArgs e) => DisplayRootViewForAsync<ShellViewModel>();
 
         protected override object GetInstance(Type service, string key) => container.GetInstance(service, key);
 

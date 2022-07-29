@@ -168,6 +168,7 @@ namespace MTGPrint.ViewModels
             var vm = container.GetInstance<DeckViewModel>();
             vm.LoadDeck(message.DeckPath);
             StatusText = "Deck loaded";
+            InfoText = $"{vm.Deck.Cards.Count} Cards";
             await ActivateItemAsync(vm, cancellationToken);
         }
 
@@ -184,6 +185,7 @@ namespace MTGPrint.ViewModels
             if (vm.Deck.Cards.Any())
             {
                 StatusText = "Deck loaded";
+                InfoText = $"{vm.Deck.Cards.Count} Cards";
                 await ActivateItemAsync(vm, cancellationToken);
             }
         }

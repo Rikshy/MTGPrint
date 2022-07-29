@@ -58,8 +58,16 @@ namespace MTGPrint.Helper.Grabber
                 var card = LocalData.LocalCards.FirstOrDefault(c => c.Name.ToUpper() == parsedName.Trim().ToUpper());
                 if (card == null)
                 {
-                    errs.Add($"card '{line}' not found");
-                    continue;
+                    card = LocalData.LocalCards.FirstOrDefault(c => c.Name.ToUpper().Contains(parsedName.Trim().ToUpper()));
+                    if (card != null)
+                    {
+                        errs.Add($"identified '{line}' as {card.Name}");
+                    }
+                    else
+                    {
+                        errs.Add($"card '{line}' not found");
+                        continue;
+                    }
                 }
 
                 var first = card.Prints.FirstOrDefault();

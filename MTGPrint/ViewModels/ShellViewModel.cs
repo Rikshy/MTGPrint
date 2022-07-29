@@ -168,7 +168,7 @@ namespace MTGPrint.ViewModels
             var vm = container.GetInstance<DeckViewModel>();
             vm.LoadDeck(message.DeckPath);
             StatusText = "Deck loaded";
-            InfoText = $"{vm.Deck.Cards.Count} Cards";
+            InfoText = $"{vm.Deck.CardCount} Cards // {vm.Deck.UniqueCardCount} Unique // {vm.Deck.TokenCount} Tokens and Faces";
             await ActivateItemAsync(vm, cancellationToken);
         }
 
@@ -185,7 +185,7 @@ namespace MTGPrint.ViewModels
             if (vm.Deck.Cards.Any())
             {
                 StatusText = "Deck loaded";
-                InfoText = $"{vm.Deck.Cards.Count} Cards";
+                InfoText = $"{vm.Deck.CardCount} Cards // {vm.Deck.UniqueCardCount} Unique // {vm.Deck.TokenCount} Tokens and Faces";
                 await ActivateItemAsync(vm, cancellationToken);
             }
         }

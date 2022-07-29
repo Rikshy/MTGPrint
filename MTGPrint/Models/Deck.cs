@@ -69,6 +69,8 @@ namespace MTGPrint.Models
         [JsonIgnore]
         public int CardCount => Cards.Where(c => !c.IsToken && !c.IsChild).Sum(c => c.Count);
 
+        public int UniqueCardCount => Cards.Where(c => !c.IsToken && !c.IsChild).Count();
+
         [JsonIgnore]
         public int TokenCount => Cards.Where(c => c.IsToken || c.IsChild).Sum(c => c.Count);
 

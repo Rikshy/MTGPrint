@@ -1,4 +1,6 @@
-﻿namespace MTGPrint.Helper.Grabber
+﻿using System;
+
+namespace MTGPrint.Helper.Grabber
 {
     public abstract class BaseWebGrabber : BaseGrabber
     {
@@ -15,6 +17,6 @@
         }
 
         protected virtual string RefineResponse(string response)
-            => response;
+            => response.IndexOf(Environment.NewLine) < 0 ? response.Replace("\n", Environment.NewLine) : response;
     }
 }

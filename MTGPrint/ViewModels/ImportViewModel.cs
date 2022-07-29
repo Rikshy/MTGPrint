@@ -108,5 +108,7 @@ namespace MTGPrint.ViewModels
             => new Uri("http://www.tappedout.net").Open();
         public void OpenArchidekt()
             => new Uri("http://www.archidekt.com").Open();
+        public void OpenMoxfield()
+            => new Uri("http://www.moxfield.com").Open();
     }
 }
